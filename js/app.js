@@ -52,3 +52,43 @@ searchInput.addEventListener("keypress", (e) => {
 });
 
 console.log("Shopline JS Loaded");
+// 5. LOAD PRODUCTS ON PRODUCTS PAGE
+const productGrid = document.getElementById("productGrid");
+if(productGrid){
+  loadProducts();
+}
+
+async function loadProducts() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const searchQuery = urlParams.get('search');
+  const district = urlParams.get('district');
+
+  document.getElementById("searchInput").value = searchQuery || "";
+  if(searchQuery) document.getElementById("resultTitle").innerText = `Results for "${searchQuery}"`;
+
+  let q = collection(db, "products");
+  // Note: For now we get all products. Later we add where() for search/district
+  const querySnapshot = await getDocs(q);
+  
+  productGrid.innerHTML = "";
+  let count = 0;
+  
+  querySnapshot.forEach((doc) => {
+    const product = doc.data();
+    // Simple client-side search filter
+    if(searchQuery && !product.name.toLowerCase().includes(searchQuery.toLowerCase())) return;
+    
+    count++;
+    productGrid.innerHTML += `
+      <div class="product-card" onclick="location.href='product-detail.html?id=${doc.id}'">
+        <img src="${product.image}">
+        <h3>${product.name}</h3>
+        <p class="price">₹${product.price} <span class="oldPrice">₹${product.oldPrice}</span></p>
+        <p class="discount">${product.discount}% off</p>
+        <p style="font-size:11px; color:#878787;">Seller: ${product.district}</p>
+      </div>
+    `;
+  });
+  
+  document.getElementById("resultCount").innerText = `${count} Products Found`;
+}
