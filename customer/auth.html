@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><title>Shopline - Login</title>
+<link rel="stylesheet" href="../css/style.css"></head>
+<body>
+<div class="auth-box">
+  <h1>Shopline Kerala</h1>
+  <select id="role">
+    <option value="buyer">I want to Buy</option>
+    <option value="seller">I want to Sell</option>
+  </select>
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Password">
+  <select id="state" required>
+    <option value="">Select State</option>
+    <option value="Kerala" selected>Kerala</option>
+  </select>
+  <select id="district" required>
+    <option value="">Select District</option>
+    <option>Kozhikode</option><option>Ernakulam</option><option>Thiruvananthapuram</option>
+    <option>Thrissur</option><option>Kannur</option><option>Kollam</option>
+    <!-- Add all 14 districts -->
+  </select>
+  <button id="signupBtn">Create Account</button>
+</div>
+<script type="module" src="../js/auth.js"></script>
+</body>
+</html>
