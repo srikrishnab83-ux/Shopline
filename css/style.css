@@ -1,17 +1,46 @@
+/* SHOPlINE PRO CSS */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-body { background: #f8f9fa; color: #333; }
-.navbar { display: flex; justify-content: space-between; padding: 15px 5%; background: #0d6efd; color: white; align-items: center; }
-.navbar .logo { font-size: 24px; font-weight: 700; }
-.navbar .logo span { color: #ffc107; }
-.navbar nav a { color: white; margin-left: 20px; text-decoration: none; }
-.hero { text-align: center; padding: 80px 20px; background: linear-gradient(135deg, #0d6efd, #004aad); color: white; }
-.hero h1 { font-size: 42px; margin-bottom: 10px; }
-.btn { padding: 12px 24px; border-radius: 8px; text-decoration: none; margin: 10px; display: inline-block; }
-.btn-primary { background: #ffc107; color: #000; font-weight: 600; }
-.btn-secondary { background: white; color: #0d6efd; font-weight: 600; }
-.features { display: flex; justify-content: center; gap: 20px; padding: 50px 5%; }
-.feature-box { background: white; padding: 20px; border-radius: 10px; width: 300px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-.categories { padding: 50px 5%; text-align: center; }
-.cat-grid { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
-.cat-grid a { background: white; padding: 15px 30px; border-radius: 8px; text-decoration: none; color: #0d6efd; font-weight: 600; }
-footer { text-align: center; padding: 20px; background: #212529; color: white; margin-top: 50px; }
+body { background: #f1f3f6; color: #212121; padding-bottom: 70px; }
+
+/* 1. STICKY HEADER WITH SEARCH */
+.navbar { position: sticky; top: 0; z-index: 100; background: #2874f0; padding: 10px 4%; display: flex; align-items: center; gap: 15px; }
+.navbar .logo { font-size: 22px; font-weight: 700; color: white; }
+.navbar .logo span { color: #ffe500; }
+.search-bar { flex: 1; display: flex; }
+.search-bar input { width: 100%; padding: 10px 15px; border: none; border-radius: 2px; font-size: 14px; }
+.nav-icons { display: flex; gap: 20px; }
+.nav-icons a { color: white; text-decoration: none; font-size: 13px; font-weight: 500; }
+
+/* 2. HERO - SMALLER AND CLEAN */
+.hero { background: white; padding: 20px 4%; text-align: center; box-shadow: 0 1px 1px rgba(0,0,0,.1); }
+.hero h1 { font-size: 20px; color: #212121; margin-bottom: 5px; }
+.hero p { font-size: 13px; color: #878787; margin-bottom: 15px; }
+.btn { padding: 10px 20px; border-radius: 2px; text-decoration: none; font-weight: 600; font-size: 14px; }
+.btn-primary { background: #fb641b; color: white; }
+
+/* 3. FEATURE CARDS - HORIZONTAL SCROLL */
+.features { display: flex; gap: 10px; padding: 15px 4%; overflow-x: auto; background: white; margin-bottom: 10px; }
+.feature-box { min-width: 200px; background: #f8f9fa; padding: 12px; border-radius: 8px; text-align: center; }
+.feature-box h3 { font-size: 14px; margin-bottom: 4px; }
+.feature-box p { font-size: 12px; color: #878787; }
+
+/* 4. CATEGORY GRID WITH ICONS */
+.categories { background: white; padding: 15px 4%; }
+.categories h2 { font-size: 18px; margin-bottom: 15px; }
+.cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; text-align: center; }
+.cat-grid a { text-decoration: none; color: #212121; font-size: 12px; font-weight: 500; }
+.cat-grid img { width: 64px; height: 64px; object-fit: contain; margin-bottom: 5px; }
+
+/* 5. PRODUCT GRID - LIKE MEESHO */
+.product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 15px 4%; background: white; }
+.product-card { background: white; border: 1px solid #e0e0e0; border-radius: 4px; padding: 8px; }
+.product-card img { width: 100%; height: 160px; object-fit: contain; }
+.product-card h3 { font-size: 13px; height: 36px; overflow: hidden; }
+.product-card .price { font-size: 16px; font-weight: 600; color: #212121; }
+.product-card .oldPrice { font-size: 12px; color: #878787; text-decoration: line-through; margin-left: 5px; }
+
+/* 6. BOTTOM NAV FOR MOBILE */
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 8px 0; box-shadow: 0 -1px 3px rgba(0,0,0,.1); }
+.bottom-nav a { text-decoration: none; color: #878787; font-size: 11px; text-align: center; }
+footer { text-align: center; padding: 20px; font-size: 12px; color: #878787; }
