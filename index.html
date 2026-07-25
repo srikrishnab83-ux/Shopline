@@ -8,36 +8,63 @@
 </head>
 <body>
 
-  <!-- 1. STICKY HEADER WITH SEARCH -->
+  <!-- 1. STICKY HEADER -->
   <header class="navbar">
     <div class="logo">Shopline<span>Kerala</span></div>
     <div class="search-bar">
-      <input type="text" placeholder="Search for Products in Kerala">
+      <input type="text" placeholder="Search for Mobiles, Fashion, Electronics in Kerala">
     </div>
     <div class="nav-icons">
       <a href="customer/auth.html" id="authLink">Login</a>
-      <a href="customer/cart.html">Cart</a>
+      <a href="customer/cart.html">🛒 Cart</a>
     </div>
   </header>
 
-  <!-- 2. HERO SECTION -->
-  <section class="hero">
-    <h1>Kerala's Own Marketplace</h1>
-    <p>Buy and Sell products only inside Kerala. Support local sellers.</p>
-    <a href="customer/products.html" class="btn btn-primary">Start Shopping</a>
-    <a href="seller/seller-dashboard.html" class="btn" style="background:white; color:#2874f0; border:1px solid #2874f0;">Become a Seller</a>
+  <!-- 2. BANNER SLIDER / OFFERS -->
+  <section class="banner">
+    <img src="https://rukminim2.flixcart.com/fk-p-flap/1600/270/image/8c0c4f5b5b5b5b5b.jpg?q=20" alt="Big Sale">
   </section>
 
-  <!-- 3. FEATURE CARDS -->
-  <section class="features">
-    <div class="feature-box">
-      <h3>Kerala Only</h3>
-      <p>Only buyers and sellers from Kerala can register. No other states allowed.</p>
+  <!-- 3. CATEGORY GRID -->
+  <section class="categories">
+    <h2>Shop by Category</h2>
+    <div class="cat-grid">
+      <a href="customer/products.html?category=mobiles"><img src="https://rukminim2.flixcart.com/image/312/312/xif0q/mobile/3/5/l/-original-imaghx9qmgqskxkc.jpeg?q=70"><p>Mobiles</p></a>
+      <a href="customer/products.html?category=fashion"><img src="https://rukminim2.flixcart.com/image/612/612/l4ln8sw0/t-shirt/p/q/1/s-t0-rt-white-02-tripr-original-imagfc4ywwgpzdk3.jpeg?q=70"><p>Fashion</p></a>
+      <a href="customer/products.html?category=electronics"><img src="https://rukminim2.flixcart.com/image/312/312/xif0q/headphone/b/h/b/-original-imagphz7qzjbzwcy.jpeg?q=70"><p>Electronics</p></a>
+      <a href="customer/products.html?category=home"><img src="https://rukminim2.flixcart.com/image/612/612/l2hwwi80/mixer-grinder-juicer/2/y/z/500w-mixer-grinder-with-3-stainless-steel-jar-500-w-mixer-grinder-original-image9z9fz9x3f2f.jpeg?q=70"><p>Home</p></a>
+      <a href="customer/products.html?category=grocery"><img src="https://rukminim2.flixcart.com/image/612/612/l5ld8sw0/grocery/7/7/9/1kg-toor-dal-tata-sampann-original-imag8y5zvz7fz7fz.jpeg?q=70"><p>Grocery</p></a>
+      <a href="customer/products.html?category=beauty"><img src="https://rukminim2.flixcart.com/image/612/612/xif0q/face-wash/c/s/r/100-neutrogena-deep-clean-facial-cleanser-neutrogena-original-imagqz5z5z5z5z5.jpeg?q=70"><p>Beauty</p></a>
     </div>
-    <div class="feature-box">
-      <h3>District Based</h3>
-      <p>Filter products by your district: Kozhikode, Kochi, Trivandrum and more.</p>
+  </section>
+
+  <!-- 4. DEAL OF THE DAY -->
+  <section class="deal-section">
+    <div class="deal-header">
+      <h2>Deal of the Day</h2>
+      <p>Ends in 12h 34m</p>
+      <a href="customer/products.html">View All ></a>
     </div>
-    <div class="feature-box">
-      <h3>Safe & Secure</h3>
-      <p
+    <div class="product-grid" id="dealProducts">
+      <!-- Sample Product Cards -->
+      <div class="product-card">
+        <img src="https://rukminim2.flixcart.com/image/312/312/xif0q/mobile/3/5/l/-original-imaghx9qmgqskxkc.jpeg?q=70">
+        <h3>Samsung Galaxy M35 5G</h3>
+        <p class="price">₹15,999 <span class="oldPrice">₹19,999</span> <span class="discount">20% off</span></p>
+        <p class="tag">Free Delivery in Kerala</p>
+      </div>
+      <div class="product-card">
+        <img src="https://rukminim2.flixcart.com/image/612/612/xif0q/headphone/b/h/b/-original-imagphz7qzjbzwcy.jpeg?q=70">
+        <h3>Boat Rockerz 450</h3>
+        <p class="price">₹1,299 <span class="oldPrice">₹2,999</span> <span class="discount">56% off</span></p>
+        <p class="tag">District: Kozhikode</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. WHY SHOPlINE KERALA -->
+  <section class="why-us">
+    <h2>Why Shop on Shopline Kerala?</h2>
+    <div class="features">
+      <div class="feature-box">
+        <h3>🚚 Fast Local Delivery</h3>
