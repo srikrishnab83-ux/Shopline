@@ -3,29 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shopline Kerala - Buy & Sell Inside Kerala</title>
+  <title>Shopline Kerala - Kerala's Own Marketplace</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+
+  <!-- 1. STICKY HEADER WITH SEARCH -->
   <header class="navbar">
     <div class="logo">Shopline<span>Kerala</span></div>
-    <nav>
-      <a href="customer/products.html">Shop</a>
-      <a href="seller/seller-dashboard.html">Sell</a>
-      <a href="customer/auth.html" id="authLink">Login / Signup</a>
+    <div class="search-bar">
+      <input type="text" placeholder="Search for Products in Kerala">
+    </div>
+    <div class="nav-icons">
+      <a href="customer/auth.html" id="authLink">Login</a>
       <a href="customer/cart.html">Cart</a>
-    </nav>
+    </div>
   </header>
 
+  <!-- 2. HERO SECTION -->
   <section class="hero">
     <h1>Kerala's Own Marketplace</h1>
     <p>Buy and Sell products only inside Kerala. Support local sellers.</p>
-    <div class="hero-btns">
-      <a href="customer/products.html" class="btn btn-primary">Start Shopping</a>
-      <a href="seller/seller-dashboard.html" class="btn btn-secondary">Become a Seller</a>
-    </div>
+    <a href="customer/products.html" class="btn btn-primary">Start Shopping</a>
+    <a href="seller/seller-dashboard.html" class="btn" style="background:white; color:#2874f0; border:1px solid #2874f0;">Become a Seller</a>
   </section>
 
+  <!-- 3. FEATURE CARDS -->
   <section class="features">
     <div class="feature-box">
       <h3>Kerala Only</h3>
@@ -37,26 +40,4 @@
     </div>
     <div class="feature-box">
       <h3>Safe & Secure</h3>
-      <p>Admin verified sellers and secure payments.</p>
-    </div>
-  </section>
-
-  <section class="categories">
-    <h2>Shop by Category</h2>
-    <div class="cat-grid">
-      <a href="customer/products.html?category=mobiles">Mobiles</a>
-      <a href="customer/products.html?category=fashion">Fashion</a>
-      <a href="customer/products.html?category=electronics">Electronics</a>
-      <a href="customer/products.html?category=home">Home</a>
-    </div>
-  </section>
-
-  <footer>
-    <p>© 2026 Shopline Kerala. All rights reserved. Made for Kerala, by Kerala.</p>
-  </footer>
-
-  <script type="module">
-    import { auth } from './js/firebase-config.js';
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
-    
-    onAuthStateChanged(auth, (user) => {
+      <p
