@@ -3,41 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shopline Kerala - Buy & Sell in Kerala | Kerala's Own Marketplace</title>
+  <title>Shopline Kerala - Kerala's Own Marketplace</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-  <!-- 1. TOP HEADER -->
+  <!-- 1. FIXED STICKY HEADER - MOBILE FRIENDLY -->
   <header class="navbar">
     <div class="logo">Shopline<span>Kerala</span></div>
-    <div class="search-bar">
-      <input type="text" placeholder="Search for Products, Brands in Kerala">
-    </div>
     <div class="nav-icons">
       <a href="customer/auth.html" id="authLink">Login</a>
-      <a href="seller/seller-dashboard.html">Become Seller</a>
-      <a href="customer/cart.html">🛒 Cart</a>
+      <a href="customer/cart.html">🛒</a>
     </div>
   </header>
+  
+  <!-- SEARCH BAR SEPARATE -->
+  <div class="search-wrap">
+    <input type="text" placeholder="Search in Kerala">
+  </div>
 
-  <!-- 2. BANNER SLIDER -->
-  <section class="banner-slider">
-    <img src="https://rukminim2.flixcart.com/fk-p-flap/1600/270/image/onam-sale-kerala.jpg?q=20" alt="Onam Sale">
+  <!-- 2. BANNER -->
+  <section class="banner">
+    <img src="https://rukminim2.flixcart.com/fk-p-flap/844/140/image/onam-sale-kerala.jpg?q=20" alt="Onam Sale">
   </section>
 
-  <!-- 3. 8 CATEGORY GRID -->
+  <!-- 3. FIXED CATEGORY GRID - 4 PER ROW LIKE MEESHO -->
   <section class="categories">
     <h2>Shop by Category</h2>
-    <div class="cat-grid-8">
-      <a><img src="https://rukminim2.flixcart.com/image/312/312/xif0q/mobile/3/5/l/-original-imaghx9qmgqskxkc.jpeg?q=70"><p>Mobiles</p></a>
-      <a><img src="https://rukminim2.flixcart.com/image/612/612/l4ln8sw0/t-shirt/p/q/1/s-t0-rt-white-02-tripr-original-imagfc4ywwgpzdk3.jpeg?q=70"><p>Fashion</p></a>
-      <a><img src="https://rukminim2.flixcart.com/image/312/312/xif0q/headphone/b/h/b/-original-imagphz7qzjbzwcy.jpeg?q=70"><p>Electronics</p></a>
-      <a><img src="https://rukminim2.flixcart.com/image/612/612/l2hwwi80/mixer-grinder-juicer/2/y/z/500w-mixer-grinder-original-image9z9fz9x3f2f.jpeg?q=70"><p>Home</p></a>
-      <a><img src="https://rukminim2.flixcart.com/image/612/612/l5ld8sw0/grocery/7/7/9/1kg-toor-dal-original-imag8y5zvz7fz7fz.jpeg?q=70"><p>Grocery</p></a>
-      <a><img src="https://rukminim2.flixcart.com/image/612/612/xif0q/face-wash/c/s/r/100-neutrogena-deep-clean-original-imagqz5z5z5z5z5.jpeg?q=70"><p>Beauty</p></a>
-      <a><img src="https://rukminim2.flixcart.com/image/612/612/xif0q/furniture/dining-table/5/4/3/120-60-75-engineered-wood-original-imagzqzqzqzqzqz.jpeg?q=70"><p>Furniture</p></a>
-      <a><img src="https://rukminim2.flixcart.com/image/612/612/xif0q/toy/4/5/6/educational-building-blocks-original-imagzqzqzqzqzqz.jpeg?q=70"><p>Toys</p></a>
+    <div class="cat-grid">
+      <a href="customer/products.html?category=mobiles"><img src="https://rukminim2.flixcart.com/image/312/312/xif0q/mobile/3/5/l/-original-imaghx9qmgqskxkc.jpeg?q=70"><p>Mobiles</p></a>
+      <a href="customer/products.html?category=fashion"><img src="https://rukminim2.flixcart.com/image/612/612/l4ln8sw0/t-shirt/p/q/1/s-t0-rt-white-02-tripr-original-imagfc4ywwgpzdk3.jpeg?q=70"><p>Fashion</p></a>
+      <a href="customer/products.html?category=electronics"><img src="https://rukminim2.flixcart.com/image/312/312/xif0q/headphone/b/h/b/-original-imagphz7qzjbzwcy.jpeg?q=70"><p>Electronics</p></a>
+      <a href="customer/products.html?category=home"><img src="https://rukminim2.flixcart.com/image/612/612/l2hwwi80/mixer-grinder-juicer/2/y/z/500w-mixer-grinder-original-image9z9fz9x3f2f.jpeg?q=70"><p>Home</p></a>
+      <a href="customer/products.html?category=grocery"><img src="https://rukminim2.flixcart.com/image/612/612/l5ld8sw0/grocery/7/7/9/1kg-toor-dal-original-imag8y5zvz7fz7fz.jpeg?q=70"><p>Grocery</p></a>
+      <a href="customer/products.html?category=beauty"><img src="https://rukminim2.flixcart.com/image/612/612/xif0q/face-wash/c/s/r/100-neutrogena-deep-clean-original-imagqz5z5z5z5z5.jpeg?q=70"><p>Beauty</p></a>
+      <a href="customer/products.html?category=furniture"><img src="https://rukminim2.flixcart.com/image/612/612/xif0q/furniture/dining-table/5/4/3/120-60-75-engineered-wood-original-imagzqzqzqzqzqz.jpeg?q=70"><p>Furniture</p></a>
+      <a href="customer/products.html?category=toys"><img src="https://rukminim2.flixcart.com/image/612/612/xif0q/toy/4/5/6/educational-building-blocks-original-imagzqzqzqzqzqz.jpeg?q=70"><p>Toys</p></a>
     </div>
   </section>
 
@@ -46,84 +47,73 @@
     <div class="flash-header">
       <h2>⚡ Flash Sale</h2>
       <p>Ends in: <span id="timer">05:59:12</span></p>
-      <a href="customer/products.html">View All</a>
     </div>
     <div class="product-grid">
       <div class="product-card">
         <img src="https://rukminim2.flixcart.com/image/312/312/xif0q/mobile/3/5/l/-original-imaghx9qmgqskxkc.jpeg?q=70">
-        <h3>OnePlus Nord CE3</h3>
-        <p class="price">₹22,999 <span class="oldPrice">₹26,999</span> <span class="discount">15% off</span></p>
+        <h3>Samsung M35 5G</h3>
+        <p class="price">₹15,999 <span class="oldPrice">₹19,999</span></p>
+        <p class="discount">20% off</p>
       </div>
       <div class="product-card">
         <img src="https://rukminim2.flixcart.com/image/612/612/xif0q/headphone/b/h/b/-original-imagphz7qzjbzwcy.jpeg?q=70">
-        <h3>Boat Headphones</h3>
-        <p class="price">₹1,299 <span class="oldPrice">₹2,999</span> <span class="discount">56% off</span></p>
+        <h3>Boat Rockerz 450</h3>
+        <p class="price">₹1,299 <span class="oldPrice">₹2,999</span></p>
+        <p class="discount">56% off</p>
       </div>
     </div>
   </section>
 
-  <!-- 5. TRENDING IN YOUR DISTRICT -->
-  <section class="trending-district">
-    <h2>🔥 Trending in Kozhikode</h2>
-    <div class="product-grid">
-      <!-- Load from Firestore later -->
+  <!-- 5. NEW: TOP DEALS IN KERALA -->
+  <section class="top-deals">
+    <h2>🔥 Top Deals in Kerala</h2>
+    <div class="deal-scroll">
+      <div class="deal-card">
+        <img src="https://rukminim2.flixcart.com/image/612/612/l4ln8sw0/t-shirt/p/q/1/s-t0-rt-white-02-tripr-original-imagfc4ywwgpzdk3.jpeg?q=70">
+        <p>Min 50% Off</p>
+        <b>Fashion</b>
+      </div>
+      <div class="deal-card">
+        <img src="https://rukminim2.flixcart.com/image/612/612/l2hwwi80/mixer-grinder-juicer/2/y/z/500w-mixer-grinder-original-image9z9fz9x3f2f.jpeg?q=70">
+        <p>Up to 40% Off</p>
+        <b>Home Appliances</b>
+      </div>
+      <div class="deal-card">
+        <img src="https://rukminim2.flixcart.com/image/612/612/l5ld8sw0/grocery/7/7/9/1kg-toor-dal-original-imag8y5zvz7fz7fz.jpeg?q=70">
+        <p>From ₹99</p>
+        <b>Grocery</b>
+      </div>
     </div>
   </section>
 
-  <!-- 6. TOP KERALA BRANDS -->
-  <section class="brands">
-    <h2>Top Brands in Kerala</h2>
-    <div class="brand-grid">
-      <img src="https://logo.clearbit.com/samsung.com">
-      <img src="https://logo.clearbit.com/oneplus.com">
-      <img src="https://logo.clearbit.com/boat-lifestyle.com">
-      <img src="https://logo.clearbit.com/philips.com">
-      <img src="https://logo.clearbit.com/baj.com">
+  <!-- 6. NEW: SELL ON SHOPlINE BANNER -->
+  <section class="seller-banner">
+    <div>
+      <h2>Become a Seller in Kerala</h2>
+      <p>Sell to 2 Crore+ customers in Kerala. Zero commission for first 3 months.</p>
+      <a href="seller/seller-dashboard.html" class="btn-sell">Start Selling</a>
     </div>
+    <img src="https://rukminim2.flixcart.com/image/400/400/xif0q/seller-banner.png">
   </section>
 
-  <!-- 7. KERALA FESTIVE BANNER -->
-  <section class="festive-banner">
-    <img src="https://rukminim2.flixcart.com/fk-p-flap/1600/270/image/onam-special.jpg?q=20" alt="Onam Special">
-  </section>
-
-  <!-- 8. WHY SHOPlINE -->
+  <!-- 7. WHY SHOPlINE -->
   <section class="why-us">
-    <h2>Why 2 Lakh+ Keralites Trust Shopline</h2>
+    <h2>Why Shopline Kerala?</h2>
     <div class="features">
-      <div class="feature-box"><h3>🚚 2-3 Day Delivery</h3><p>Across all 14 districts of Kerala</p></div>
-      <div class="feature-box"><h3>✅ Verified Sellers</h3><p>Admin checks every seller from Kerala</p></div>
-      <div class="feature-box"><h3>💰 COD Available</h3><p>Pay on delivery. No risk.</p></div>
-      <div class="feature-box"><h3>📞 Malayalam Support</h3><p>Talk to us in your language</p></div>
+      <div class="feature-box"><h3>🚚 2-3 Day Delivery</h3><p>Across all 14 districts</p></div>
+      <div class="feature-box"><h3>✅ Verified Sellers</h3><p>Only Kerala sellers</p></div>
+      <div class="feature-box"><h3>💰 COD Available</h3><p>Pay on delivery</p></div>
+      <div class="feature-box"><h3>📞 Malayalam Support</h3><p>We speak your language</p></div>
     </div>
   </section>
 
-  <!-- 9. CUSTOMER REVIEWS -->
-  <section class="testimonials">
-    <h2>What Our Customers Say</h2>
-    <div class="testimonial-grid">
-      <div class="testimonial-card"><img src="https://i.pravatar.cc/50?img=1"><p>"Fast delivery to Thrissur. Product quality is top!"</p><h4>- Anjali, Thrissur</h4></div>
-      <div class="testimonial-card"><img src="https://i.pravatar.cc/50?img=2"><p>"Supporting local Kerala sellers feels really good."</p><h4>- Muhammed, Kozhikode</h4></div>
-    </div>
-  </section>
-
-  <!-- 10. APP DOWNLOAD -->
-  <section class="app-download">
-    <div class="app-text">
-      <h2>Download Shopline Kerala App</h2>
-      <p>Get exclusive app-only deals and faster checkout</p>
-      <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" width="150">
-    </div>
-    <img src="https://rukminim2.flixcart.com/image/400/400/xif0q/app/screenshot.png" width="200">
-  </section>
-
-  <!-- 11. BIG FOOTER -->
+  <!-- 8. BIG FOOTER -->
   <footer>
     <div class="footer-grid">
-      <div><h4>ABOUT</h4><a>About Us</a><a>Contact</a><a>Careers</a></div>
-      <div><h4>HELP</h4><a>Payments</a><a>Shipping</a><a>Returns</a></div>
-      <div><h4>POLICY</h4><a>Terms</a><a>Privacy</a><a>Kerala Only</a></div>
-      <div><h4>SELL ON SHOPlINE</h4><a>Become a Seller</a><a>Seller Hub</a></div>
+      <div><h4>ABOUT</h4><a>About Us</a><a>Contact</a></div>
+      <div><h4>HELP</h4><a>Payments</a><a>Shipping</a></div>
+      <div><h4>POLICY</h4><a>Terms</a><a>Privacy</a></div>
+      <div><h4>SELL</h4><a>Become Seller</a></div>
     </div>
     <p class="copyright">© 2026 Shopline Kerala. Made for Kerala, by Kerala.</p>
   </footer>
