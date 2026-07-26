@@ -267,6 +267,18 @@ html, body { overflow-x: hidden; width: 100%; }
   font-size: 12px;
   font-weight: 500;
 }
+.product-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+.product-card { border: 1px solid #e0e0e0; padding: 15px; border-radius: 4px; cursor: pointer; }
+.product-card:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+.product-card img { width: 100%; height: 200px; object-fit: contain; }
+.product-card .price { color: #388e3c; font-size: 18px; font-weight: bold; }
+.product-card .district { color: #878787; font-size: 12px; }
+
+@media (max-width: 768px){ .product-grid-4 { grid-template-columns: repeat(2, 1fr); }
 
 /* ========== 8. FESTIVE BANNER ========== */
 .festive-banner {
