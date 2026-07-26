@@ -29,25 +29,21 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-// 4. SEARCH FUNCTION - THIS FIXES YOUR 🔍 BUTTON
-const searchInput = document.querySelector(".search-wrap input");
+// SEARCH FUNCTION
 const searchBtn = document.querySelector(".search-wrap button");
+const searchInput = document.querySelector(".search-wrap input");
 
-function doSearch() {
-  const searchTerm = searchInput.value.trim();
-  if (searchTerm !== "") {
-    // Go to products page with search query
-    window.location.href = `customer/products.html?search=${encodeURIComponent(searchTerm)}`;
+searchBtn.addEventListener("click", () => {
+  let query = searchInput.value.trim();
+  if(query !== ""){
+    window.location.href = `customer/products.html?search=${query}`;
   }
-}
+});
 
-// Click search button
-searchBtn.addEventListener("click", doSearch);
-
-// Press Enter key
+// Enter key also works
 searchInput.addEventListener("keypress", (e) => {
-  if (e.key === "Enter") {
-    doSearch();
+  if(e.key === "Enter"){
+    searchBtn.click();
   }
 });
 
