@@ -10,19 +10,31 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// 2. SEARCH FUNCTION - for homepage
+// SEARCH FUNCTION - works from any page
 const searchBtn = document.querySelector("#searchBtn");
 const searchInput = document.querySelector("#searchInput");
 
 function doSearch() {
   let query = searchInput.value.trim();
   if(query !== ""){
-    window.location.href = `products.html?search=${query}`;
+    // Check if we are already in customer folder
+    let path = window.location.pathname.includes("/customer/") 
+      ? `products.html?search=${query}` 
+      : `customer/products.html?search=${query}`;
+    
+    window.location.href = path;
   }
 }
-if(searchBtn){ searchBtn.addEventListener("click", doSearch); }
-if(searchInput){ searchInput.addEventListener("keypress", (e) => { if (e.key === "Enter") doSearch(); }); }
 
+if(searchBtn){ 
+  searchBtn.addEventListener("click", doSearch); 
+  console.log("Search button connected"); // for debugging
+}
+if(searchInput){ 
+  searchInput.addEventListener("keypress", (e) => { 
+    if (e.key === "Enter") doSearch(); 
+  }); 
+}
 // 3. LOAD PRODUCTS ON PRODUCTS PAGE
 const productGrid = document.getElementById("productGrid");
 const resultTitle = document.getElementById("resultTitle");
