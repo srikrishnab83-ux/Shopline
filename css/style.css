@@ -80,6 +80,29 @@ img { max-width: 100%; display: block; }
   font-weight: 500;
   white-space: nowrap;
 }
+html, body {
+  overflow-x: hidden; /* stops white space on right */
+  width: 100%;
+}
+
+.search-wrap {
+  max-width: 200px; /* was too big on mobile */
+}
+.search-wrap input {
+  width: 120px; /* reduce input width on mobile */
+}
+
+@media (max-width: 768px){
+  .navbar {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .nav-icons {
+    order: 3;
+    width: 100%;
+    justify-content: space-around;
+  }
+}
 
 /* ========== 3. CATEGORY NAVBAR ========== */
 .category-nav {
