@@ -96,23 +96,57 @@ html, body {
     justify-content: space-around;
   }
 }
-html, body { overflow-x: hidden; width: 100%; }
+
+footer {
+  background: #172337;
+  color: white;
+  margin-top: 10px;
+}
 
 .footer-grid {
-  display: grid !important;
-  grid-template-columns: repeat(4, 1fr) !important;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 30px;
-  padding: 40px 20px;
-  background: #212121;
+  padding: 40px 4%;
+  background: #172337;
   color: #fff;
 }
-.footer-grid h4 { font-size: 12px; color: #878787; margin-bottom: 12px; }
-.footer-grid a { display: block; color: #fff; text-decoration: none; font-size: 12px; margin-bottom: 8px; }
-.footer-grid a:hover { text-decoration: underline; }
-.footer-bottom { background: #212121; color: #878787; text-align: center; padding: 20px; font-size: 12px; border-top: 1px solid #333; }
 
+.footer-grid h4 { 
+  font-size: 12px; 
+  color: #878787; 
+  margin-bottom: 12px; 
+  font-weight: 500;
+}
+
+.footer-grid a { 
+  display: block; 
+  color: #fff; 
+  text-decoration: none; 
+  font-size: 12px; 
+  margin-bottom: 8px; 
+}
+
+.footer-grid a:hover { 
+  text-decoration: underline; 
+}
+
+.footer-bottom { 
+  background: #172337; 
+  color: #878787; 
+  text-align: center; 
+  padding: 20px 4%; 
+  font-size: 12px; 
+  border-top: 1px solid #454d5e; 
+}
+
+/* Mobile: make it 2x2 grid */
 @media (max-width: 768px){
-  .footer-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .footer-grid { 
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 20px;
+    padding: 30px 4%;
+  }
 }
 /* ========== 3. CATEGORY NAVBAR ========== */
 .category-nav {
