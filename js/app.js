@@ -16,7 +16,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// ========== 2. LOAD PRODUCTS - SINGLE FUNCTION ==========
+// ========== 2. LOAD PRODUCTS - ONLY ONE FUNCTION ==========
 async function loadProducts() {
   const grid = document.getElementById('productGrid');
   if(!grid) return; // not on products page
