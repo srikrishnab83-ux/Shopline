@@ -1,48 +1,3 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-// 1. YOUR FIREBASE CONFIG
-const firebaseConfig = { 
-  apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo",
-  authDomain: "willwin-cart.firebaseapp.com",
-  projectId: "willwin-cart",
-}; 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// 2. SEARCH FUNCTION
-const searchBtn = document.querySelector("#searchBtn");
-const searchInput = document.querySelector("#searchInput");
-
-function doSearch() {
-  let query = searchInput.value.trim();
-  if(query !== ""){
-    let path = window.location.pathname.includes("/customer/") 
-      ? `products.html?search=${encodeURIComponent(query)}` 
-      : `customer/products.html?search=${encodeURIComponent(query)}`;
-    window.location.href = path;
-  }
-}
-
-if(searchBtn){ 
-  searchBtn.addEventListener("click", doSearch); 
-}
-if(searchInput){ 
-  searchInput.addEventListener("keypress", (e) => { 
-    if (e.key === "Enter") doSearch(); 
-  }); 
-}
-
-// 3. LOAD PRODUCTS ON PRODUCTS PAGE
-const productGrid = document.getElementById("productGrid");
-
-if(productGrid){
-  loadProducts();
-  
-  document.getElementById("districtFilter")?.addEventListener("change", loadProducts);
-  document.getElementById("priceFilter")?.addEventListener("change", loadProducts);
-}
-
 async function loadProducts() {
   const urlParams = new URLSearchParams(window.location.search);
   const searchQuery = urlParams.get('search');
@@ -54,8 +9,8 @@ async function loadProducts() {
   const resultCount = document.getElementById("resultCount");
   
   if(searchQuery) resultTitle.innerText = `Results for "${searchQuery}"`;
-  if(categoryQuery) resultTitle.innerText = categoryQuery;
-  if(!searchQuery && !categoryQuery) resultTitle.innerText = "All Products";
+  else if(categoryQuery) resultTitle.innerText = categoryQuery;
+  else resultTitle.innerText = "All Products";
   
   try {
     const snapshot = await getDocs(collection(db, "products"));
@@ -65,12 +20,15 @@ async function loadProducts() {
       let p = doc.data();
       p.id = doc.id;
       
+      // Skip if required fields are missing
+      if(!p.name || !p.price || !p.image) return; 
+      
       let match = true;
       if(searchQuery && !p.name.toLowerCase().includes(searchQuery.toLowerCase())) match = false;
       if(categoryQuery && p.category !== categoryQuery) match = false;
       if(district && p.district !== district) match = false;
       if(priceRange){
-        let [min, max] = priceRange.split("-").map(Number); // FIX: convert to number
+        let [min, max] = priceRange.split("-").map(Number);
         if(Number(p.price) < min || Number(p.price) > max) match = false;
       }
       
@@ -81,7 +39,7 @@ async function loadProducts() {
     productGrid.innerHTML = "";
     
     if(products.length === 0){
-      productGrid.innerHTML = "<p style='text-align:center; grid-column: 1/-1;'>No products found. Add products in Firebase first.</p>";
+      productGrid.innerHTML = "<p style='text-align:center; grid-column: 1/-1;'>No products found</p>";
       return;
     }
     
@@ -98,8 +56,6 @@ async function loadProducts() {
     
   } catch(error) {
     console.error("Firebase Error:", error);
-    productGrid.innerHTML = "<p style='color:red;'>Error loading products. Check Firebase rules.</p>";
+    productGrid.innerHTML = "<p style='color:red; text-align:center;'>Error loading products. Check Firebase rules.</p>";
   }
 }
-
-console.log("Shopline JS Loaded");
