@@ -1,59 +1,19 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Add Products to DB</title>
-  <style>body{font-family:sans-serif;padding:20px;background:#111;color:#fff}</style>
-</head>
-<body>
-  <h2>Adding Products... Check Console</h2>
-  <button onclick="addProducts()">Click to Add All Products</button>
-
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  // 1. PASTE YOUR FIREBASE CONFIG HERE
-  const firebaseConfig = {
-    apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo",
-    authDomain: "willwin-cart.firebaseapp.com",
-    projectId: "willwin-cart",
-    storageBucket: "willwin-cart.firebasestorage.app",
-    messagingSenderId: "432614337343",
-    appId: "G-8WD54NWJW5"
-  };
-
+  const firebaseConfig = { /* YOUR CONFIG */ };
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  const products = [
-    // FASHION
-    {name: "Men's Cotton T-Shirt", category: "Fashion", subcategory: "Men's Wear", sub_subcategory: "T-Shirts", district: "Kozhikode", price: 499, oldPrice: 999, discount: 50, image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400"},
-    {name: "Men's Formal Shirt", category: "Fashion", subcategory: "Men's Wear", sub_subcategory: "Shirts", district: "Kozhikode", price: 799, oldPrice: 1499, discount: 47, image: "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=400"},
-    {name: "Men's Slim Jeans", category: "Fashion", subcategory: "Men's Wear", sub_subcategory: "Jeans", district: "Kannur", price: 1299, oldPrice: 2499, discount: 48, image: "https://images.unsplash.com/photo-1542272604-787c3835535d?w=400"},
-    {name: "Women's Saree", category: "Fashion", subcategory: "Women's Wear", sub_subcategory: "Sarees", district: "Thrissur", price: 1899, oldPrice: 3999, discount: 52, image: "https://images.unsplash.com/photo-1619191163428-4a7a7c0d7e6e?w=400"},
-    
-    // MOBILES
-    {name: "Samsung Galaxy M35 5G", category: "Mobiles", subcategory: "Smartphones", sub_subcategory: "Samsung", district: "Kasaragod", price: 15999, oldPrice: 19999, discount: 20, image: "https://images.unsplash.com/photo-1592750475338-74b7b21085f1?w=400"},
-    {name: "iPhone 15", category: "Mobiles", subcategory: "Smartphones", sub_subcategory: "Apple", district: "Ernakulam", price: 69999, oldPrice: 79999, discount: 12, image: "https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=400"},
-    
-    // ELECTRONICS
-    {name: "Boat Headphones", category: "Electronics", subcategory: "Audio", sub_subcategory: "Headphones", district: "Malappuram", price: 1299, oldPrice: 2999, discount: 57, image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"},
-    {name: "LG 43 Inch TV", category: "Electronics", subcategory: "TV", sub_subcategory: "Smart TV", district: "Palakkad", price: 28999, oldPrice: 39999, discount: 27, image: "https://images.unsplash.com/photo-1593784991095-a205069470b6?w=400"},
-    
-    // HOME
-    {name: "Dining Table", category: "Home", subcategory: "Furniture", sub_subcategory: "Tables", district: "Kottayam", price: 8999, oldPrice: 12000, discount: 25, image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400"},
-    
-    // GROCERY
-    {name: "Kerala Rice 10kg", category: "Grocery", subcategory: "Food Grains", sub_subcategory: "Rice", district: "Alappuzha", price: 650, oldPrice: 750, discount: 13, image: "https://images.unsplash.com/photo-1608198093002-ad4e005484ec?w=400"},
-  ];
-
-  async function addProducts() {
-    for(const p of products){
-      await addDoc(collection(db, "products"), p);
-      console.log("✅ Added:", p.name);
+  async function test() {
+    try {
+      await addDoc(collection(db, "products"), {name: "Test Product", category: "Test"});
+      alert("SUCCESS! Product Added");
+    } catch(e) {
+      alert("ERROR: " + e.message);
+      console.log(e);
     }
-    alert("All 10 products added successfully! Now check Firebase");
   }
+  test();
 </script>
-</body>
-</html>
