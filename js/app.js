@@ -103,6 +103,23 @@ async function loadTrendingKozhikode() {
     </div>
   `).join('');
 }
+// ========== 3B. LOAD FLASH SALE ON HOMEPAGE ==========
+async function loadFlashSale() {
+  const grid = document.querySelector('.flash-sale .product-grid-4');
+  if(!grid) return;
+
+  let qSnap = await getDocs(collection(db, "products"));
+  let products = qSnap.docs.map(doc => ({id: doc.id, ...doc.data()})).slice(0,8);
+
+  grid.innerHTML = products.map(p => `
+    <div class="product-card" onclick="location.href='customer/product.html?id=${p.id}'">
+      <img src="${p.image}" alt="${p.name}">
+      <h3>${p.name}</h3>
+      <p class="price">₹${p.price} <span class="oldPrice">₹${p.oldPrice || ''}</span></p>
+      <p class="discount">${p.discount || 0}% off</p>
+    </div>
+  `).join('');
+}
 
 // ========== 4. SEARCH + FILTERS ==========
 document.getElementById('searchBtn')?.addEventListener('click', () => {
