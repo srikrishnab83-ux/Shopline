@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head><title>Add Products</title></head>
+<body>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    // PASTE YOUR FIREBASE CONFIG HERE
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const products = [
+    {
+      name: "Men's Cotton T-Shirt",
+      category: "Fashion",
+      subcategory: "Men's Wear",
+      sub_subcategory: "T-Shirts",
+      district: "Kozhikode",
+      price: 499,
+      oldPrice: 999,
+      discount: 50,
+      image: "https://via.placeholder.com/400x400.png?text=T-Shirt"
+    },
+    {
+      name: "Men's Formal Shirt",
+      category: "Fashion",
+      subcategory: "Men's Wear", 
+      sub_subcategory: "Shirts",
+      district: "Kozhikode",
+      price: 799,
+      oldPrice: 1499,
+      discount: 47,
+      image: "https://via.placeholder.com/400x400.png?text=Shirt"
+    },
+    {
+      name: "Samsung Galaxy M35 5G",
+      category: "Mobiles",
+      subcategory: "Smartphones",
+      sub_subcategory: "Samsung",
+      district: "Kasaragod",
+      price: 15999,
+      oldPrice: 19999,
+      discount: 20,
+      image: "https://via.placeholder.com/400x400.png?text=Samsung"
+    }
+  ];
+
+  async function addProducts() {
+    for(const p of products){
+      await addDoc(collection(db, "products"), p);
+      console.log("Added:", p.name);
+    }
+    alert("All products added!");
+  }
+  
+  addProducts();
+</script>
+</body>
+</html>
