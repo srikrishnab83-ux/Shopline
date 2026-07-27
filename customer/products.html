@@ -25,24 +25,18 @@
     </div>
   </header>
 
-  <!-- FILTERS -->
+  <!-- FILTERS - ADDED CATEGORY + SUBCATEGORY -->
   <section class="filters">
-    <div class="container">
+    <div class="container" style="display:flex; gap:10px; flex-wrap:wrap;">
       <h3>Filters</h3>
-      <select id="districtFilter">
-        <option value="">All Districts</option>
-        <option>Kozhikode</option>
-        <option>Ernakulam</option>
-        <option>Thiruvananthapuram</option>
-        <option>Thrissur</option>
-        <option>Malappuram</option>
-        <!-- Add all 14 districts -->
-      </select>
+      <select id="districtFilter"><option value="all">All Districts</option></select>
+      <select id="categoryFilter"><option value="all">All Categories</option></select>
+      <select id="subcategoryFilter"><option value="all">All Subcategories</option></select>
       <select id="priceFilter">
-        <option value="">All Prices</option>
-        <option value="0-500">Under ₹500</option>
-        <option value="500-2000">₹500 - ₹2000</option>
-        <option value="2000-10000">₹2000 - ₹10000</option>
+        <option value="all">All Prices</option>
+        <option value="0-1000">Under ₹1000</option>
+        <option value="1000-5000">₹1000 - ₹5000</option>
+        <option value="5000+">Above ₹5000</option>
       </select>
     </div>
   </section>
@@ -66,6 +60,128 @@
     <a href="profile.html">👤<br>Account</a>
   </div>
 
-  <script type="module" src="../js/app.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo",
+  authDomain: "willwin-cart.firebaseapp.com",
+  projectId: "willwin-cart",
+  storageBucket: "willwin-cart.firebasestorage.app",
+  messagingSenderId: "432614337343",
+  appId: "1:432614337343:web:336c27edc1dd734d7c418a"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+let allProducts = [];
+
+const params = new URLSearchParams(window.location.search);
+const categoryFromURL = params.get('category');
+const districtFromURL = params.get('district');
+
+async function loadProducts() {
+  const snap = await getDocs(collection(db, "products"));
+  allProducts = [];
+  const categories = new Set();
+  const subcategories = new Set();
+  const districts = new Set();
+
+  snap.forEach(doc => {
+    const p = doc.data();
+    p.id = doc.id;
+    allProducts.push(p);
+    categories.add(p.category);
+    subcategories.add(p.subcategory);
+    districts.add(p.district);
+  });
+
+  fillDropdown('categoryFilter', categories);
+  fillDropdown('subcategoryFilter', subcategories);
+  fillDropdown('districtFilter', districts);
+  
+  if(categoryFromURL) {
+    document.getElementById('categoryFilter').value = categoryFromURL;
+    document.getElementById('resultTitle').innerText = categoryFromURL;
+  }
+  if(districtFromURL) {
+    document.getElementById('districtFilter').value = districtFromURL;
+    document.getElementById('resultTitle').innerText = `Trending in ${districtFromURL}`;
+  }
+  
+  applyFilters();
+}
+
+function fillDropdown(id, items) {
+  const select = document.getElementById(id);
+  items.forEach(item => {
+    if(item){
+      const opt = document.createElement('option');
+      opt.value = item;
+      opt.innerText = item;
+      select.appendChild(opt);
+    }
+  });
+}
+
+function displayProducts(products) {
+  const container = document.getElementById('productGrid');
+  document.getElementById('resultCount').innerText = `${products.length} Products Found`;
+  container.innerHTML = '';
+  
+  if(products.length == 0) {
+    container.innerHTML = '<p>No products found</p>';
+    return;
+  }
+
+  products.forEach(p => {
+    const card = `
+      <div class="product-card">
+        <img src="${p.image}" alt="${p.name}">
+        <h3>${p.name}</h3>
+        <p class="price">₹${p.price.toLocaleString()} <span class="oldPrice">₹${p.oldPrice.toLocaleString()}</span></p>
+        <p class="discount">${p.discount}% off</p>
+        <p>📍 ${p.district}</p>
+        <p><b>${p.subcategory}</b></p>
+        <button onclick="addToCart('${p.id}')" style="margin-top:5px;padding:8px;width:100%;background:#2874f0;color:#fff;border:none;cursor:pointer">Add to Cart</button>
+      </div>
+    `;
+    container.innerHTML += card;
+  });
+}
+
+['districtFilter','categoryFilter','subcategoryFilter','priceFilter'].forEach(id => {
+  document.getElementById(id).addEventListener('change', applyFilters);
+});
+
+function applyFilters() {
+  let filtered = allProducts;
+  const district = districtFilter.value;
+  const category = categoryFilter.value;
+  const subcategory = subcategoryFilter.value;
+  const price = priceFilter.value;
+
+  if(district != 'all') filtered = filtered.filter(p => p.district == district);
+  if(category != 'all') filtered = filtered.filter(p => p.category == category);
+  if(subcategory != 'all') filtered = filtered.filter(p => p.subcategory == subcategory);
+  
+  if(price != 'all') {
+    if(price == '0-1000') filtered = filtered.filter(p => p.price <= 1000);
+    if(price == '1000-5000') filtered = filtered.filter(p => p.price > 1000 && p.price <= 5000);
+    if(price == '5000+') filtered = filtered.filter(p => p.price > 5000);
+  }
+  displayProducts(filtered);
+}
+
+window.addToCart = function(productId) {
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  cart.push(productId);
+  localStorage.setItem('cart', JSON.stringify(cart));
+  alert('Added to Cart!');
+}
+
+loadProducts();
+</script>
 </body>
 </html>
