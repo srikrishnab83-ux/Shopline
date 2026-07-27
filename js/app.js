@@ -1,11 +1,10 @@
-// ========== 1. FIREBASE CONFIG ==========
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+// 1. PASTE YOUR FIREBASE CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo",
-  authDomain: "willwin-cart.firebaseapp.com", 
+  authDomain: "willwin-cart.firebaseapp.com",
   projectId: "willwin-cart",
   storageBucket: "willwin-cart.firebasestorage.app",
   messagingSenderId: "432614337343",
@@ -14,143 +13,97 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth(app);
 
-// ========== 2. LOAD PRODUCTS - PRODUCTS.PAGE ==========
+let allProducts = [];
+
+// 2. LOAD ALL PRODUCTS FROM FIRESTORE
 async function loadProducts() {
-  const grid = document.getElementById('productGrid');
-  if(!grid) return; 
+  const snap = await getDocs(collection(db, "products"));
+  allProducts = [];
+  const categories = new Set();
+  const subcategories = new Set();
+  const districts = new Set();
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const searchQuery = urlParams.get('search');
-  const categoryQuery = urlParams.get('category');
-  const districtQuery = urlParams.get('district');
-  const districtEl = document.getElementById("districtFilter");
-  const priceEl = document.getElementById("priceFilter");
+  snap.forEach(doc => {
+    const p = doc.data();
+    p.id = doc.id;
+    allProducts.push(p);
+    categories.add(p.category);
+    subcategories.add(p.subcategory);
+    districts.add(p.district);
+  });
+
+  fillDropdown('categoryFilter', categories);
+  fillDropdown('subcategoryFilter', subcategories);
+  fillDropdown('districtFilter', districts);
   
-  const district = districtEl ? districtEl.value : districtQuery;
-  const priceRange = priceEl ? priceEl.value : null;
-  
-  const resultTitle = document.getElementById("resultTitle");
-  const resultCount = document.getElementById("resultCount");
-  
-  if(resultTitle) {
-    if(searchQuery) resultTitle.innerText = `Results for "${searchQuery}"`;
-    else if(categoryQuery) resultTitle.innerText = categoryQuery;
-    else if(districtQuery) resultTitle.innerText = `Products in ${districtQuery}`;
-    else resultTitle.innerText = "All Products";
-  }
-  
-  grid.innerHTML = '<p>Loading...</p>';
-  
-  try {
-    const snapshot = await getDocs(collection(db, "products"));
-    let products = [];
-    
-    snapshot.forEach((doc) => {
-      let p = doc.data();
-      p.id = doc.id;
-      
-      if(!p.name || !p.price || !p.image) return; 
-      
-      let match = true;
-      if(searchQuery && !p.name.toLowerCase().includes(searchQuery.toLowerCase())) match = false;
-      if(categoryQuery && p.category !== categoryQuery) match = false;
-      if(district && p.district !== district) match = false;
-      if(priceRange){
-        let [min, max] = priceRange.split("-").map(Number);
-        if(Number(p.price) < min || Number(p.price) > max) match = false;
-      }
-      
-      if(match) products.push(p);
-    });
-    
-    if(resultCount) resultCount.innerText = `${products.length} Products Found`;
-    
-    if(products.length === 0){
-      grid.innerHTML = "<p style='text-align:center; grid-column: 1/-1;'>No products found</p>";
-      return;
-    }
-    
-    grid.innerHTML = products.map(p => `
-      <div class="product-card" onclick="location.href='product.html?id=${p.id}'">
-        <img src="${p.image}" alt="${p.name}">
-        <h3>${p.name}</h3>
-        <p class="price">₹${p.price} <span class="oldPrice">₹${p.oldPrice || ''}</span></p>
-        <p class="discount">${p.discount || 0}% off</p>
-        <p class="district">📍 ${p.district}</p>
-      </div>
-    `).join('');
-    
-  } catch(error) {
-    console.error("Firebase Error:", error);
-    grid.innerHTML = "<p style='color:red; text-align:center;'>Error loading products. Check Firebase rules.</p>";
-  }
+  // Show products in Flash Sale section first
+  displayProducts(allProducts.slice(0,8), '.flash-sale .product-grid-4');
 }
 
-// ========== 3. TRENDING KOZHIKODE - HOMEPAGE ==========
-async function loadTrendingKozhikode() {
-  const grid = document.getElementById('trendingKozhikode');
-  if(!grid) return;
-
-  let qSnap = await getDocs(collection(db, "products"));
-  let products = qSnap.docs.map(doc => ({id: doc.id, ...doc.data()}));
-  let trending = products.filter(p => p.district === "Kozhikode").slice(0,8);
-
-  grid.innerHTML = trending.map(p => `
-    <div class="product-card" onclick="location.href='customer/product.html?id=${p.id}'">
-      <img src="${p.image}" alt="${p.name}">
-      <h3>${p.name}</h3>
-      <p class="price">₹${p.price}</p>
-    </div>
-  `).join('');
-}
-
-// ========== 3B. FLASH SALE - HOMEPAGE ==========
-async function loadFlashSale() {
-  const grid = document.querySelector('.flash-sale .product-grid-4');
-  if(!grid) return;
-
-  let qSnap = await getDocs(collection(db, "products"));
-  let products = qSnap.docs.map(doc => ({id: doc.id, ...doc.data()})).slice(0,8);
-
-  grid.innerHTML = products.map(p => `
-    <div class="product-card" onclick="location.href='customer/product.html?id=${p.id}'">
-      <img src="${p.image}" alt="${p.name}">
-      <h3>${p.name}</h3>
-      <p class="price">₹${p.price} <span class="oldPrice">₹${p.oldPrice || ''}</span></p>
-      <p class="discount">${p.discount || 0}% off</p>
-    </div>
-  `).join('');
-}
-
-// ========== 4. SEARCH + FILTERS ==========
-document.getElementById('searchBtn')?.addEventListener('click', () => {
-  const val = document.getElementById('searchInput').value.trim();
-  if(val) location.href = `customer/products.html?search=${encodeURIComponent(val)}`;
-});
-
-document.getElementById('searchInput')?.addEventListener('keypress', (e) => {
-  if(e.key === 'Enter') document.getElementById('searchBtn').click();
-});
-
-document.getElementById('districtFilter')?.addEventListener('change', loadProducts);
-document.getElementById('priceFilter')?.addEventListener('change', loadProducts);
-
-// ========== 5. INIT ==========
-document.addEventListener('DOMContentLoaded', () => {
-  loadProducts();
-  loadTrendingKozhikode();
-  loadFlashSale(); // NEW
-
-  onAuthStateChanged(auth, (user) => {
-    const authLink = document.getElementById('authLink');
-    if(user && authLink) {
-      authLink.innerText = 'Logout';
-      authLink.onclick = (e) => { e.preventDefault(); signOut(auth); location.reload(); }
-    } else if(authLink) {
-      authLink.innerText = 'Login';
-      authLink.href = 'customer/auth.html';
+function fillDropdown(id, items) {
+  const select = document.getElementById(id);
+  items.forEach(item => {
+    if(item){
+      const opt = document.createElement('option');
+      opt.value = item;
+      opt.innerText = item;
+      select.appendChild(opt);
     }
   });
+}
+
+// 3. FUNCTION TO SHOW PRODUCTS AS CARDS
+function displayProducts(products, containerSelector) {
+  const container = document.querySelector(containerSelector);
+  if(!container) return;
+  container.innerHTML = '';
+  
+  products.forEach(p => {
+    const card = `
+      <div class="product-card">
+        <img src="${p.image}" alt="${p.name}">
+        <h3>${p.name}</h3>
+        <p class="price">₹${p.price.toLocaleString()} <span class="oldPrice">₹${p.oldPrice.toLocaleString()}</span></p>
+        <p class="discount">${p.discount}% off</p>
+        <p>📍 ${p.district}</p>
+        <button onclick="addToCart('${p.id}')" style="margin-top:5px;padding:8px;width:100%;background:#2874f0;color:#fff;border:none;cursor:pointer">Add to Cart</button>
+      </div>
+    `;
+    container.innerHTML += card;
+  });
+}
+
+// 4. FILTER LOGIC
+['districtFilter','categoryFilter','subcategoryFilter','priceFilter'].forEach(id => {
+  document.getElementById(id).addEventListener('change', applyFilters);
 });
+
+function applyFilters() {
+  let filtered = allProducts;
+  const district = districtFilter.value;
+  const category = categoryFilter.value;
+  const subcategory = subcategoryFilter.value;
+  const price = priceFilter.value;
+
+  if(district != 'all') filtered = filtered.filter(p => p.district == district);
+  if(category != 'all') filtered = filtered.filter(p => p.category == category);
+  if(subcategory != 'all') filtered = filtered.filter(p => p.subcategory == subcategory);
+  
+  if(price != 'all') {
+    if(price == '0-1000') filtered = filtered.filter(p => p.price <= 1000);
+    if(price == '1000-5000') filtered = filtered.filter(p => p.price > 1000 && p.price <= 5000);
+    if(price == '5000+') filtered = filtered.filter(p => p.price > 5000);
+  }
+  displayProducts(filtered, '.flash-sale .product-grid-4');
+}
+
+// 5. ADD TO CART - SIMPLE VERSION
+window.addToCart = function(productId) {
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  cart.push(productId);
+  localStorage.setItem('cart', JSON.stringify(cart));
+  alert('Added to Cart!');
+}
+
+loadProducts();
