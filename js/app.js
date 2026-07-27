@@ -16,18 +16,19 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// ========== 2. LOAD PRODUCTS - ONLY ONE FUNCTION ==========
+// ========== 2. LOAD PRODUCTS - PRODUCTS.PAGE ==========
 async function loadProducts() {
   const grid = document.getElementById('productGrid');
-  if(!grid) return; // not on products page
+  if(!grid) return; 
 
   const urlParams = new URLSearchParams(window.location.search);
   const searchQuery = urlParams.get('search');
   const categoryQuery = urlParams.get('category');
+  const districtQuery = urlParams.get('district');
   const districtEl = document.getElementById("districtFilter");
   const priceEl = document.getElementById("priceFilter");
   
-  const district = districtEl ? districtEl.value : null;
+  const district = districtEl ? districtEl.value : districtQuery;
   const priceRange = priceEl ? priceEl.value : null;
   
   const resultTitle = document.getElementById("resultTitle");
@@ -36,6 +37,7 @@ async function loadProducts() {
   if(resultTitle) {
     if(searchQuery) resultTitle.innerText = `Results for "${searchQuery}"`;
     else if(categoryQuery) resultTitle.innerText = categoryQuery;
+    else if(districtQuery) resultTitle.innerText = `Products in ${districtQuery}`;
     else resultTitle.innerText = "All Products";
   }
   
@@ -49,7 +51,7 @@ async function loadProducts() {
       let p = doc.data();
       p.id = doc.id;
       
-      if(!p.name || !p.price || !p.image) return; // skip broken products
+      if(!p.name || !p.price || !p.image) return; 
       
       let match = true;
       if(searchQuery && !p.name.toLowerCase().includes(searchQuery.toLowerCase())) match = false;
@@ -86,7 +88,7 @@ async function loadProducts() {
   }
 }
 
-// ========== 3. TRENDING KOZHIKODE ==========
+// ========== 3. TRENDING KOZHIKODE - HOMEPAGE ==========
 async function loadTrendingKozhikode() {
   const grid = document.getElementById('trendingKozhikode');
   if(!grid) return;
@@ -103,7 +105,8 @@ async function loadTrendingKozhikode() {
     </div>
   `).join('');
 }
-// ========== 3B. LOAD FLASH SALE ON HOMEPAGE ==========
+
+// ========== 3B. FLASH SALE - HOMEPAGE ==========
 async function loadFlashSale() {
   const grid = document.querySelector('.flash-sale .product-grid-4');
   if(!grid) return;
@@ -138,12 +141,16 @@ document.getElementById('priceFilter')?.addEventListener('change', loadProducts)
 document.addEventListener('DOMContentLoaded', () => {
   loadProducts();
   loadTrendingKozhikode();
+  loadFlashSale(); // NEW
 
   onAuthStateChanged(auth, (user) => {
     const authLink = document.getElementById('authLink');
     if(user && authLink) {
       authLink.innerText = 'Logout';
       authLink.onclick = (e) => { e.preventDefault(); signOut(auth); location.reload(); }
+    } else if(authLink) {
+      authLink.innerText = 'Login';
+      authLink.href = 'customer/auth.html';
     }
   });
 });
