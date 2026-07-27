@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Details - Shopline Kerala</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <!-- HEADER -->
+  <div class="top-bar">
+    <p>Delivering across all 14 districts of Kerala | COD Available</p>
+  </div>
+  <header class="navbar">
+    <div class="container">
+      <div class="logo" onclick="location.href='../index.html'" style="cursor:pointer;">Shopline<span>Kerala</span></div>
+      <div class="nav-icons">
+        <a href="auth.html">Login</a>
+        <a href="cart.html">🛒 Cart</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- PRODUCT DETAILS -->
+  <div class="container" id="productDetails" style="padding:20px; display:flex; gap:30px; flex-wrap:wrap">
+    Loading product...
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <a href="../index.html">🏠<br>Home</a>
+    <a href="products.html">🛍️<br>Shop</a>
+    <a href="cart.html">🛒<br>Cart</a>
+    <a href="profile.html">👤<br>Account</a>
+  </div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const productId = new URLSearchParams(window.location.search).get('id');
+
+async function loadProduct() {
+  const docSnap = await getDoc(doc(db, "products", productId));
+  if(docSnap.exists()) {
+    const p = docSnap.data();
+    const images = p.images || [p.image]; // use array if exists, else use single image
+    
+    let thumbHTML = '';
+    images.forEach((img) => {
+      thumbHTML += `<img src="${img}" onclick="changeImage('${img}')" style="width:70px; height:70px; object-fit:cover; border:2px solid #eee; cursor:pointer; border-radius:4px">`;
+    });
+    
+    document.getElementById('productDetails').innerHTML = `
+      <div class="product-gallery" style="display:flex; gap:10px">
+        <div class="thumbnails" style="display:flex; flex-direction:column; gap:5px">${thumbHTML}</div>
+        <div class="main-image">
+          <img id="mainImg" src="${images[0]}" style="width:400px; height:400px; object-fit:cover; border:1px solid #ddd; border-radius:8px">
+        </div>
+      </div>
+      <div style="flex:1; min-width:300px">
+          <h1>${p.name}</h1>
+          <p>⭐ 4.5 | ${p.totalReviews || 0} Reviews</p>
+          <h2>₹${p.price.toLocaleString()} <span style="text-decoration:line-through; color:gray; font-size:16px">₹${p.oldPrice.toLocaleString()}</span></h2>
+          <p style="color:green; font-weight:bold">${p.discount}% off</p>
+          <p><b>Category:</b> ${p.category} > ${p.subcategory}</p>
+          <p><b>Delivery:</b> To ${p.district} in 2-3 Days | COD Available</p>
+          <p><b>Stock:</b> ${p.stock || 10} left</p>
+          <br>
+          <button onclick="addToCart('${productId}')" style="padding:12px 30px; background:#ff9f00; border:none; font-size:16px; cursor:pointer; margin-right:10px; border-radius:4px">Add to Cart</button>
+          <button style="padding:12px 30px; background:#2874f0; color:#fff; border:none; font-size:16px; cursor:pointer; border-radius:4px">Buy Now</button>
+      </div>
+    `;
+  } else {
+    document.getElementById('productDetails').innerHTML = "Product not found";
+  }
+}
+
+window.changeImage = function(src) {
+  document.getElementById('mainImg').src = src;
+}
+
+window.addToCart = function(id) {
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  cart.push(id);
+  localStorage.setItem('cart', JSON.stringify(cart));
+  alert('Added to Cart!');
+}
+
+loadProduct();
+</script>
+</body>
+</html>
