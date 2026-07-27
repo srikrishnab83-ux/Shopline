@@ -72,20 +72,18 @@ const firebaseConfig = {
   messagingSenderId: "432614337343",
   appId: "1:432614337343:web:336c27edc1dd734d7c418a"
 };
-
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 let allProducts = [];
 
 const params = new URLSearchParams(window.location.search);
 const categoryFromURL = params.get('category');
-const districtFromURL = params.get('district');
+const subcategoryFromURL = params.get('subcategory');
 
 async function loadProducts() {
   const snap = await getDocs(collection(db, "products"));
   allProducts = [];
   const categories = new Set();
-  const subcategories = new Set();
   const districts = new Set();
 
   snap.forEach(doc => {
@@ -93,28 +91,24 @@ async function loadProducts() {
     p.id = doc.id;
     allProducts.push(p);
     categories.add(p.category);
-    subcategories.add(p.subcategory);
     districts.add(p.district);
   });
 
   fillDropdown('categoryFilter', categories);
-  fillDropdown('subcategoryFilter', subcategories);
   fillDropdown('districtFilter', districts);
   
   if(categoryFromURL) {
-    document.getElementById('categoryFilter').value = categoryFromURL;
-    document.getElementById('resultTitle').innerText = categoryFromURL;
+    categoryFilter.value = categoryFromURL;
+    updateSubcategoryDropdown(); // load subcategories for that category
   }
-  if(districtFromURL) {
-    document.getElementById('districtFilter').value = districtFromURL;
-    document.getElementById('resultTitle').innerText = `Trending in ${districtFromURL}`;
-  }
+  if(subcategoryFromURL) subcategoryFilter.value = subcategoryFromURL;
   
   applyFilters();
 }
 
 function fillDropdown(id, items) {
   const select = document.getElementById(id);
+  select.innerHTML = '<option value="all">All</option>'; // reset
   items.forEach(item => {
     if(item){
       const opt = document.createElement('option');
@@ -125,58 +119,85 @@ function fillDropdown(id, items) {
   });
 }
 
+// NEW FUNCTION: Update subcategory based on selected category
+function updateSubcategoryDropdown() {
+  const selectedCategory = categoryFilter.value;
+  const types = new Set();
+  
+  allProducts.forEach(p => {
+    if(selectedCategory == 'all' || p.category == selectedCategory) {
+      types.add(p.subcategory);
+    }
+  });
+  
+  fillDropdown('subcategoryFilter', types);
+  fillDropdown('typeFilter', new Set()); // reset type too
+}
+
+// NEW FUNCTION: Update type based on selected subcategory
+function updateTypeDropdown() {
+  const selectedCategory = categoryFilter.value;
+  const selectedSubcategory = subcategoryFilter.value;
+  const types = new Set();
+  
+  allProducts.forEach(p => {
+    if((selectedCategory == 'all' || p.category == selectedCategory) && 
+       (selectedSubcategory == 'all' || p.subcategory == selectedSubcategory)) {
+      types.add(p.sub_subcategory);
+    }
+  });
+  
+  fillDropdown('typeFilter', types);
+}
+
 function displayProducts(products) {
   const container = document.getElementById('productGrid');
   document.getElementById('resultCount').innerText = `${products.length} Products Found`;
   container.innerHTML = '';
-  
-  if(products.length == 0) {
-    container.innerHTML = '<p>No products found</p>';
-    return;
-  }
-
   products.forEach(p => {
-    const card = `
-      <div class="product-card">
-        <img src="${p.image}" alt="${p.name}">
+    container.innerHTML += `
+      <div class="product-card" onclick="location.href='product.html?id=${p.id}'" style="cursor:pointer">
+        <img src="${p.image}">
         <h3>${p.name}</h3>
-        <p class="price">₹${p.price.toLocaleString()} <span class="oldPrice">₹${p.oldPrice.toLocaleString()}</span></p>
-        <p class="discount">${p.discount}% off</p>
-        <p>📍 ${p.district}</p>
-        <p><b>${p.subcategory}</b></p>
-        <button onclick="addToCart('${p.id}')" style="margin-top:5px;padding:8px;width:100%;background:#2874f0;color:#fff;border:none;cursor:pointer">Add to Cart</button>
+        <p class="price">₹${p.price} <span class="oldPrice">₹${p.oldPrice}</span></p>
+        <p>${p.discount}% off</p>
+        <p><small>${p.subcategory} > ${p.sub_subcategory}</small></p>
+        <button onclick="event.stopPropagation(); addToCart('${p.id}')">Add to Cart</button>
       </div>
     `;
-    container.innerHTML += card;
   });
 }
 
-['districtFilter','categoryFilter','subcategoryFilter','priceFilter'].forEach(id => {
-  document.getElementById(id).addEventListener('change', applyFilters);
+// UPDATED EVENT LISTENERS
+categoryFilter.addEventListener('change', () => {
+  updateSubcategoryDropdown();
+  applyFilters();
 });
+subcategoryFilter.addEventListener('change', () => {
+  updateTypeDropdown();
+  applyFilters();
+});
+districtFilter.addEventListener('change', applyFilters);
+typeFilter.addEventListener('change', applyFilters);
+priceFilter.addEventListener('change', applyFilters);
 
 function applyFilters() {
   let filtered = allProducts;
-  const district = districtFilter.value;
-  const category = categoryFilter.value;
-  const subcategory = subcategoryFilter.value;
-  const price = priceFilter.value;
-
-  if(district != 'all') filtered = filtered.filter(p => p.district == district);
-  if(category != 'all') filtered = filtered.filter(p => p.category == category);
-  if(subcategory != 'all') filtered = filtered.filter(p => p.subcategory == subcategory);
+  if(districtFilter.value != 'all') filtered = filtered.filter(p => p.district == districtFilter.value);
+  if(categoryFilter.value != 'all') filtered = filtered.filter(p => p.category == categoryFilter.value);
+  if(subcategoryFilter.value != 'all') filtered = filtered.filter(p => p.subcategory == subcategoryFilter.value);
+  if(typeFilter.value != 'all') filtered = filtered.filter(p => p.sub_subcategory == typeFilter.value);
   
-  if(price != 'all') {
-    if(price == '0-1000') filtered = filtered.filter(p => p.price <= 1000);
-    if(price == '1000-5000') filtered = filtered.filter(p => p.price > 1000 && p.price <= 5000);
-    if(price == '5000+') filtered = filtered.filter(p => p.price > 5000);
-  }
+  if(priceFilter.value == '0-1000') filtered = filtered.filter(p => p.price <= 1000);
+  if(priceFilter.value == '1000-5000') filtered = filtered.filter(p => p.price > 1000 && p.price <= 5000);
+  if(priceFilter.value == '5000+') filtered = filtered.filter(p => p.price > 5000);
+  
   displayProducts(filtered);
 }
 
-window.addToCart = function(productId) {
+window.addToCart = function(id) {
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
-  cart.push(productId);
+  cart.push(id);
   localStorage.setItem('cart', JSON.stringify(cart));
   alert('Added to Cart!');
 }
