@@ -1,19 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add Products to DB</title>
+</head>
+<body>
+  <h2>Click to Add Products</h2>
+  <button onclick="addProducts()">Add All Products</button>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  const firebaseConfig = { /* YOUR CONFIG */ };
+  const firebaseConfig = {
+    // PASTE YOUR CONFIG HERE
+  };
+
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  async function test() {
-    try {
-      await addDoc(collection(db, "products"), {name: "Test Product", category: "Test"});
-      alert("SUCCESS! Product Added");
-    } catch(e) {
-      alert("ERROR: " + e.message);
-      console.log(e);
+  const products = [
+    {name: "Men's Cotton T-Shirt", category: "Fashion", subcategory: "Men's Wear", sub_subcategory: "T-Shirts", district: "Kozhikode", price: 499, oldPrice: 999, discount: 50, image: "https://via.placeholder.com/400"},
+    {name: "Men's Formal Shirt", category: "Fashion", subcategory: "Men's Wear", sub_subcategory: "Shirts", district: "Kozhikode", price: 799, oldPrice: 1499, discount: 47, image: "https://via.placeholder.com/400"}
+  ];
+
+  window.addProducts = async function() {
+    for(const p of products){
+      await addDoc(collection(db, "products"), p);
+      console.log("✅ Added:", p.name);
     }
+    alert("All products added! Check Firebase");
   }
-  test();
 </script>
+</body>
+</html>
