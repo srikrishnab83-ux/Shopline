@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Products - Shopline Kerala</title>
   <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .search-wrap{display:flex; gap:5px; flex:1; max-width:400px; margin:0 20px}
+    .search-wrap input{padding:8px; border-radius:4px; border:none; width:100%}
+    .search-wrap button{padding:8px 12px; border:none; border-radius:4px; background:#fff; cursor:pointer}
+    .add-cart-btn{background:#fb641b; color:#fff; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; width:100%; margin-top:8px; font-weight:bold}
+    .product-card{padding:10px; border:1px solid #eee; border-radius:8px; background:#fff}
+    .product-card:hover{box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+  </style>
 </head>
 <body>
   <!-- SAME HEADER AS HOMEPAGE -->
@@ -12,22 +20,22 @@
     <p>Delivering across all 14 districts of Kerala | COD Available</p>
   </div>
   <header class="navbar">
-    <div class="container">
+    <div class="container" style="display:flex; align-items:center">
       <div class="logo" onclick="location.href='../index.html'" style="cursor:pointer;">Shopline<span>Kerala</span></div>
       <div class="search-wrap">
-        <input type="text" placeholder="Search for products..." id="searchInput">
-        <button id="searchBtn">🔍</button>
+        <input type="text" placeholder="Search for products..." id="searchInput" onkeyup="searchProducts()">
+        <button id="searchBtn" onclick="searchProducts()">🔍</button>
       </div>
       <div class="nav-icons">
         <a href="auth.html" id="authLink">Login</a>
-        <a href="cart.html">🛒 Cart</a>
+        <a href="cart.html" id="cartLink" style="background:#fb641b; padding:8px 15px; border-radius:4px; color:#fff">🛒 Cart(0)</a>
       </div>
     </div>
   </header>
 
   <!-- FILTERS - ADDED CATEGORY + SUBCATEGORY -->
   <section class="filters">
-    <div class="container" style="display:flex; gap:10px; flex-wrap:wrap;">
+    <div class="container" style="display:flex; gap:10px; flex-wrap:wrap; padding:15px">
       <h3>Filters</h3>
       <select id="districtFilter"><option value="all">All Districts</option></select>
       <select id="categoryFilter"><option value="all">All Categories</option></select>
@@ -67,10 +75,7 @@ import { getFirestore, collection, getDocs } from "https://www.gstatic.com/fireb
 const firebaseConfig = {
   apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo",
   authDomain: "willwin-cart.firebaseapp.com",
-  projectId: "willwin-cart",
-  storageBucket: "willwin-cart.firebasestorage.app",
-  messagingSenderId: "432614337343",
-  appId: "1:432614337343:web:336c27edc1dd734d7c418a"
+  projectId: "willwin-cart"
 };
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -81,10 +86,18 @@ const districtFilter = document.getElementById('districtFilter');
 const categoryFilter = document.getElementById('categoryFilter');
 const subcategoryFilter = document.getElementById('subcategoryFilter');
 const priceFilter = document.getElementById('priceFilter');
+const searchInput = document.getElementById('searchInput');
 
 const params = new URLSearchParams(window.location.search);
 const categoryFromURL = params.get('category');
 const subcategoryFromURL = params.get('subcategory');
+const searchFromURL = params.get('search');
+
+function updateCartCount(){
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  let totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+  document.getElementById('cartLink').innerText = `🛒 Cart(${totalQty})`;
+}
 
 async function loadProducts() {
   try {
@@ -109,8 +122,10 @@ async function loadProducts() {
       updateSubcategoryDropdown();
     }
     if(subcategoryFromURL) subcategoryFilter.value = subcategoryFromURL;
+    if(searchFromURL) searchInput.value = searchFromURL;
     
     applyFilters();
+    updateCartCount();
   } catch(e) {
     console.error("Error:", e);
     document.getElementById('productGrid').innerHTML = "Error loading products";
@@ -153,16 +168,45 @@ function displayProducts(products) {
   }
   products.forEach(p => {
     container.innerHTML += `
-      <div class="product-card" onclick="location.href='product.html?id=${p.id}'" style="cursor:pointer">
-        <img src="${p.image}">
-        <h3>${p.name}</h3>
-        <p class="price">₹${p.price} <span class="oldPrice">₹${p.oldPrice}</span></p>
-        <p>${p.discount}% off</p>
-        <p><small>${p.subcategory} ${p.sub_subcategory ? ' > ' + p.sub_subcategory : ''}</small></p>
-        <button onclick="event.stopPropagation(); addToCart('${p.id}')">Add to Cart</button>
+      <div class="product-card" data-name="${p.name}">
+        <div onclick="location.href='product.html?id=${p.id}'" style="cursor:pointer">
+          <img src="${p.image}" style="width:100%; height:200px; object-fit:cover">
+          <h3>${p.name}</h3>
+          <p class="price">₹${Number(p.price).toLocaleString()} <span class="oldPrice">₹${Number(p.oldPrice).toLocaleString()}</span></p>
+          <p style="color:green">${p.discount}% off</p>
+          <p><small>${p.subcategory} ${p.sub_subcategory ? ' > ' + p.sub_subcategory : ''}</small></p>
+        </div>
+        <button class="add-cart-btn" onclick="quickAddToCart('${p.id}', '${p.name}', '${p.image}', ${p.price})">Add to Cart</button>
       </div>
     `;
   });
+}
+
+// 3. FIXED ADD TO CART - SAVES FULL DETAILS NOT JUST ID
+window.quickAddToCart = function(id, name, image, price) {
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  
+  const cartItem = {
+    id, name, image, price: Number(price), qty: 1,
+    size: 'NA', color: 'NA', variant: 'Default'
+  }
+
+  const existing = cart.find(item => item.id === id && item.variant === 'Default');
+  if(existing){ 
+    existing.qty += 1; 
+  } else { 
+    cart.push(cartItem); 
+  }
+
+  localStorage.setItem('cart', JSON.stringify(cart));
+  alert(`${name} added to cart`);
+  updateCartCount();
+  window.location.href = 'cart.html';
+}
+
+// 4. SEARCH FUNCTION
+window.searchProducts = function(){
+  applyFilters(); // search is now part of filters
 }
 
 // 3. EVENT LISTENERS
@@ -173,9 +217,19 @@ categoryFilter.addEventListener('change', () => {
 subcategoryFilter.addEventListener('change', applyFilters);
 districtFilter.addEventListener('change', applyFilters);
 priceFilter.addEventListener('change', applyFilters);
+searchInput.addEventListener('keyup', applyFilters);
 
 function applyFilters() {
   let filtered = allProducts;
+  const searchQuery = searchInput.value.toLowerCase();
+
+  if(searchQuery) {
+    filtered = filtered.filter(p => 
+      p.name.toLowerCase().includes(searchQuery) || 
+      p.category.toLowerCase().includes(searchQuery) ||
+      p.subcategory.toLowerCase().includes(searchQuery)
+    );
+  }
   if(districtFilter.value != 'all') filtered = filtered.filter(p => p.district == districtFilter.value);
   if(categoryFilter.value != 'all') filtered = filtered.filter(p => p.category == categoryFilter.value);
   if(subcategoryFilter.value != 'all') filtered = filtered.filter(p => p.subcategory == subcategoryFilter.value);
@@ -187,15 +241,7 @@ function applyFilters() {
   displayProducts(filtered);
 }
 
-window.addToCart = function(id) {
-  let cart = JSON.parse(localStorage.getItem('cart')) || [];
-  cart.push(id);
-  localStorage.setItem('cart', JSON.stringify(cart));
-  alert('Added to Cart!');
-}
-
 loadProducts();
-</script>
 </script>
 </body>
 </html>
