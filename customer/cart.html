@@ -39,7 +39,7 @@
     <div class="cart-items">
 
       <!-- EXIT BUTTON - GOES BACK TO PRODUCT PAGE -->
-      <a href="javascript:history.back()" class="back-btn">← Back to Product</a>
+      <a href="#" onclick="exitAndClearCart()" class="back-btn">← Exit & Clear Cart</a>
 
       <h2>Shopping Cart (<span id="cartCount">0</span> items)</h2>
       <div id="cartList">Loading...</div>
@@ -188,7 +188,13 @@ window.checkout = async function(){
   localStorage.removeItem('cart');
   window.location.href = '../index.html';
 }
-
+window.exitAndClearCart = function(){
+  if(confirm('Are you sure? This will remove all items from your cart.')){
+    localStorage.removeItem('cart'); // clear cart
+    window.location.href = 'product.html'; // go back to product page
+  }
+}
+  
 loadCart();
 </script>
 </body>
