@@ -6,18 +6,12 @@
   <style>
     body{font-family:Arial; background:#f5f5f5; padding:20px}
     h1{background:#2874f0; color:#fff; padding:15px; border-radius:4px}
-    .order-box{background:#fff; padding:15px; margin:15px 0; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1)}
-    .order-header{display:flex; justify-content:space-between; border-bottom:1px solid #eee; padding-bottom:10px; flex-wrap:wrap}
-    .status{padding:5px 10px; border-radius:4px; font-weight:bold; background:#fff3cd; color:#856404}
-    .item{padding:8px 0; border-bottom:1px dashed #eee}
-    .address{margin-top:10px; background:#f9f9f9; padding:10px; border-radius:4px; font-size:14px}
-    .total{font-size:18px; font-weight:bold; color:green; text-align:right}
-    .refresh-btn{background:#fb641b; color:#fff; border:none; padding:10px 20px; border-radius:4px; cursor:pointer; margin-bottom:10px}
+    .order-box{background:#fff; padding:15px; margin:15px 0; border-radius:8px}
+    .error{color:red; background:#ffdddd; padding:15px; border-radius:4px}
   </style>
 </head>
 <body>
   <h1>📦 Shopline Kerala - All Orders</h1>
-  <button class="refresh-btn" onclick="loadOrders()">🔄 Refresh Orders</button>
   <div id="ordersList">Loading orders...</div>
 
 <script type="module">
@@ -29,49 +23,26 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 async function loadOrders() {
-  document.getElementById('ordersList').innerHTML = "Loading orders...";
-  const querySnapshot = await getDocs(collection(db, "orders")); // No orderBy
-  const ordersList = document.getElementById('ordersList');
-  
-  if(querySnapshot.empty){
-    ordersList.innerHTML = "<p>No orders yet</p>";
-    return;
-  }
-  
-  let orders = [];
-  querySnapshot.forEach((doc) => {
-    orders.push({id: doc.id, ...doc.data()});
-  });
-  
-  // Sort manually - newest first. Handles missing createdAt
-  orders.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-  
-  ordersList.innerHTML = '';
-  orders.forEach((o) => {
-    const date = o.createdAt ? o.createdAt.toDate().toLocaleString("en-IN") : "Just Now";
+  try {
+    const querySnapshot = await getDocs(collection(db, "orders"));
+    const ordersList = document.getElementById('ordersList');
     
-    let itemsHTML = '';
-    o.items.forEach(item => {
-      itemsHTML += `<div class="item"><b>${item.name}</b> - Qty:${item.qty} - Size:${item.size} - Color:${item.color} - <b>₹${item.price}</b></div>`;
+    if(querySnapshot.empty){
+      ordersList.innerHTML = "<p>No orders found in 'orders' collection</p>";
+      return;
+    }
+    
+    let html = '';
+    querySnapshot.forEach((doc) => {
+      const o = doc.data();
+      html += `<div class="order-box"><b>Order ID:</b> ${doc.id}<br><b>Customer:</b> ${o.customer?.name}<br><b>Total:</b> ₹${o.finalTotal}</div>`;
     });
+    ordersList.innerHTML = html;
     
-    ordersList.innerHTML += `
-      <div class="order-box">
-        <div class="order-header">
-          <div><b>Order ID:</b> ${o.id}<br><b>Date:</b> ${date}</div>
-          <div><span class="status">${o.status || 'New Order'}</span><br><b>Total:</b> ₹${o.finalTotal}</div>
-        </div>
-        <div class="address">
-          <b>Customer:</b> ${o.customer.name} | ${o.customer.phone}<br>
-          <b>Address:</b> ${o.customer.street}, ${o.customer.district}, ${o.customer.state} - ${o.customer.pincode}<br>
-          <b>Landmark:</b> ${o.customer.landmark || 'NA'}
-        </div>
-        <h4 style="margin-top:10px">Items:</h4>
-        ${itemsHTML}
-        <p class="total">Product: ₹${o.productTotal} + Shipping: ₹${o.shippingCharge} = ₹${o.finalTotal}</p>
-      </div>
-    `;
-  });
+  } catch(e) {
+    document.getElementById('ordersList').innerHTML = `<div class="error"><b>ERROR:</b> ${e.message}<br><br>Fix: Go to Firebase > Rules and set allow read: if true;</div>`;
+    console.error("FIREBASE ERROR:", e);
+  }
 }
 loadOrders();
 </script>
