@@ -70,6 +70,14 @@ async function loadProduct() {
           <p><b>Category:</b> ${p.category} > ${p.subcategory}</p>
           <p><b>Delivery:</b> To ${p.district} in 2-3 Days | COD Available</p>
           <p><b>Stock:</b> ${p.stock || 10} left</p>
+          <div style="margin:15px 0">
+  <p><b>Select Size:</b></p>
+  <div id="sizeOptions" style="display:flex; gap:8px; flex-wrap:wrap">
+    ${(p.sizes || []).map(size => `
+      <button class="size-btn" onclick="selectSize('${size}')" style="padding:8px 15px; border:1px solid #ddd; background:#fff; cursor:pointer; border-radius:4px">${size}</button>
+    `).join('')}
+  </div>
+</div>
           <br>
           <button onclick="addToCart('${productId}')" style="padding:12px 30px; background:#ff9f00; border:none; font-size:16px; cursor:pointer; margin-right:10px; border-radius:4px">Add to Cart</button>
           <button style="padding:12px 30px; background:#2874f0; color:#fff; border:none; font-size:16px; cursor:pointer; border-radius:4px">Buy Now</button>
