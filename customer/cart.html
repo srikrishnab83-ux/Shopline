@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Your Cart - Shopline Kerala</title>
-
   <link rel="stylesheet" href="../css/style.css">
   <style>
   .container-cart{max-width:1100px; margin:20px auto; display:flex; gap:20px; padding:0 20px}
@@ -24,35 +23,15 @@
   .free-tag{color:green; font-weight:bold}
   .policy-box{font-size:13px; color:#555; margin-top:15px; line-height:1.6}
   .back-btn{display:inline-block; margin-bottom:15px; text-decoration:none; color:#2874f0; font-weight:bold; font-size:14px}
-  /* MOBILE RESPONSIVE */
-@media (max-width: 768px){
-  .container-cart{
-    flex-direction: column; /* stack instead of side by side */
-    padding: 0 10px;
+  @media (max-width: 768px){
+    .container-cart{flex-direction: column; padding: 0 10px}
+    .cart-items, .price-box{flex: 1; width: 100%}
+    .price-box{position: static; margin-top: 20px}
+    .cart-item{flex-direction: column}
+    .cart-item img{width: 100%; height: 200px}
+    .form-group[style*="display:flex"]{flex-direction: column}
+    .checkout-btn{font-size: 18px; padding: 16px}
   }
-  .cart-items, .price-box{
-    flex: 1; /* take full width */
-    width: 100%;
-  }
-  .price-box{
-    position: static; /* remove sticky on mobile */
-    margin-top: 20px;
-  }
-  .cart-item{
-    flex-direction: column; /* image above details */
-  }
-  .cart-item img{
-    width: 100%;
-    height: 200px;
-  }
-  .form-group[style*="display:flex"]{
-    flex-direction: column; /* district + state stack */
-  }
-.checkout-btn{
-    font-size: 18px;
-    padding: 16px;
-  }
-}
   </style>
 </head>
 <body>
@@ -66,24 +45,21 @@
 
   <div class="container-cart">
     <div class="cart-items">
-
-      <!-- EXIT BUTTON - GOES BACK TO PRODUCT PAGE -->
       <a href="#" onclick="exitAndClearCart()" class="back-btn">← Exit & Clear Cart</a>
-
       <h2>Shopping Cart (<span id="cartCount">0</span> items)</h2>
       <div id="cartList">Loading...</div>
 
       <h3 style="margin-top:20px">Customer Details <span class="req">*</span></h3>
-      <div class="form-group"><label for="custName">Full Name <span class="req">*</span></label><input id="custName" name="custName" placeholder="Enter Full Name" required></div>
-      <div class="form-group"><label for="custPhone">WhatsApp/Mobile Number <span class="req">*</span></label><input id="custPhone" name="custPhone" type="tel" placeholder="10 Digit Number" required></div>
-      <div class="form-group"><label for="custStreet">Street / Road / House No <span class="req">*</span></label><input id="custStreet" name="custStreet" placeholder="House No, Street Name" required></div>
+      <div class="form-group"><label>Full Name <span class="req">*</span></label><input id="custName" placeholder="Enter Full Name" required></div>
+      <div class="form-group"><label>WhatsApp/Mobile Number <span class="req">*</span></label><input id="custPhone" type="tel" placeholder="10 Digit Number" required></div>
+      <div class="form-group"><label>Street / House No <span class="req">*</span></label><input id="custStreet" placeholder="House No, Street Name" required></div>
       <div class="form-group" style="display:flex; gap:10px">
-        <div style="flex:1"><label for="custDistrict">District <span class="req">*</span></label><input id="custDistrict" name="custDistrict" placeholder="Eg: Kozhikode"></div>
-        <div style="flex:1"><label for="custState">State</label><input id="custState" name="custState" value="Kerala"></div>
+        <div style="flex:1"><label>District <span class="req">*</span></label><input id="custDistrict" placeholder="Eg: Kozhikode"></div>
+        <div style="flex:1"><label>State</label><input id="custState" value="Kerala"></div>
       </div>
       <div class="form-group" style="display:flex; gap:10px">
-        <div style="flex:1"><label for="custPincode">Pincode <span class="req">*</span></label><input id="custPincode" name="custPincode" placeholder="6 Digit Pincode"></div>
-        <div style="flex:1"><label for="custLandmark">Landmark</label><input id="custLandmark" name="custLandmark" placeholder="Near Bus Stand"></div>
+        <div style="flex:1"><label>Pincode <span class="req">*</span></label><input id="custPincode" placeholder="6 Digit Pincode"></div>
+        <div style="flex:1"><label>Landmark</label><input id="custLandmark" placeholder="Near Bus Stand"></div>
       </div>
 
       <h3 style="margin-top:20px">Delivery & Returns</h3>
@@ -110,7 +86,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, getDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
 const app = initializeApp(firebaseConfig);
@@ -118,49 +94,43 @@ const db = getFirestore(app);
 
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let productTotal = 0;
-let cartProducts = [];
 
-async function loadCart() {
+function loadCart() {
   const cartList = document.getElementById('cartList');
   if(cart.length === 0){
     cartList.innerHTML = '<p>Your cart is empty. <a href="../index.html">Shop Now</a></p>';
     document.getElementById('cartCount').innerText = 0;
+    updateTotal();
     return;
   }
   cartList.innerHTML = '';
   productTotal = 0;
-  cartProducts = [];
   let totalQty = 0;
 
-  for(let i=0; i<cart.length; i++){
-    const item = cart[i];
+  cart.forEach((item, i) => {
     item.qty = item.qty || 1;
-    const docSnap = await getDoc(doc(db, "products", item.id));
-    if(docSnap.exists()){
-      const p = docSnap.data();
-      const itemTotal = Number(p.price) * item.qty;
-      productTotal += itemTotal;
-      totalQty += item.qty;
-      cartProducts.push({id:item.id, name:p.name, price:Number(p.price), size:item.size, color:item.color, qty:item.qty});
+    const itemTotal = Number(item.price) * item.qty; // USE PRICE FROM LOCALSTORAGE
+    productTotal += itemTotal;
+    totalQty += item.qty;
 
-      cartList.innerHTML += `
-        <div class="cart-item">
-          <img src="${p.image}">
-          <div style="flex:1">
-            <h4>${p.name}</h4>
-            <p>Size: <b>${item.size}</b> | Color: <b>${item.color}</b></p>
-            <p><b>₹${Number(p.price).toLocaleString()}</b></p>
-            <div class="qty-box">
-              <button class="qty-btn" onclick="updateQty(${i}, -1)">-</button>
-              <input class="qty-input" value="${item.qty}" readonly>
-              <button class="qty-btn" onclick="updateQty(${i}, 1)">+</button>
-            </div>
-            <button class="remove-btn" onclick="removeItem(${i})">Remove</button>
+    cartList.innerHTML += `
+      <div class="cart-item">
+        <img src="${item.image}">
+        <div style="flex:1">
+          <h4>${item.name}</h4>
+          <p>Size: <b>${item.size}</b> | Color: <b>${item.color}</b></p>
+          <p><b>₹${Number(item.price).toLocaleString()}</b></p>
+          <div class="qty-box">
+            <button class="qty-btn" onclick="updateQty(${i}, -1)">-</button>
+            <input class="qty-input" value="${item.qty}" readonly>
+            <button class="qty-btn" onclick="updateQty(${i}, 1)">+</button>
           </div>
+          <button class="remove-btn" onclick="removeItem(${i})">Remove</button>
         </div>
-      `;
-    }
-  }
+      </div>
+    `;
+  });
+
   document.getElementById('cartCount').innerText = totalQty;
   document.getElementById('itemCount').innerText = totalQty;
   updateTotal();
@@ -201,14 +171,15 @@ window.checkout = async function(){
   const landmark = document.getElementById('custLandmark').value;
 
   if(!name ||!phone ||!street ||!district ||!pincode) return alert('Please fill all * required fields');
-  if(phone.length!== 10) return alert('Enter 10 digit mobile number');
-  if(pincode.length!== 6) return alert('Enter 6 digit pincode');
+  if(phone.length !== 10) return alert('Enter 10 digit mobile number');
+  if(pincode.length !== 6) return alert('Enter 6 digit pincode');
+  if(cart.length === 0) return alert('Cart is empty');
 
   let shippingCharge = productTotal > 999? 0 : parseInt(document.querySelector('input[name="shipping"]:checked').value);
 
   await addDoc(collection(db, "orders"), {
     customer: {name, phone, street, district, state, pincode, landmark},
-    items: cartProducts,
+    items: cart, // now cart already has name, price, image
     productTotal, shippingCharge, finalTotal: productTotal + shippingCharge,
     status: "New Order", createdAt: serverTimestamp()
   });
@@ -217,11 +188,11 @@ window.checkout = async function(){
   localStorage.removeItem('cart');
   window.location.href = '../index.html';
 }
+
 window.exitAndClearCart = function(){
   if(confirm('Are you sure? This will remove all items from your cart.')){
-    localStorage.removeItem('cart'); // clear cart
-    document.getElementById('cartCount').innerText = 0;
-    window.location.href = '../index.html'; // go back to home page
+    localStorage.removeItem('cart');
+    window.location.href = '../index.html';
   }
 }
   
