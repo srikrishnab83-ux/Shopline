@@ -43,12 +43,16 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 const productId = new URLSearchParams(window.location.search).get('id');
+let selectedSize = ''; 
+let currentProduct = {}; // <-- IMPORTANT: to store product data globally
 
 async function loadProduct() {
   const docSnap = await getDoc(doc(db, "products", productId));
   if(docSnap.exists()) {
     const p = docSnap.data();
-    const images = p.images || [p.image]; // use array if exists, else use single image
+    currentProduct = p; // <-- Save it here
+    
+    const images = p.images || [p.image];
     
     let thumbHTML = '';
     images.forEach((img) => {
@@ -70,16 +74,18 @@ async function loadProduct() {
           <p><b>Category:</b> ${p.category} > ${p.subcategory}</p>
           <p><b>Delivery:</b> To ${p.district} in 2-3 Days | COD Available</p>
           <p><b>Stock:</b> ${p.stock || 10} left</p>
+          
           ${p.category === 'Fashion' && p.sizes && p.sizes.length > 0 ? `
-<div style="margin:15px 0">
-  <p><b>Select Size:</b></p>
-  <div id="sizeOptions" style="display:flex; gap:8px; flex-wrap:wrap">
-    ${p.sizes.map(size => `
-      <button class="size-btn" onclick="selectSize('${size}', event)" style="padding:8px 15px; border:1px solid #ddd; background:#fff; cursor:pointer; border-radius:4px">${size}</button>
-    `).join('')}
-  </div>
-</div>
-` : ''}
+          <div style="margin:15px 0">
+            <p><b>Select Size:</b></p>
+            <div id="sizeOptions" style="display:flex; gap:8px; flex-wrap:wrap">
+              ${p.sizes.map(size => `
+                <button class="size-btn" onclick="selectSize('${size}', event)" style="padding:8px 15px; border:1px solid #ddd; background:#fff; cursor:pointer; border-radius:4px">${size}</button>
+              `).join('')}
+            </div>
+          </div>
+          ` : ''}
+
           <br>
           <button onclick="addToCart('${productId}')" style="padding:12px 30px; background:#ff9f00; border:none; font-size:16px; cursor:pointer; margin-right:10px; border-radius:4px">Add to Cart</button>
           <button style="padding:12px 30px; background:#2874f0; color:#fff; border:none; font-size:16px; cursor:pointer; border-radius:4px">Buy Now</button>
@@ -93,24 +99,26 @@ async function loadProduct() {
 window.changeImage = function(src) {
   document.getElementById('mainImg').src = src;
 }
-let selectedSize = '';
-window.selectSize = function(size) {
+
+window.selectSize = function(size, event) {
   selectedSize = size;
-  // remove active from all
-  document.querySelectorAll('.size-btn').forEach(btn => btn.style.border = '1px solid #ddd');
-  // add active to clicked
+  document.querySelectorAll('.size-btn').forEach(btn => {
+    btn.style.border = '1px solid #ddd';
+    btn.style.background = '#fff';
+  });
   event.target.style.border = '2px solid #2874f0';
   event.target.style.background = '#e3f2fd';
 }
+
 window.addToCart = function(id) {
-  if(!selectedSize && (p.sizes && p.sizes.length > 0)){
+  if(currentProduct.category === 'Fashion' && !selectedSize){
     alert('Please select a size');
     return;
   }
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
-  cart.push({id: id, size: selectedSize}); // save as object now
+  cart.push({id: id, size: selectedSize || 'NA'});
   localStorage.setItem('cart', JSON.stringify(cart));
-  alert('Added to Cart - Size: ' + selectedSize);
+  alert('Added to Cart - Size: ' + (selectedSize || 'NA'));
 }
 
 loadProduct();
