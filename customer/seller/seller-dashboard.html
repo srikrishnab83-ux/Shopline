@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seller Dashboard - Shopline Kerala</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .dashboard{max-width:1200px; margin:20px auto; padding:20px}
+    .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:15px; margin-bottom:30px}
+    .stat-card{background:#2874f0; color:#fff; padding:20px; border-radius:8px; text-align:center}
+    .stat-card h3{font-size:32px; margin:0}
+    .orders-table{width:100%; background:#fff; border-radius:8px; overflow:hidden}
+    .orders-table th{background:#f5f5f5; padding:12px; text-align:left}
+    .orders-table td{padding:12px; border-bottom:1px solid #eee}
+    .status-new{color:#fb641b; font-weight:bold}
+    .status-shipped{color:#388e3c; font-weight:bold}
+    .btn{padding:6px 12px; border:none; border-radius:4px; cursor:pointer; margin-right:5px}
+    .btn-ship{background:#388e3c; color:#fff}
+    .btn-view{background:#2874f0; color:#fff}
+    .order-details{display:none; background:#f9f9f9; padding:15px; border-top:1px solid #ddd}
+  </style>
+</head>
+<body>
+  <div class="top-bar"><p>Seller Panel - Shopline Kerala</p></div>
+  <header class="navbar">
+    <div class="container">
+      <div class="logo">Shopline<span>Kerala</span> Seller</div>
+      <a href="../index.html" style="color:#fff">Back to Shop</a>
+    </div>
+  </header>
+
+  <div class="dashboard">
+    <h2>📊 Dashboard</h2>
+    <div class="stats">
+      <div class="stat-card"><h3 id="totalOrders">0</h3><p>Total Orders</p></div>
+      <div class="stat-card" style="background:#fb641b"><h3 id="newOrders">0</h3><p>New Orders</p></div>
+      <div class="stat-card" style="background:#388e3c"><h3 id="totalRevenue">₹0</h3><p>Total Revenue</p></div>
+      <div class="stat-card" style="background:#9c27b0"><h3 id="totalProducts">0</h3><p>Products Sold</p></div>
+    </div>
+
+    <h2>📦 Recent Orders</h2>
+    <table class="orders-table">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Customer</th>
+          <th>Items</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="ordersList">
+        <tr><td colspan="6">Loading orders...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, updateDoc, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let allOrders = [];
+
+async function loadOrders() {
+  const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
+  const snap = await getDocs(q);
+  allOrders = [];
+  let totalRevenue = 0;
+  let newCount = 0;
+  let productCount = 0;
+
+  snap.forEach(docSnap => {
+    const order = {id: docSnap.id, ...docSnap.data()};
+    allOrders.push(order);
+    totalRevenue += order.finalTotal || 0;
+    if(order.status === "New Order") newCount++;
+    order.items.forEach(item => productCount += item.qty);
+  });
+
+  document.getElementById('totalOrders').innerText = allOrders.length;
+  document.getElementById('newOrders').innerText = newCount;
+  document.getElementById('totalRevenue').innerText = '₹' + totalRevenue.toLocaleString();
+  document.getElementById('totalProducts').innerText = productCount;
+
+  displayOrders();
+}
+
+function displayOrders(){
+  const tbody = document.getElementById('ordersList');
+  if(allOrders.length === 0){
+    tbody.innerHTML = '<tr><td colspan="6">No orders yet</td></tr>';
+    return;
+  }
+  
+  tbody.innerHTML = '';
+  allOrders.forEach(order => {
+    const date = order.createdAt?.toDate().toLocaleString('en-IN') || 'N/A';
+    const itemsText = order.items.map(i => `${i.name} x${i.qty}`).join(', ');
+    
+    tbody.innerHTML += `
+      <tr>
+        <td>#${order.id.substring(0,8)}</td>
+        <td>
+          <b>${order.customer.name}</b><br>
+          <small>${order.customer.phone}</small><br>
+          <small>${order.customer.district}, ${order.customer.pincode}</small>
+        </td>
+        <td>${itemsText}</td>
+        <td><b>₹${order.finalTotal.toLocaleString()}</b></td>
+        <td class="${order.status === 'New Order' ? 'status-new' : 'status-shipped'}">${order.status}</td>
+        <td>
+          <button class="btn btn-view" onclick="toggleDetails('${order.id}')">View</button>
+          ${order.status === 'New Order' ? `<button class="btn btn-ship" onclick="markShipped('${order.id}')">Mark Shipped</button>` : ''}
+        </td>
+      </tr>
+      <tr id="details-${order.id}" class="order-details">
+        <td colspan="6">
+          <b>Full Address:</b> ${order.customer.street}, ${order.customer.landmark}, ${order.customer.district} - ${order.customer.pincode}<br>
+          <b>Order Time:</b> ${date}<br>
+          <b>Shipping:</b> ₹${order.shippingCharge} | <b>Product Total:</b> ₹${order.productTotal}
+        </td>
+      </tr>
+    `;
+  });
+}
+
+window.toggleDetails = function(id){
+  const row = document.getElementById(`details-${id}`);
+  row.style.display = row.style.display === 'table-row' ? 'none' : 'table-row';
+}
+
+window.markShipped = async function(id){
+  if(!confirm('Mark this order as shipped?')) return;
+  await updateDoc(doc(db, "orders", id), {status: "Shipped"});
+  alert('Order marked as shipped');
+  loadOrders(); // reload
+}
+
+loadOrders();
+// Auto refresh every 30 seconds
+setInterval(loadOrders, 30000);
+</script>
+</body>
+</html>
