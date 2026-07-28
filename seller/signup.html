@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seller Login - Shopline Kerala</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    body{background:#f1f3f6}
+    .seller-box{max-width:500px; margin:80px auto; background:#fff; padding:30px; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.1)}
+    .seller-box h2{color:#2874f0; margin-bottom:20px; text-align:center}
+    .tabs{display:flex; margin-bottom:20px; border-bottom:2px solid #eee}
+    .tab{flex:1; padding:12px; text-align:center; cursor:pointer; font-weight:bold}
+    .tab.active{border-bottom:3px solid #2874f0; color:#2874f0}
+    .form-group{margin:15px 0}
+    .form-group label{font-size:14px; font-weight:bold; display:block; margin-bottom:5px}
+    .form-group input, .form-group select{width:100%; padding:12px; border:1px solid #ddd; border-radius:4px; box-sizing:border-box}
+    .btn{width:100%; padding:14px; background:#fb641b; color:#fff; border:none; font-size:16px; cursor:pointer; border-radius:4px; font-weight:bold}
+    .btn:hover{background:#e55a0f}
+    .error{color:red; font-size:13px; margin-top:5px}
+    .success{color:green; font-size:13px; margin-top:5px}
+  </style>
+</head>
+<body>
+  <div class="top-bar"><p>Start Selling on Shopline Kerala</p></div>
+  
+  <div class="seller-box">
+    <h2>Shopline Kerala Seller</h2>
+    
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('login')">Login</div>
+      <div class="tab" onclick="switchTab('signup')">Create Account</div>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <form id="loginForm" onsubmit="sellerLogin(event)">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="loginEmail" required>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPass" required>
+      </div>
+      <button class="btn">Login</button>
+      <p id="loginError" class="error"></p>
+    </form>
+
+    <!-- SIGNUP FORM -->
+    <form id="signupForm" style="display:none" onsubmit="sellerSignup(event)">
+      <div class="form-group">
+        <label>Store Name / Your Name *</label>
+        <input type="text" id="sName" required>
+      </div>
+      <div class="form-group">
+        <label>Email *</label>
+        <input type="email" id="sEmail" required>
+      </div>
+      <div class="form-group">
+        <label>Password * Min 6 characters</label>
+        <input type="password" id="sPass" required minlength="6">
+      </div>
+      <div class="form-group">
+        <label>Mobile Number *</label>
+        <input type="tel" id="sPhone" placeholder="10 digits" required maxlength="10">
+      </div>
+      <div class="form-group">
+        <label>State</label>
+        <input type="text" value="Kerala" readonly>
+      </div>
+      <div class="form-group">
+        <label>District *</label>
+        <select id="sDistrict" required>
+          <option value="">Select District</option>
+          <option>Kasaragod</option>
+          <option>Kannur</option>
+          <option>Wayanad</option>
+          <option>Kozhikode</option>
+          <option>Malappuram</option>
+          <option>Palakkad</option>
+          <option>Thrissur</option>
+          <option>Ernakulam</option>
+          <option>Idukki</option>
+          <option>Kottayam</option>
+          <option>Alappuzha</option>
+          <option>Pathanamthitta</option>
+          <option>Kollam</option>
+          <option>Thiruvananthapuram</option>
+        </select>
+      </div>
+      <button class="btn">Create Account</button>
+      <p id="signupError" class="error"></p>
+      <p id="signupSuccess" class="success"></p>
+    </form>
+  </div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+window.switchTab = function(tab){
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('loginForm').style.display = tab==='login' ? 'block' : 'none';
+  document.getElementById('signupForm').style.display = tab==='signup' ? 'block' : 'none';
+}
+
+// LOGIN
+window.sellerLogin = async function(e){
+  e.preventDefault();
+  document.getElementById('loginError').innerText = '';
+  try{
+    await signInWithEmailAndPassword(auth, loginEmail.value, loginPass.value);
+    window.location.href = 'dashboard.html';
+  }catch(err){
+    document.getElementById('loginError').innerText = err.message;
+  }
+}
+
+// SIGNUP
+window.sellerSignup = async function(e){
+  e.preventDefault();
+  document.getElementById('signupError').innerText = '';
+  document.getElementById('signupSuccess').innerText = '';
+  
+  try{
+    const userCred = await createUserWithEmailAndPassword(auth, sEmail.value, sPass.value);
+    // Save seller details to Firestore
+    await setDoc(doc(db, "sellers", userCred.user.uid), {
+      name: sName.value,
+      email: sEmail.value,
+      phone: sPhone.value,
+      state: "Kerala",
+      district: sDistrict.value,
+      createdAt: new Date()
+    });
+    document.getElementById('signupSuccess').innerText = 'Account Created! Redirecting...';
+    setTimeout(() => window.location.href = 'dashboard.html', 1500);
+  }catch(err){
+    document.getElementById('signupError').innerText = err.message;
+  }
+}
+</script>
+</body>
+</html>
