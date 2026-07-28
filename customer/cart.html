@@ -192,7 +192,7 @@ window.exitAndClearCart = function(){
   if(confirm('Are you sure? This will remove all items from your cart.')){
     localStorage.removeItem('cart'); // clear cart
     document.getElementById('cartCount').innerText = 0;
-    window.location.href = 'product.html'; // go back to product page
+    window.location.href = '../index.html'; // go back to home page
   }
 }
   
