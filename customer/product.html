@@ -128,14 +128,23 @@ window.selectColor = function(color, event) {
   event.target.classList.add('selected');
 }
 window.addToCart = function() {
-  if(currentProduct.category === 'Fashion' && !selectedSize){
+  if(currentProduct.category === 'Fashion' &&!selectedSize){
     alert('Please select a size');
     return;
   }
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
-  cart.push({id: productId, size: selectedSize || 'NA', color: selectedColor || 'NA'});
+  
+  // Check if same item exists
+  let existing = cart.find(item => item.id === productId && item.size === (selectedSize || 'NA') && item.color === (selectedColor || 'NA'));
+  
+  if(existing){
+    existing.qty = (existing.qty || 1) + 1;
+  } else {
+    cart.push({id: productId, size: selectedSize || 'NA', color: selectedColor || 'NA', qty: 1});
+  }
+  
   localStorage.setItem('cart', JSON.stringify(cart));
-  alert('Added to Cart - Size: ' + (selectedSize || 'NA') + ' Color: ' + (selectedColor || 'NA'));
+  alert('Added to Cart');
   updateCartCount();
 }
 
