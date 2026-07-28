@@ -128,24 +128,41 @@ window.selectColor = function(color, event) {
   event.target.classList.add('selected');
 }
 window.addToCart = function() {
-  if(currentProduct.category === 'Fashion' &&!selectedSize){
+  if(currentProduct.category === 'Fashion' && !selectedSize){
     alert('Please select a size');
     return;
   }
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
   
   // Check if same item exists
-  let existing = cart.find(item => item.id === productId && item.size === (selectedSize || 'NA') && item.color === (selectedColor || 'NA'));
+  let existing = cart.find(item => 
+    item.id === productId && 
+    item.size === (selectedSize || 'NA') && 
+    item.color === (selectedColor || 'NA')
+  );
   
   if(existing){
     existing.qty = (existing.qty || 1) + 1;
   } else {
-    cart.push({id: productId, size: selectedSize || 'NA', color: selectedColor || 'NA', qty: 1});
+    // Add name, price, image so cart page can show it
+    cart.push({
+      id: productId, 
+      name: currentProduct.name,
+      price: currentProduct.price,
+      image: currentProduct.image,
+      size: selectedSize || 'NA', 
+      color: selectedColor || 'NA', 
+      qty: 1
+    });
   }
   
   localStorage.setItem('cart', JSON.stringify(cart));
-  alert('Added to Cart');
+  
+  // REMOVED: alert('Added to Cart');
   updateCartCount();
+
+  // NEW: Direct redirect to cart
+  window.location.href = 'cart.html'; 
 }
 
 loadProduct();
