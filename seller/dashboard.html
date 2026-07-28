@@ -31,12 +31,11 @@
   .variant-table{width:100%; margin-top:10px; background:#fff; border:1px solid #ddd}
   .variant-table th{background:#f5f5f5; padding:8px; font-size:12px}
   .variant-table td{padding:6px}
-  .note{background:#fff3cd; padding:10px; border-left:4px solid #ffc107; margin:15px 0; font-size:13px}
   .price-box{background:#e8f5e9; padding:15px; border-radius:8px; margin-top:10px}
   </style>
 </head>
 <body>
-  <div class="top-bar" style="background:#232f3e; color:#fff; padding:8px; text-align:center; font-size:12px">Seller Panel - Shopline Kerala | Payment: Delivered + 2-3 days + Return period over</div>
+  <div class="top-bar" style="background:#232f3e; color:#fff; padding:8px; text-align:center; font-size:12px">Seller Panel - Shopline Kerala</div>
   <header class="navbar" style="background:#2874f0; color:#fff; padding:15px">
     <div style="max-width:1200px; margin:auto; display:flex; justify-content:space-between">
       <div class="logo">Shopline<span style="color:#ffe500">Kerala</span> Seller</div>
@@ -51,7 +50,6 @@
       <button class="tab-btn" onclick="openTab('add', event)">➕ Add Product</button>
     </div>
 
-    <!-- ORDERS TAB -->
     <div id="orders" class="tab-content active">
       <h2>Recent Orders</h2>
       <div class="stats">
@@ -60,20 +58,16 @@
         <div class="stat-card" style="background:#388e3c"><h3 id="totalRevenue">₹0</h3><p>Revenue</p></div>
         <div class="stat-card" style="background:#9c27b0"><h3 id="totalProducts">0</h3><p>My Products</p></div>
       </div>
-      <table class="orders-table"><thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Amount</th><th>Status</th></tr></thead><tbody id="ordersList"><tr><td colspan="5">Loading...</td></tr></tbody></table>
+      <table class="orders-table"><thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Amount</th><th>Status</th></tr></thead><tbody id="ordersList"></tbody></table>
     </div>
 
-    <!-- PRODUCTS TAB -->
     <div id="products" class="tab-content">
       <h2>My Products</h2>
-      <table class="products-table"><thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Category</th><th>District</th><th>Action</th></tr></thead><tbody id="productsList"><tr><td colspan="6">Loading...</td></tr></tbody></table>
+      <table class="products-table"><thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Category</th><th>District</th><th>Action</th></tr></thead><tbody id="productsList"></tbody></table>
     </div>
 
-    <!-- ADD PRODUCT TAB -->
     <div id="add" class="tab-content">
       <h2>Add New Product</h2>
-      <div class="note"><b>Note:</b> Delivery payment will be credited to you in 2-3 days after successful delivery and return period is over.</div>
-
       <form id="addProductForm" onsubmit="addProduct(event)">
         <div class="form-grid">
           <div class="form-group"><label>Product Name *</label><input id="pName" required></div>
@@ -137,9 +131,9 @@
         <div class="form-group">
           <label>Colors</label>
           <div class="color-grid" id="colorGrid"></div>
-          <div style="display:flex; gap:5px; margin-top:8px">
-            <input type="color" id="extraColor">
-            <input id="colorName" placeholder="Color Name">
+          <div style="display:flex; gap:5px; margin-top:8px; align-items:center">
+            <input type="color" id="extraColor" value="#ff0000">
+            <input id="colorName" placeholder="Color Name e.g. Maroon">
             <button type="button" class="btn-add" onclick="addExtraColor()">+ Add Color</button>
           </div>
         </div>
@@ -169,21 +163,15 @@ let uploadedImages = [];
 const defaultSizes = ['XS','S','M','L','XL','XXL','XXXL'];
 const defaultColors = [{name:'Red',code:'#FF0000'},{name:'Blue',code:'#0000FF'},{name:'Black',code:'#000'},{name:'White',code:'#FFFFFF'},{name:'Green',code:'#008000'},{name:'Yellow',code:'#FFFF00'}];
 
-// LOGIN CHECK
 onAuthStateChanged(auth, (user) => {
   if (!user) window.location.href = 'login.html';
   else {
     currentUser = user;
-    loadOrders();
-    loadProducts();
-    loadCategories().catch(e=>console.log("No categories yet"));
-    renderSizeColor();
+    loadOrders(); loadProducts(); loadCategories(); renderSizeColor();
   }
 });
 
 window.logout = () => signOut(auth).then(() => window.location.href = 'login.html');
-
-// FIX 1: PASS EVENT
 window.openTab = (tab, evt) => {
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -191,15 +179,14 @@ window.openTab = (tab, evt) => {
   evt.target.classList.add('active');
 }
 
-// PRICE CALC
 window.calcPrice = () => {
   const price = Number(document.getElementById('pPrice').value)||0;
   document.getElementById('customerPrice').innerText = price + 20;
 }
 
-// IMAGE PREVIEW
+// FIX 2: ALLOW 4 IMAGES + SHOW ALL PREVIEWS
 window.previewImages = (e) => {
-  uploadedImages = Array.from(e.target.files).slice(0,4);
+  uploadedImages = Array.from(e.target.files).slice(0,4); // max 4
   const box = document.getElementById('imgPreview'); box.innerHTML='';
   uploadedImages.forEach(f => {
     const reader = new FileReader();
@@ -208,13 +195,18 @@ window.previewImages = (e) => {
   })
 }
 
-// SIZE + COLOR RENDER
 function renderSizeColor(){
   const sizeGrid = document.getElementById('sizeGrid'); sizeGrid.innerHTML='';
-  defaultSizes.forEach(s => sizeGrid.innerHTML += `<div class="chip" onclick="toggleSize('${s}', this)">${s}</div>`);
+  defaultSizes.forEach(s => {
+    const active = selectedSizes.includes(s)? 'active' : '';
+    sizeGrid.innerHTML += `<div class="chip ${active}" onclick="toggleSize('${s}', this)">${s}</div>`;
+  });
 
   const colorGrid = document.getElementById('colorGrid'); colorGrid.innerHTML='';
-  defaultColors.forEach(c => colorGrid.innerHTML += `<div class="chip" style="background:${c.code}; color:#fff" onclick="toggleColor('${c.name}','${c.code}', this)">${c.name}</div>`);
+  defaultColors.concat(selectedColors).forEach(c => {
+    const active = selectedColors.find(x=>x.name==c.name)? 'active' : '';
+    colorGrid.innerHTML += `<div class="chip ${active}" style="background:${c.code}; color:#fff; border-color:${c.code}" onclick="toggleColor('${c.name}','${c.code}', this)">${c.name}</div>`;
+  });
 }
 
 window.toggleSize = (s, el) => {
@@ -227,14 +219,21 @@ window.toggleColor = (n,c, el) => {
   el.classList.toggle('active');
   selectedColors.find(x=>x.name==n)? selectedColors=selectedColors.filter(x=>x.name!=n) : selectedColors.push({name:n,code:c});
 }
+
+// FIX 3: READ COLOR PICKER VALUE
+window.addExtraColor = () => {
+  const code = document.getElementById('extraColor').value;
+  const name = document.getElementById('colorName').value.trim();
+  if(!name) return alert("Enter Color Name");
+  if(!selectedColors.find(x=>x.name==name)){ 
+    selectedColors.push({name,code}); 
+    document.getElementById('colorName').value=''; 
+    renderSizeColor(); 
+  }
+}
 window.addExtraSize = () => {
   const val = document.getElementById('extraSize').value.toUpperCase();
   if(val &&!selectedSizes.includes(val)){ selectedSizes.push(val); document.getElementById('extraSize').value=''; renderSizeColor(); updateSizeTable(); }
-}
-window.addExtraColor = () => {
-  const code = document.getElementById('extraColor').value;
-  const name = document.getElementById('colorName').value;
-  if(name &&!selectedColors.find(x=>x.name==name)){ selectedColors.push({name,code}); document.getElementById('colorName').value=''; renderSizeColor(); }
 }
 
 function updateSizeTable(){
@@ -249,13 +248,11 @@ function updateSizeTable(){
   })
 }
 
-// CATEGORY LOAD
+// FIX 1: REFRESH CATEGORIES AFTER ADD
 async function loadCategories(){
-  try{
-    const snap = await getDocs(collection(db, "categories"));
-    const sel = document.getElementById('pCategory'); sel.innerHTML='<option value="">Select</option>';
-    snap.forEach(d=>{ if(!d.data().parent) sel.innerHTML += `<option value="${d.id}">${d.data().name}</option>` });
-  }catch(e){ console.log("Create categories collection first") }
+  const snap = await getDocs(collection(db, "categories"));
+  const sel = document.getElementById('pCategory'); sel.innerHTML='<option value="">Select</option>';
+  snap.forEach(d=>{ if(!d.data().parent) sel.innerHTML += `<option value="${d.id}">${d.data().name}</option>` });
 }
 window.loadSubCat = async () => {
   const catId = document.getElementById('pCategory').value;
@@ -265,16 +262,15 @@ window.loadSubCat = async () => {
 }
 window.addNewCategory = async () => {
   const name = prompt("New Category Name:");
-  if(name) { await addDoc(collection(db,"categories"),{name,parent:null}); loadCategories(); }
+  if(name) { await addDoc(collection(db,"categories"),{name,parent:null}); await loadCategories(); } // await added
 }
 window.addNewSubCategory = async () => {
   const parent = document.getElementById('pCategory').value;
   if(!parent) return alert("Select Category first");
   const name = prompt("New SubCategory Name:");
-  if(name) { await addDoc(collection(db,"categories"),{name,parent}); loadSubCat(); }
+  if(name) { await addDoc(collection(db,"categories"),{name,parent}); await loadSubCat(); } // await added
 }
 
-// UPLOAD IMAGES
 async function uploadAllImages(){
   const urls = [];
   for(let i=0; i<uploadedImages.length; i++){
@@ -285,7 +281,6 @@ async function uploadAllImages(){
   return urls;
 }
 
-// ADD PRODUCT
 window.addProduct = async function(e){
   e.preventDefault();
   if(uploadedImages.length==0) return alert("Upload atleast 1 image");
@@ -309,10 +304,9 @@ window.addProduct = async function(e){
   alert('Product Added Successfully!');
   document.getElementById('addProductForm').reset();
   selectedSizes=[]; selectedColors=[]; uploadedImages=[]; document.getElementById('imgPreview').innerHTML='';
-  loadProducts(); openTab('products', event);
+  loadProducts(); openTab('products', {target: document.querySelector('.tab-btn:nth-child(2)')});
 }
 
-// LOAD DATA
 async function loadOrders() {
   const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
   const snap = await getDocs(q);
