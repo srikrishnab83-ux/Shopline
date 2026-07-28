@@ -4,38 +4,35 @@
   <meta charset="UTF-8">
   <title>Seller Dashboard - Shopline Kerala</title>
   <style>
-  .dashboard{max-width:1200px; margin:20px auto; padding:20px}
-  .tabs{display:flex; gap:10px; margin-bottom:20px; border-bottom:2px solid #eee; flex-wrap:wrap}
-  .tab-btn{padding:12px 20px; border:none; background:none; cursor:pointer; font-size:16px; font-weight:bold}
-  .tab-btn.active{border-bottom:3px solid #2874f0; color:#2874f0}
-  .tab-content{display:none}
-  .tab-content.active{display:block}
-  .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:15px; margin-bottom:30px}
-  .stat-card{background:#2874f0; color:#fff; padding:20px; border-radius:8px; text-align:center}
-  .orders-table,.products-table{width:100%; background:#fff; border-radius:8px; overflow:hidden; margin-top:15px; font-size:14px}
-  .orders-table th,.products-table th{background:#f5f5f5; padding:12px; text-align:left}
-  .orders-table td,.products-table td{padding:12px; border-bottom:1px solid #eee; vertical-align:top}
-  .form-grid{display:grid; grid-template-columns:1fr 1fr; gap:15px}
-  .form-group{display:flex; flex-direction:column}
-  .form-group label{font-weight:bold; margin-bottom:5px; font-size:14px}
-  .form-group input,.form-group select,.form-group textarea{padding:10px; border:1px solid #ddd; border-radius:4px}
-  .btn-save{padding:12px 30px; background:#388e3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:16px; margin-top:15px}
-  .btn-logout{background:#d32f2f; color:#fff; padding:8px 15px; border:none; border-radius:4px; cursor:pointer; float:right}
-  .btn-delete{background:#d32f2f; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer; margin-right:5px}
-  .btn-ship{background:#ff9f00; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer}
-  .img-preview{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap}
-  .img-box{position:relative}
-  .img-box img{width:100px; height:100px; object-fit:cover; border:1px solid #ddd; border-radius:4px}
-  .img-remove{position:absolute; top:-8px; right:-8px; background:red; color:#fff; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer}
-  .size-grid,.color-grid{display:flex; gap:10px; flex-wrap:wrap; margin-top:8px}
-  .chip{padding:8px 12px; border:2px solid #ddd; border-radius:20px; cursor:pointer; background:#fff; position:relative}
-  .chip.active{border-color:#2874f0; background:#e3f2fd; color:#2874f0; font-weight:bold}
-  .chip .remove{position:absolute; top:-5px; right:-5px; background:red; color:#fff; border-radius:50%; width:16px; height:16px; font-size:10px; line-height:16px; cursor:pointer}
-  .variant-table{width:100%; margin-top:10px; background:#fff; border:1px solid #ddd}
-  .price-box{background:#e8f5e9; padding:15px; border-radius:8px; margin-top:10px}
-  .status-select{padding:6px; border:1px solid #ddd; border-radius:4px}
-  .stock-toggle{background:#388e3c; color:#fff; padding:4px 8px; border:none; border-radius:4px; cursor:pointer}
-  .stock-toggle.off{background:#9e9e9e}
+ .dashboard{max-width:1200px; margin:20px auto; padding:20px}
+ .tabs{display:flex; gap:10px; margin-bottom:20px; border-bottom:2px solid #eee; flex-wrap:wrap}
+ .tab-btn{padding:12px 20px; border:none; background:none; cursor:pointer; font-size:16px; font-weight:bold}
+ .tab-btn.active{border-bottom:3px solid #2874f0; color:#2874f0}
+ .tab-content{display:none}
+ .tab-content.active{display:block}
+ .orders-table,.products-table{width:100%; background:#fff; border-radius:8px; overflow:hidden; margin-top:15px; font-size:14px}
+ .orders-table th,.products-table th{background:#f5f5f5; padding:12px; text-align:left}
+ .orders-table td,.products-table td{padding:12px; border-bottom:1px solid #eee; vertical-align:top}
+ .form-grid{display:grid; grid-template-columns:1fr 1fr; gap:15px}
+ .form-group{display:flex; flex-direction:column}
+ .form-group label{font-weight:bold; margin-bottom:5px; font-size:14px}
+ .form-group input,.form-group select,.form-group textarea{padding:10px; border:1px solid #ddd; border-radius:4px}
+ .btn-save{padding:12px 30px; background:#388e3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:16px; margin-top:15px}
+ .btn-logout{background:#d32f2f; color:#fff; padding:8px 15px; border:none; border-radius:4px; cursor:pointer; float:right}
+ .btn-delete{background:#d32f2f; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer; margin-right:5px}
+ .btn-ship{background:#ff9f00; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer; margin-right:5px}
+ .img-preview{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap}
+ .img-box{position:relative}
+ .img-box img{width:100px; height:100px; object-fit:cover; border:1px solid #ddd; border-radius:4px}
+ .img-remove{position:absolute; top:-8px; right:-8px; background:red; color:#fff; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer}
+ .size-grid,.color-grid{display:flex; gap:10px; flex-wrap:wrap; margin-top:8px}
+ .chip{padding:8px 12px; border:2px solid #ddd; border-radius:20px; cursor:pointer; background:#fff; position:relative}
+ .chip.active{border-color:#2874f0; background:#e3f2fd; color:#2874f0; font-weight:bold}
+ .chip.remove{position:absolute; top:-5px; right:-5px; background:red; color:#fff; border-radius:50%; width:16px; height:16px; font-size:10px; line-height:16px; cursor:pointer}
+ .price-box{background:#e8f5e9; padding:15px; border-radius:8px; margin-top:10px}
+ .status-select{padding:6px; border:1px solid #ddd; border-radius:4px}
+ .stock-toggle{background:#388e3c; color:#fff; padding:4px 8px; border:none; border-radius:4px; cursor:pointer}
+ .stock-toggle.off{background:#9e9e9e}
   </style>
 </head>
 <body>
@@ -114,7 +111,6 @@
           </div>
         </div>
 
-        <!-- NEW COLOR METHOD -->
         <div class="form-group">
           <label>Colors</label>
           <div class="color-grid" id="colorGrid"></div>
@@ -171,7 +167,6 @@ window.calcPrice = () => {
   document.getElementById('customerPrice').innerText = price + 20;
 }
 
-// FIX: IMAGE PREVIEW WITH REMOVE BUTTON
 window.previewImages = (e) => {
   uploadedImages = Array.from(e.target.files).slice(0,4);
   renderImagePreview();
@@ -181,7 +176,7 @@ function renderImagePreview(){
   uploadedImages.forEach((f, i) => {
     const reader = new FileReader();
     reader.onload = ev => {
-      box.innerHTML += `<div class="img-box"><img src="${ev.target.result}"><button type="button" class="img-remove" onclick="removeImage(${i})">X</button></div>`;
+      box.innerHTML += '<div class="img-box"><img src="' + ev.target.result + '"><button type="button" class="img-remove" onclick="removeImage(' + i + ')">X</button></div>';
     };
     reader.readAsDataURL(f);
   })
@@ -196,12 +191,12 @@ function renderSizeColor(){
   const sizeGrid = document.getElementById('sizeGrid'); sizeGrid.innerHTML='';
   defaultSizes.forEach(s => {
     const active = selectedSizes.includes(s)? 'active' : '';
-    sizeGrid.innerHTML += `<div class="chip ${active}" onclick="toggleSize('${s}', this)">${s}</div>`;
+    sizeGrid.innerHTML += '<div class="chip ' + active + '" onclick="toggleSize(\'' + s + '\', this)">' + s + '</div>';
   });
 
   const colorGrid = document.getElementById('colorGrid'); colorGrid.innerHTML='';
   selectedColors.forEach(c => {
-    colorGrid.innerHTML += `<div class="chip active" style="background:${c.code}; color:#fff">${c.name}<span class="remove" onclick="removeColor('${c.name}')">X</span></div>`;
+    colorGrid.innerHTML += '<div class="chip active" style="background:' + c.code + '; color:#fff">' + c.name + '<span class="remove" onclick="removeColor(\'' + c.name + '\')">X</span></div>';
   });
 }
 
@@ -231,7 +226,7 @@ window.addExtraSize = () => {
 async function uploadAllImages(){
   const urls = [];
   for(let i=0; i<uploadedImages.length; i++){
-    const fileRef = ref(storage, `products/${currentUser.uid}/${Date.now()}_${i}`);
+    const fileRef = ref(storage, 'products/' + currentUser.uid + '/' + Date.now() + '_' + i);
     const snap = await uploadBytes(fileRef, uploadedImages[i]);
     urls.push(await getDownloadURL(snap.ref));
   }
@@ -263,33 +258,23 @@ window.addProduct = async function(e){
   }catch(error){ alert("❌ Error: " + error.message); }
 }
 
-// NEW: UPDATE ORDER STATUS
 window.updateOrderStatus = async (id, status) => {
   await updateDoc(doc(db, "orders", id), {status});
   alert("Status updated to: " + status);
   loadOrders();
 }
 
-// NEW: DOWNLOAD SHIPPING LABEL
 window.downloadLabel = (order) => {
-  const printWindow = window.open('', '', 'height=600,width=800');
-  printWindow.document.write(`
-    <html><head><title>Shipping Label</title>
-    <style>body{font-family:Arial; padding:20px} .box{border:2px solid #000; padding:15px; margin-bottom:15px}</style>
-    </head><body>
-    <h2>Shopline Kerala - Shipping Label</h2>
-    <div class="box"><h3>FROM: Shipper</h3>
-    Name: Your Store<br>Address: Talipparamba, Kannur, Kerala<br>Phone: +91 98xxxxxxx
-    </div>
-    <div class="box"><h3>TO: Customer</h3>
-    Name: ${order.customer.name}<br>
-    Address: ${order.customer.address}, ${order.customer.district}, Kerala<br>
-    Phone: ${order.customer.phone}
-    </div>
-    <h4>Order ID: #${order.id.substring(0,8)} | Amount: ₹${order.finalTotal}</h4>
-    <script>window.print();</script>
-    </body></html>
-  `);
+  const paymentMethod = order.paymentMethod || "COD";
+  const codText = paymentMethod === "COD"? '<h2 style="color:red; border:2px dashed red; padding:5px; text-align:center">CASH ON DELIVERY: ₹' + order.finalTotal + '</h2>' : '<h3 style="color:green">PREPAID - Paid: ₹' + order.finalTotal + '</h3>';
+
+  const printWindow = window.open('', '', 'height=700,width=800');
+  printWindow.document.write('<html><head><title>Shipping Label</title><style>body{font-family:Arial; padding:20px}.box{border:2px solid #000; padding:15px; margin-bottom:15px}</style></head><body>');
+  printWindow.document.write('<h2>Shopline Kerala - Shipping Label</h2>' + codText);
+  printWindow.document.write('<div class="box"><h3>FROM: Shipper</h3>Name: Your Store<br>Address: Talipparamba, Kannur, Kerala<br>Phone: +91 98xxxxxxx</div>');
+  printWindow.document.write('<div class="box"><h3>TO: Customer</h3>Name: ' + order.customer.name + '<br>Address: ' + order.customer.address + ', ' + order.customer.district + ', Kerala<br>Phone: ' + order.customer.phone + '</div>');
+  printWindow.document.write('<h4>Order ID: #' + order.id.substring(0,8) + ' | Amount: ₹' + order.finalTotal + '</h4>');
+  printWindow.document.write('<script>window.print();</script></body></html>');
   printWindow.document.close();
 }
 
@@ -298,22 +283,9 @@ async function loadOrders() {
   const snap = await getDocs(q);
   let html='';
   snap.forEach(d => { const o = d.data(); o.id = d.id;
-    let statusOptions = orderStatuses.map(s => `<option ${o.status==s?'selected':''}>${s}</option>`).join('');
-    html += `<tr>
-      <td>#${d.id.substring(0,6)}</td>
-      <td>${o.customer.name}<br><small>${o.customer.phone}</small></td>
-      <td>${o.items.length} items</td>
-      <td>₹${o.finalTotal}</td>
-      <td>
-        <select class="status-select" onchange="updateOrderStatus('${d.id}', this.value)">
-          ${statusOptions}
-        </select>
-      </td>
-      <td>
-        <button class="btn-ship" onclick='downloadLabel(${JSON.stringify(o)})'>Label</button>
-        <button class="btn-delete" onclick="deleteOrder('${d.id}')">Delete</button>
-      </td>
-    </tr>`;
+    let statusOptions = '';
+    orderStatuses.forEach(s => { statusOptions += '<option ' + (o.status==s?'selected':'') + '>' + s + '</option>'; });
+    html += '<tr><td>#' + d.id.substring(0,6) + '</td><td>' + o.customer.name + '<br><small>' + o.customer.phone + '</small></td><td>' + o.items.length + ' items</td><td>₹' + o.finalTotal + '</td><td><select class="status-select" onchange="updateOrderStatus(\'' + d.id + '\', this.value)">' + statusOptions + '</select></td><td><button class="btn-ship" onclick=\'downloadLabel(' + JSON.stringify(o) + ')\'>Label</button><button class="btn-delete" onclick="deleteOrder(\'' + d.id + '\')">Delete</button></td></tr>';
   });
   document.getElementById('ordersList').innerHTML=html || '<tr><td colspan="6">No orders</td></tr>';
 }
@@ -325,9 +297,8 @@ window.deleteOrder = async function(id){
   }
 }
 
-// NEW: STOCK TOGGLE
 window.toggleStock = async (id, currentStock) => {
-  await updateDoc(doc(db, "products", id), {stock: !currentStock});
+  await updateDoc(doc(db, "products", id), {stock:!currentStock});
   loadProducts();
 }
 
@@ -335,14 +306,7 @@ async function loadProducts() {
   const snap = await getDocs(collection(db, "products"));
   let html='';
   snap.forEach(d => { const p = d.data(); if(p.sellerId === currentUser.uid){
-    html += `<tr>
-      <td><img src="${p.images[0]}" width="50"></td>
-      <td>${p.name}</td>
-      <td>₹${p.customerPrice}</td>
-      <td>${p.category}</td>
-      <td><button class="stock-toggle ${p.stock?'':'off'}" onclick="toggleStock('${d.id}', ${p.stock})">${p.stock?'In Stock':'Out of Stock'}</button></td>
-      <td><button class="btn-delete" onclick="deleteProduct('${d.id}')">Delete</button></td>
-    </tr>`;
+    html += '<tr><td><img src="' + p.images[0] + '" width="50"></td><td>' + p.name + '</td><td>₹' + p.customerPrice + '</td><td>' + p.category + '</td><td><button class="stock-toggle ' + (p.stock?'':'off') + '" onclick="toggleStock(\'' + d.id + '\', ' + p.stock + ')">' + (p.stock?'In Stock':'Out of Stock') + '</button></td><td><button class="btn-delete" onclick="deleteProduct(\'' + d.id + '\')">Delete</button></td></tr>';
   }});
   document.getElementById('productsList').innerHTML=html || '<tr><td colspan="6">No products yet</td></tr>';
 }
