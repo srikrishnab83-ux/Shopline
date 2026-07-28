@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Product Details - Shopline Kerala</title>
   <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .size-btn.selected, .color-btn.selected{border:2px solid #2874f0 !important; background:#e3f2fd !important}
+    .nav-icons a#cartLink{background:#fb641b; padding:8px 15px; border-radius:4px; color:#fff}
+  </style>
 </head>
 <body>
   <!-- HEADER -->
@@ -16,7 +20,7 @@
       <div class="logo" onclick="location.href='../index.html'" style="cursor:pointer;">Shopline<span>Kerala</span></div>
       <div class="nav-icons">
         <a href="auth.html">Login</a>
-        <a href="cart.html">🛒 Cart</a>
+        <a href="cart.html" id="cartLink">🛒 Cart(0)</a>
       </div>
     </div>
   </header>
@@ -44,14 +48,19 @@ const db = getFirestore(app);
 
 const productId = new URLSearchParams(window.location.search).get('id');
 let selectedSize = ''; 
-let currentProduct = {}; // <-- IMPORTANT: to store product data globally
+let selectedColor = '';
+let currentProduct = {};
+
+function updateCartCount(){
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  document.getElementById('cartLink').innerText = `🛒 Cart(${cart.length})`;
+}
 
 async function loadProduct() {
   const docSnap = await getDoc(doc(db, "products", productId));
   if(docSnap.exists()) {
     const p = docSnap.data();
-    currentProduct = p; // <-- Save it here
-    
+    currentProduct = p;
     const images = p.images || [p.image];
     
     let thumbHTML = '';
@@ -69,7 +78,7 @@ async function loadProduct() {
       <div style="flex:1; min-width:300px">
           <h1>${p.name}</h1>
           <p>⭐ 4.5 | ${p.totalReviews || 0} Reviews</p>
-          <h2>₹${p.price.toLocaleString()} <span style="text-decoration:line-through; color:gray; font-size:16px">₹${p.oldPrice.toLocaleString()}</span></h2>
+          <h2>₹${Number(p.price).toLocaleString()} <span style="text-decoration:line-through; color:gray; font-size:16px">₹${Number(p.oldPrice).toLocaleString()}</span></h2>
           <p style="color:green; font-weight:bold">${p.discount}% off</p>
           <p><b>Category:</b> ${p.category} > ${p.subcategory}</p>
           <p><b>Delivery:</b> To ${p.district} in 2-3 Days | COD Available</p>
@@ -78,74 +87,56 @@ async function loadProduct() {
           ${p.category === 'Fashion'? `
   ${p.sizes && p.sizes.length > 0? `
   <div style="margin:15px 0">
-    <p><b>Select Size:</b></p>
+    <p><b>Select Size: *</b></p>
     <div id="sizeOptions" style="display:flex; gap:8px; flex-wrap:wrap">
-      ${p.sizes.map(size => `
-        <button class="size-btn" onclick="selectSize('${size}', event)" style="padding:8px 15px; border:1px solid #ddd; background:#fff; cursor:pointer; border-radius:4px">${size}</button>
-      `).join('')}
+      ${p.sizes.map(size => `<button class="size-btn" onclick="selectSize('${size}', event)" style="padding:8px 15px; border:1px solid #ddd; background:#fff; cursor:pointer; border-radius:4px">${size}</button>`).join('')}
     </div>
   </div>
   ` : ''}
-
   ${p.colors && p.colors.length > 0? `
   <div style="margin:15px 0">
     <p><b>Select Color:</b></p>
     <div id="colorOptions" style="display:flex; gap:10px; flex-wrap:wrap">
-      ${p.colors.map(color => `
-        <button class="color-btn" onclick="selectColor('${color}', event)" title="${color}" style="padding:8px 15px; border:1px solid #ddd; background:#fff; cursor:pointer; border-radius:20px">${color}</button>
-      `).join('')}
+      ${p.colors.map(color => `<button class="color-btn" onclick="selectColor('${color}', event)" style="padding:8px 15px; border:1px solid #ddd; background:#fff; cursor:pointer; border-radius:20px">${color}</button>`).join('')}
     </div>
   </div>
   ` : ''}
 ` : ''}
 
           <br>
-          <button onclick="addToCart('${productId}')" style="padding:12px 30px; background:#ff9f00; border:none; font-size:16px; cursor:pointer; margin-right:10px; border-radius:4px">Add to Cart</button>
+          <button onclick="addToCart()" style="padding:12px 30px; background:#ff9f00; border:none; font-size:16px; cursor:pointer; margin-right:10px; border-radius:4px">Add to Cart</button>
           <button style="padding:12px 30px; background:#2874f0; color:#fff; border:none; font-size:16px; cursor:pointer; border-radius:4px">Buy Now</button>
       </div>
     `;
   } else {
     document.getElementById('productDetails').innerHTML = "Product not found";
   }
+  updateCartCount();
 }
 
 window.changeImage = function(src) {
   document.getElementById('mainImg').src = src;
 }
-
 window.selectSize = function(size, event) {
   selectedSize = size;
-  document.querySelectorAll('.size-btn').forEach(btn => {
-    btn.style.border = '1px solid #ddd';
-    btn.style.background = '#fff';
-  });
-  event.target.style.border = '2px solid #2874f0';
-  event.target.style.background = '#e3f2fd';
+  document.querySelectorAll('.size-btn').forEach(btn => btn.classList.remove('selected'));
+  event.target.classList.add('selected');
 }
-let selectedColor = ''; // add this on top with selectedSize
-
 window.selectColor = function(color, event) {
   selectedColor = color;
-  document.querySelectorAll('.color-btn').forEach(btn => {
-    btn.style.border = '1px solid #ddd';
-    btn.style.background = '#fff';
-  });
-  event.target.style.border = '2px solid #2874f0';
-  event.target.style.background = '#e3f2fd';
+  document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('selected'));
+  event.target.classList.add('selected');
 }
-window.addToCart = function(id) {
-  if(currentProduct.category === 'Fashion' &&!selectedSize){
+window.addToCart = function() {
+  if(currentProduct.category === 'Fashion' && !selectedSize){
     alert('Please select a size');
     return;
   }
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
-  cart.push({
-    id: id,
-    size: selectedSize || 'NA',
-    color: selectedColor || 'NA'
-  });
+  cart.push({id: productId, size: selectedSize || 'NA', color: selectedColor || 'NA'});
   localStorage.setItem('cart', JSON.stringify(cart));
   alert('Added to Cart - Size: ' + (selectedSize || 'NA') + ' Color: ' + (selectedColor || 'NA'));
+  updateCartCount();
 }
 
 loadProduct();
