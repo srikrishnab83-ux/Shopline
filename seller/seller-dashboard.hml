@@ -6,12 +6,23 @@
   <link rel="stylesheet" href="../css/style.css">
   <style>
     .dashboard{max-width:1200px; margin:20px auto; padding:20px}
+    .tabs{display:flex; gap:10px; margin-bottom:20px; border-bottom:2px solid #eee}
+    .tab-btn{padding:12px 20px; border:none; background:none; cursor:pointer; font-size:16px; font-weight:bold}
+    .tab-btn.active{border-bottom:3px solid #2874f0; color:#2874f0}
+    .tab-content{display:none}
+    .tab-content.active{display:block}
     .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:15px; margin-bottom:30px}
     .stat-card{background:#2874f0; color:#fff; padding:20px; border-radius:8px; text-align:center}
-    .orders-table{width:100%; background:#fff; border-radius:8px; overflow:hidden}
-    .orders-table th{background:#f5f5f5; padding:12px; text-align:left}
-    .orders-table td{padding:12px; border-bottom:1px solid #eee}
+    .orders-table, .products-table{width:100%; background:#fff; border-radius:8px; overflow:hidden; margin-top:15px}
+    .orders-table th, .products-table th{background:#f5f5f5; padding:12px; text-align:left}
+    .orders-table td, .products-table td{padding:12px; border-bottom:1px solid #eee}
+    .form-grid{display:grid; grid-template-columns:1fr 1fr; gap:15px}
+    .form-group{display:flex; flex-direction:column}
+    .form-group label{font-weight:bold; margin-bottom:5px; font-size:14px}
+    .form-group input, .form-group select, .form-group textarea{padding:10px; border:1px solid #ddd; border-radius:4px}
+    .btn-save{padding:12px 30px; background:#388e3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:16px; margin-top:15px}
     .btn-logout{background:#d32f2f; color:#fff; padding:8px 15px; border:none; border-radius:4px; cursor:pointer; float:right}
+    .btn-delete{background:#d32f2f; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer}
   </style>
 </head>
 <body>
@@ -24,43 +35,148 @@
   </header>
 
   <div class="dashboard">
-    <h2>📊 Dashboard</h2>
-    <div class="stats">
-      <div class="stat-card"><h3 id="totalOrders">0</h3><p>Total Orders</p></div>
-      <div class="stat-card" style="background:#fb641b"><h3 id="newOrders">0</h3><p>New Orders</p></div>
-      <div class="stat-card" style="background:#388e3c"><h3 id="totalRevenue">₹0</h3><p>Total Revenue</p></div>
-      <div class="stat-card" style="background:#9c27b0"><h3 id="totalProducts">0</h3><p>Products Sold</p></div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="openTab('orders')">📦 Orders</button>
+      <button class="tab-btn" onclick="openTab('products')">🛍️ My Products</button>
+      <button class="tab-btn" onclick="openTab('add')">➕ Add Product</button>
     </div>
-    <table class="orders-table"><thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Amount</th><th>Status</th></tr></thead><tbody id="ordersList"></tbody></table>
+
+    <!-- ORDERS TAB -->
+    <div id="orders" class="tab-content active">
+      <h2>Recent Orders</h2>
+      <div class="stats">
+        <div class="stat-card"><h3 id="totalOrders">0</h3><p>Total Orders</p></div>
+        <div class="stat-card" style="background:#fb641b"><h3 id="newOrders">0</h3><p>New Orders</p></div>
+        <div class="stat-card" style="background:#388e3c"><h3 id="totalRevenue">₹0</h3><p>Revenue</p></div>
+        <div class="stat-card" style="background:#9c27b0"><h3 id="totalProducts">0</h3><p>My Products</p></div>
+      </div>
+      <table class="orders-table"><thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Amount</th><th>Status</th></tr></thead><tbody id="ordersList"></tbody></table>
+    </div>
+
+    <!-- PRODUCTS TAB -->
+    <div id="products" class="tab-content">
+      <h2>My Products</h2>
+      <table class="products-table"><thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Category</th><th>District</th><th>Action</th></tr></thead><tbody id="productsList"></tbody></table>
+    </div>
+
+    <!-- ADD PRODUCT TAB -->
+    <div id="add" class="tab-content">
+      <h2>Add New Product</h2>
+      <form id="addProductForm" onsubmit="addProduct(event)">
+        <div class="form-grid">
+          <div class="form-group"><label>Product Name *</label><input id="pName" required></div>
+          <div class="form-group"><label>Product Image URL *</label><input id="pImage" placeholder="https://i.imgur.com/..." required></div>
+          <div class="form-group"><label>Price ₹ *</label><input id="pPrice" type="number" required></div>
+          <div class="form-group"><label>Old Price ₹</label><input id="pOldPrice" type="number"></div>
+          <div class="form-group"><label>Discount %</label><input id="pDiscount" type="number"></div>
+          <div class="form-group"><label>Category *</label><input id="pCategory" placeholder="Electronics" required></div>
+          <div class="form-group"><label>Subcategory</label><input id="pSubcategory" placeholder="Mobile"></div>
+          <div class="form-group">
+            <label>District *</label>
+            <select id="pDistrict" required>
+              <option value="">Select District</option>
+              <option>Kasaragod</option><option>Kannur</option><option>Wayanad</option><option>Kozhikode</option>
+              <option>Malappuram</option><option>Palakkad</option><option>Thrissur</option><option>Ernakulam</option>
+              <option>Idukki</option><option>Kottayam</option><option>Alappuzha</option><option>Pathanamthitta</option>
+              <option>Kollam</option><option>Thiruvananthapuram</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group"><label>Description</label><textarea id="pDesc" rows="4"></textarea></div>
+        <button type="submit" class="btn-save">Save Product</button>
+      </form>
+    </div>
   </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, orderBy, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+let currentUser = null;
 
-// CHECK LOGIN FIRST
+// LOGIN CHECK
 onAuthStateChanged(auth, (user) => {
-  if (!user) window.location.href = 'login.html'; // not logged in
-  else loadOrders();
+  if (!user) window.location.href = 'login.html';
+  else { currentUser = user; loadOrders(); loadProducts(); }
 });
 
-window.logout = function(){
-  signOut(auth).then(() => window.location.href = 'login.html');
+window.logout = () => signOut(auth).then(() => window.location.href = 'login.html');
+window.openTab = (tab) => {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(tab).classList.add('active');
+  event.target.classList.add('active');
 }
 
+// LOAD ORDERS
 async function loadOrders() {
   const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
   const snap = await getDocs(q);
-  // ... same order display code as before
-  // copy the displayOrders function from previous dashboard
+  let total=0, newC=0, revenue=0;
+  let html='';
+  snap.forEach(d => {
+    const o = d.data();
+    total++; if(o.status==="New Order") newC++; revenue+=o.finalTotal;
+    html += `<tr><td>#${d.id.substring(0,6)}</td><td>${o.customer.name}<br><small>${o.customer.phone}</small></td><td>${o.items.length} items</td><td>₹${o.finalTotal}</td><td>${o.status}</td></tr>`;
+  });
+  document.getElementById('totalOrders').innerText=total;
+  document.getElementById('newOrders').innerText=newC;
+  document.getElementById('totalRevenue').innerText='₹'+revenue.toLocaleString();
+  document.getElementById('ordersList').innerHTML=html || '<tr><td colspan="5">No orders</td></tr>';
 }
-loadOrders();
+
+// LOAD PRODUCTS - ONLY OWN PRODUCTS
+async function loadProducts() {
+  const snap = await getDocs(collection(db, "products"));
+  let count=0, html='';
+  snap.forEach(d => {
+    const p = d.data();
+    if(p.sellerId === currentUser.uid){ // filter by seller
+      count++;
+      html += `<tr>
+        <td><img src="${p.image}" width="50"></td>
+        <td>${p.name}</td>
+        <td>₹${p.price}</td>
+        <td>${p.category}</td>
+        <td>${p.district}</td>
+        <td><button class="btn-delete" onclick="deleteProduct('${d.id}')">Delete</button></td>
+      </tr>`;
+    }
+  });
+  document.getElementById('totalProducts').innerText=count;
+  document.getElementById('productsList').innerHTML=html || '<tr><td colspan="6">No products yet. Add one!</td></tr>';
+}
+
+// ADD PRODUCT - WITH SELLERID
+window.addProduct = async function(e){
+  e.preventDefault();
+  const product = {
+    name: pName.value, image: pImage.value, price: Number(pPrice.value), 
+    oldPrice: Number(pOldPrice.value)||0, discount: Number(pDiscount.value)||0,
+    category: pCategory.value, subcategory: pSubcategory.value, 
+    district: pDistrict.value, description: pDesc.value, 
+    sellerId: currentUser.uid, // <-- key line
+    createdAt: serverTimestamp()
+  };
+  await addDoc(collection(db, "products"), product);
+  alert('Product Added Successfully!');
+  document.getElementById('addProductForm').reset();
+  loadProducts();
+  openTab('products');
+}
+
+// DELETE PRODUCT
+window.deleteProduct = async function(id){
+  if(confirm('Delete this product?')){
+    await deleteDoc(doc(db, "products", id));
+    loadProducts();
+  }
+}
 </script>
 </body>
 </html>
