@@ -8,6 +8,10 @@
   <style>
     .size-btn.selected, .color-btn.selected{border:2px solid #2874f0 !important; background:#e3f2fd !important}
     .nav-icons a#cartLink{background:#fb641b; padding:8px 15px; border-radius:4px; color:#fff}
+    .search-wrap{display:flex; gap:5px; flex:1; max-width:400px; margin:0 20px}
+    .search-wrap input{padding:8px; border-radius:4px; border:none; width:100%}
+    .search-wrap button{padding:8px 12px; border:none; border-radius:4px; background:#fff; cursor:pointer}
+    @media(max-width:768px){ .search-wrap{max-width:150px} }
   </style>
 </head>
 <body>
@@ -16,8 +20,15 @@
     <p>Delivering across all 14 districts of Kerala | COD Available</p>
   </div>
   <header class="navbar">
-    <div class="container">
+    <div class="container" style="display:flex; align-items:center">
       <div class="logo" onclick="location.href='../index.html'" style="cursor:pointer;">Shopline<span>Kerala</span></div>
+      
+      <!-- ADDED SEARCH BAR -->
+      <div class="search-wrap">
+        <input type="text" id="searchInput" placeholder="Search products..." onkeyup="searchProducts()">
+        <button type="button" onclick="searchProducts()">🔍</button>
+      </div>
+
       <div class="nav-icons">
         <a href="auth.html">Login</a>
         <a href="cart.html" id="cartLink">🛒 Cart(0)</a>
@@ -53,7 +64,8 @@ let currentProduct = {};
 
 function updateCartCount(){
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
-  document.getElementById('cartLink').innerText = `🛒 Cart(${cart.length})`;
+  let totalQty = cart.reduce((sum, item) => sum + item.qty, 0); // count qty not items
+  document.getElementById('cartLink').innerText = `🛒 Cart(${totalQty})`;
 }
 
 async function loadProduct() {
@@ -85,27 +97,27 @@ async function loadProduct() {
           <p><b>Stock:</b> ${p.stock || 10} left</p>
           
           ${p.category === 'Fashion'? `
-  ${p.sizes && p.sizes.length > 0? `
-  <div style="margin:15px 0">
-    <p><b>Select Size: *</b></p>
-    <div id="sizeOptions" style="display:flex; gap:8px; flex-wrap:wrap">
-      ${p.sizes.map(size => `<button class="size-btn" onclick="selectSize('${size}', event)" style="padding:8px 15px; border:1px solid #ddd; background:#fff; cursor:pointer; border-radius:4px">${size}</button>`).join('')}
-    </div>
-  </div>
-  ` : ''}
-  ${p.colors && p.colors.length > 0? `
-  <div style="margin:15px 0">
-    <p><b>Select Color:</b></p>
-    <div id="colorOptions" style="display:flex; gap:10px; flex-wrap:wrap">
-      ${p.colors.map(color => `<button class="color-btn" onclick="selectColor('${color}', event)" style="padding:8px 15px; border:1px solid #ddd; background:#fff; cursor:pointer; border-radius:20px">${color}</button>`).join('')}
-    </div>
-  </div>
-  ` : ''}
-` : ''}
+            ${p.sizes && p.sizes.length > 0? `
+            <div style="margin:15px 0">
+              <p><b>Select Size: *</b></p>
+              <div id="sizeOptions" style="display:flex; gap:8px; flex-wrap:wrap">
+                ${p.sizes.map(size => `<button class="size-btn" onclick="selectSize('${size}', event)" style="padding:8px 15px; border:1px solid #ddd; background:#fff; cursor:pointer; border-radius:4px">${size}</button>`).join('')}
+              </div>
+            </div>
+            ` : ''}
+            ${p.colors && p.colors.length > 0? `
+            <div style="margin:15px 0">
+              <p><b>Select Color:</b></p>
+              <div id="colorOptions" style="display:flex; gap:10px; flex-wrap:wrap">
+                ${p.colors.map(color => `<button class="color-btn" onclick="selectColor('${color}', event)" style="padding:8px 15px; border:1px solid #ddd; background:#fff; cursor:pointer; border-radius:20px">${color}</button>`).join('')}
+              </div>
+            </div>
+            ` : ''}
+          ` : ''}
 
           <br>
           <button onclick="addToCart()" style="padding:12px 30px; background:#ff9f00; border:none; font-size:16px; cursor:pointer; margin-right:10px; border-radius:4px">Add to Cart</button>
-          <button style="padding:12px 30px; background:#2874f0; color:#fff; border:none; font-size:16px; cursor:pointer; border-radius:4px">Buy Now</button>
+          <button onclick="buyNow()" style="padding:12px 30px; background:#2874f0; color:#fff; border:none; font-size:16px; cursor:pointer; border-radius:4px">Buy Now</button>
       </div>
     `;
   } else {
@@ -127,6 +139,8 @@ window.selectColor = function(color, event) {
   document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('selected'));
   event.target.classList.add('selected');
 }
+
+// FIXED: FALLBACK PRICE FOR TV/MOBILE WITH NO SIZE
 window.addToCart = function() {
   if(currentProduct.category === 'Fashion' && !selectedSize){
     alert('Please select a size');
@@ -134,7 +148,8 @@ window.addToCart = function() {
   }
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
   
-  // Check if same item exists
+  const priceToUse = Number(currentProduct.price); // Always use base price. No variant price needed
+
   let existing = cart.find(item => 
     item.id === productId && 
     item.size === (selectedSize || 'NA') && 
@@ -144,11 +159,10 @@ window.addToCart = function() {
   if(existing){
     existing.qty = (existing.qty || 1) + 1;
   } else {
-    // Add name, price, image so cart page can show it
     cart.push({
       id: productId, 
       name: currentProduct.name,
-      price: currentProduct.price,
+      price: priceToUse, // FIXED: This will never be 0 now
       image: currentProduct.image,
       size: selectedSize || 'NA', 
       color: selectedColor || 'NA', 
@@ -157,12 +171,23 @@ window.addToCart = function() {
   }
   
   localStorage.setItem('cart', JSON.stringify(cart));
-  
-  // REMOVED: alert('Added to Cart');
   updateCartCount();
-
-  // NEW: Direct redirect to cart
+  alert(`${currentProduct.name} added to cart`);
   window.location.href = 'cart.html'; 
+}
+
+window.buyNow = function(){
+  addToCart(); // reuse add to cart then go to checkout
+  window.location.href = 'checkout.html';
+}
+
+// ADDED: SEARCH FUNCTION
+function searchProducts(){
+  const query = document.getElementById('searchInput').value.toLowerCase();
+  if(query.length > 2){
+    // Redirect to products page with search query
+    window.location.href = `products.html?search=${encodeURIComponent(query)}`;
+  }
 }
 
 loadProduct();
