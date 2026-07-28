@@ -6,19 +6,22 @@
   <title>Your Cart - Shopline Kerala</title>
   <link rel="stylesheet" href="../css/style.css">
   <style>
-    .container-cart{max-width:1100px; margin:20px auto; display:flex; gap:20px; padding:0 20px}
-    .cart-items{flex:2; background:#fff; padding:15px; border-radius:4px}
-    .price-box{flex:1; background:#fff; padding:15px; border-radius:4px; height:fit-content; position:sticky; top:20px}
-    .cart-item{display:flex; gap:15px; border-bottom:1px solid #eee; padding:15px 0}
-    .cart-item img{width:100px; height:100px; object-fit:cover}
-    .remove-btn{color:#2874f0; border:none; background:none; cursor:pointer; font-weight:bold}
-    .checkout-btn{width:100%; padding:12px; background:#fb641b; color:#fff; border:none; font-size:16px; cursor:pointer; border-radius:4px; margin-top:10px}
-    .form-group{margin:10px 0}
-    .form-group label{font-size:13px; font-weight:bold}
-    .form-group input, .form-group textarea{padding:10px; margin-top:5px; border:1px solid #ccc; border-radius:4px; width:95%}
-    .req{color:red}
-    .free-tag{color:green; font-weight:bold}
-    .policy-box{font-size:13px; color:#555; margin-top:15px; line-height:1.6}
+   .container-cart{max-width:1100px; margin:20px auto; display:flex; gap:20px; padding:0 20px}
+   .cart-items{flex:2; background:#fff; padding:15px; border-radius:4px}
+   .price-box{flex:1; background:#fff; padding:15px; border-radius:4px; height:fit-content; position:sticky; top:20px}
+   .cart-item{display:flex; gap:15px; border-bottom:1px solid #eee; padding:15px 0}
+   .cart-item img{width:100px; height:100px; object-fit:cover}
+   .qty-box{display:flex; align-items:center; gap:8px; margin:8px 0}
+   .qty-btn{width:30px; height:30px; border:1px solid #ddd; background:#fff; cursor:pointer; font-size:18px}
+   .qty-input{width:40px; text-align:center; border:1px solid #ddd; height:28px}
+   .remove-btn{color:#2874f0; border:none; background:none; cursor:pointer; font-weight:bold}
+   .checkout-btn{width:100%; padding:12px; background:#fb641b; color:#fff; border:none; font-size:16px; cursor:pointer; border-radius:4px; margin-top:10px}
+   .form-group{margin:10px 0}
+   .form-group label{font-size:13px; font-weight:bold}
+   .form-group input,.form-group textarea{padding:10px; margin-top:5px; border:1px solid #ccc; border-radius:4px; width:95%}
+   .req{color:red}
+   .free-tag{color:green; font-weight:bold}
+   .policy-box{font-size:13px; color:#555; margin-top:15px; line-height:1.6}
   </style>
 </head>
 <body>
@@ -32,7 +35,7 @@
 
   <div class="container-cart">
     <div class="cart-items">
-      <h2>Shopping Cart</h2>
+      <h2>Shopping Cart (<span id="cartCount">0</span> items)</h2>
       <div id="cartList">Loading...</div>
 
       <h3 style="margin-top:20px">Customer Details <span class="req">*</span></h3>
@@ -59,10 +62,10 @@
 
     <div class="price-box">
       <h3>PRICE DETAILS</h3>
-      <p>Price <span id="totalPrice" style="float:right">₹0</span></p>
+      <p>Price (<span id="itemCount">0</span> items) <span id="totalPrice" style="float:right">₹0</span></p>
       <h4 style="margin-top:15px">Choose Shipping</h4>
-      <label style="display:block; border:1px solid #ddd; padding:10px; margin:8px 0; border-radius:4px"><input type="radio" name="shipping" value="60" data-name="Courier" checked onchange="updateTotal()"> Courier - ₹60 - 2-3 Days</label>
-      <label style="display:block; border:1px solid #ddd; padding:10px; margin:8px 0; border-radius:4px"><input type="radio" name="shipping" value="40" data-name="India Post" onchange="updateTotal()"> India Post - ₹40 - 5-7 Days</label>
+      <label style="display:block; border:1px solid #ddd; padding:10px; margin:8px 0; border-radius:4px"><input type="radio" name="shipping" value="60" checked onchange="updateTotal()"> Courier - ₹60 - 2-3 Days</label>
+      <label style="display:block; border:1px solid #ddd; padding:10px; margin:8px 0; border-radius:4px"><input type="radio" name="shipping" value="40" onchange="updateTotal()"> India Post - ₹40 - 5-7 Days</label>
       <p>Shipping Charges <span id="shipCharge" style="float:right">₹60</span></p>
       <hr>
       <h3>Total Amount <span id="finalTotal" style="float:right">₹0</span></h3>
@@ -86,19 +89,24 @@ async function loadCart() {
   const cartList = document.getElementById('cartList');
   if(cart.length === 0){
     cartList.innerHTML = '<p>Your cart is empty. <a href="../index.html">Shop Now</a></p>';
+    document.getElementById('cartCount').innerText = 0;
     return;
   }
   cartList.innerHTML = '';
   productTotal = 0;
   cartProducts = [];
+  let totalQty = 0;
   
   for(let i=0; i<cart.length; i++){
     const item = cart[i];
+    item.qty = item.qty || 1; // default qty 1
     const docSnap = await getDoc(doc(db, "products", item.id));
     if(docSnap.exists()){
       const p = docSnap.data();
-      productTotal += Number(p.price);
-      cartProducts.push({id:item.id, name:p.name, price:Number(p.price), size:item.size, color:item.color, qty:1});
+      const itemTotal = Number(p.price) * item.qty;
+      productTotal += itemTotal;
+      totalQty += item.qty;
+      cartProducts.push({id:item.id, name:p.name, price:Number(p.price), size:item.size, color:item.color, qty:item.qty});
 
       cartList.innerHTML += `
         <div class="cart-item">
@@ -107,13 +115,27 @@ async function loadCart() {
             <h4>${p.name}</h4>
             <p>Size: <b>${item.size}</b> | Color: <b>${item.color}</b></p>
             <p><b>₹${Number(p.price).toLocaleString()}</b></p>
+            <div class="qty-box">
+              <button class="qty-btn" onclick="updateQty(${i}, -1)">-</button>
+              <input class="qty-input" value="${item.qty}" readonly>
+              <button class="qty-btn" onclick="updateQty(${i}, 1)">+</button>
+            </div>
             <button class="remove-btn" onclick="removeItem(${i})">Remove</button>
           </div>
         </div>
       `;
     }
   }
+  document.getElementById('cartCount').innerText = totalQty;
+  document.getElementById('itemCount').innerText = totalQty;
   updateTotal();
+}
+
+window.updateQty = function(index, change){
+  cart[index].qty = (cart[index].qty || 1) + change;
+  if(cart[index].qty < 1) cart[index].qty = 1; // minimum 1
+  localStorage.setItem('cart', JSON.stringify(cart));
+  loadCart(); // reload to update price
 }
 
 window.updateTotal = function(){
@@ -131,7 +153,7 @@ window.updateTotal = function(){
 window.removeItem = function(index){
   cart.splice(index, 1);
   localStorage.setItem('cart', JSON.stringify(cart));
-  location.reload();
+  loadCart();
 }
 
 window.checkout = async function(){
