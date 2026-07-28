@@ -4,24 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Your Cart - Shopline Kerala</title>
+
   <link rel="stylesheet" href="../css/style.css">
   <style>
-   .container-cart{max-width:1100px; margin:20px auto; display:flex; gap:20px; padding:0 20px}
-   .cart-items{flex:2; background:#fff; padding:15px; border-radius:4px}
-   .price-box{flex:1; background:#fff; padding:15px; border-radius:4px; height:fit-content; position:sticky; top:20px}
-   .cart-item{display:flex; gap:15px; border-bottom:1px solid #eee; padding:15px 0}
-   .cart-item img{width:100px; height:100px; object-fit:cover}
-   .qty-box{display:flex; align-items:center; gap:8px; margin:8px 0}
-   .qty-btn{width:30px; height:30px; border:1px solid #ddd; background:#fff; cursor:pointer; font-size:18px}
-   .qty-input{width:40px; text-align:center; border:1px solid #ddd; height:28px}
-   .remove-btn{color:#2874f0; border:none; background:none; cursor:pointer; font-weight:bold}
-   .checkout-btn{width:100%; padding:12px; background:#fb641b; color:#fff; border:none; font-size:16px; cursor:pointer; border-radius:4px; margin-top:10px}
-   .form-group{margin:10px 0}
-   .form-group label{font-size:13px; font-weight:bold}
-   .form-group input,.form-group textarea{padding:10px; margin-top:5px; border:1px solid #ccc; border-radius:4px; width:95%}
-   .req{color:red}
-   .free-tag{color:green; font-weight:bold}
-   .policy-box{font-size:13px; color:#555; margin-top:15px; line-height:1.6}
+  .container-cart{max-width:1100px; margin:20px auto; display:flex; gap:20px; padding:0 20px}
+  .cart-items{flex:2; background:#fff; padding:15px; border-radius:4px}
+  .price-box{flex:1; background:#fff; padding:15px; border-radius:4px; height:fit-content; position:sticky; top:20px}
+  .cart-item{display:flex; gap:15px; border-bottom:1px solid #eee; padding:15px 0}
+  .cart-item img{width:100px; height:100px; object-fit:cover}
+  .qty-box{display:flex; align-items:center; gap:8px; margin:8px 0}
+  .qty-btn{width:30px; height:30px; border:1px solid #ddd; background:#fff; cursor:pointer; font-size:18px}
+  .qty-input{width:40px; text-align:center; border:1px solid #ddd; height:28px}
+  .remove-btn{color:#2874f0; border:none; background:none; cursor:pointer; font-weight:bold}
+  .checkout-btn{width:100%; padding:12px; background:#fb641b; color:#fff; border:none; font-size:16px; cursor:pointer; border-radius:4px; margin-top:10px}
+  .form-group{margin:10px 0}
+  .form-group label{font-size:13px; font-weight:bold}
+  .form-group input,.form-group textarea{padding:10px; margin-top:5px; border:1px solid #ccc; border-radius:4px; width:95%}
+  .req{color:red}
+  .free-tag{color:green; font-weight:bold}
+  .policy-box{font-size:13px; color:#555; margin-top:15px; line-height:1.6}
+  .back-btn{display:inline-block; margin-bottom:15px; text-decoration:none; color:#2874f0; font-weight:bold; font-size:14px}
   </style>
 </head>
 <body>
@@ -29,26 +31,30 @@
   <header class="navbar">
     <div class="container">
       <div class="logo" onclick="location.href='../index.html'" style="cursor:pointer;">Shopline<span>Kerala</span></div>
-      <a href="../index.html" style="color:#fff">← Continue Shopping</a>
+      <a href="../index.html" style="color:#fff">Home</a>
     </div>
   </header>
 
   <div class="container-cart">
     <div class="cart-items">
+
+      <!-- EXIT BUTTON - GOES BACK TO PRODUCT PAGE -->
+      <a href="javascript:history.back()" class="back-btn">← Back to Product</a>
+
       <h2>Shopping Cart (<span id="cartCount">0</span> items)</h2>
       <div id="cartList">Loading...</div>
 
       <h3 style="margin-top:20px">Customer Details <span class="req">*</span></h3>
-      <div class="form-group"><label>Full Name <span class="req">*</span></label><input id="custName" placeholder="Enter Full Name" required></div>
-      <div class="form-group"><label>WhatsApp/Mobile Number <span class="req">*</span></label><input id="custPhone" placeholder="10 Digit Number" required></div>
-      <div class="form-group"><label>Street / Road / House No <span class="req">*</span></label><input id="custStreet" placeholder="House No, Street Name" required></div>
+      <div class="form-group"><label for="custName">Full Name <span class="req">*</span></label><input id="custName" name="custName" placeholder="Enter Full Name" required></div>
+      <div class="form-group"><label for="custPhone">WhatsApp/Mobile Number <span class="req">*</span></label><input id="custPhone" name="custPhone" type="tel" placeholder="10 Digit Number" required></div>
+      <div class="form-group"><label for="custStreet">Street / Road / House No <span class="req">*</span></label><input id="custStreet" name="custStreet" placeholder="House No, Street Name" required></div>
       <div class="form-group" style="display:flex; gap:10px">
-        <div style="flex:1"><label>District <span class="req">*</span></label><input id="custDistrict" placeholder="Eg: Kozhikode"></div>
-        <div style="flex:1"><label>State</label><input id="custState" value="Kerala"></div>
+        <div style="flex:1"><label for="custDistrict">District <span class="req">*</span></label><input id="custDistrict" name="custDistrict" placeholder="Eg: Kozhikode"></div>
+        <div style="flex:1"><label for="custState">State</label><input id="custState" name="custState" value="Kerala"></div>
       </div>
       <div class="form-group" style="display:flex; gap:10px">
-        <div style="flex:1"><label>Pincode <span class="req">*</span></label><input id="custPincode" placeholder="6 Digit Pincode"></div>
-        <div style="flex:1"><label>Landmark</label><input id="custLandmark" placeholder="Near Bus Stand"></div>
+        <div style="flex:1"><label for="custPincode">Pincode <span class="req">*</span></label><input id="custPincode" name="custPincode" placeholder="6 Digit Pincode"></div>
+        <div style="flex:1"><label for="custLandmark">Landmark</label><input id="custLandmark" name="custLandmark" placeholder="Near Bus Stand"></div>
       </div>
 
       <h3 style="margin-top:20px">Delivery & Returns</h3>
@@ -96,10 +102,10 @@ async function loadCart() {
   productTotal = 0;
   cartProducts = [];
   let totalQty = 0;
-  
+
   for(let i=0; i<cart.length; i++){
     const item = cart[i];
-    item.qty = item.qty || 1; // default qty 1
+    item.qty = item.qty || 1;
     const docSnap = await getDoc(doc(db, "products", item.id));
     if(docSnap.exists()){
       const p = docSnap.data();
@@ -133,9 +139,9 @@ async function loadCart() {
 
 window.updateQty = function(index, change){
   cart[index].qty = (cart[index].qty || 1) + change;
-  if(cart[index].qty < 1) cart[index].qty = 1; // minimum 1
+  if(cart[index].qty < 1) cart[index].qty = 1;
   localStorage.setItem('cart', JSON.stringify(cart));
-  loadCart(); // reload to update price
+  loadCart();
 }
 
 window.updateTotal = function(){
@@ -164,20 +170,20 @@ window.checkout = async function(){
   const state = document.getElementById('custState').value;
   const pincode = document.getElementById('custPincode').value;
   const landmark = document.getElementById('custLandmark').value;
-  
+
   if(!name ||!phone ||!street ||!district ||!pincode) return alert('Please fill all * required fields');
   if(phone.length!== 10) return alert('Enter 10 digit mobile number');
   if(pincode.length!== 6) return alert('Enter 6 digit pincode');
-  
+
   let shippingCharge = productTotal > 999? 0 : parseInt(document.querySelector('input[name="shipping"]:checked').value);
-  
+
   await addDoc(collection(db, "orders"), {
     customer: {name, phone, street, district, state, pincode, landmark},
     items: cartProducts,
     productTotal, shippingCharge, finalTotal: productTotal + shippingCharge,
     status: "New Order", createdAt: serverTimestamp()
   });
-  
+
   alert(`Order Placed Successfully! Total: ₹${productTotal + shippingCharge}`);
   localStorage.removeItem('cart');
   window.location.href = '../index.html';
