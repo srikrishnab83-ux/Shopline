@@ -75,16 +75,29 @@ async function loadProduct() {
           <p><b>Delivery:</b> To ${p.district} in 2-3 Days | COD Available</p>
           <p><b>Stock:</b> ${p.stock || 10} left</p>
           
-          ${p.category === 'Fashion' && p.sizes && p.sizes.length > 0 ? `
-          <div style="margin:15px 0">
-            <p><b>Select Size:</b></p>
-            <div id="sizeOptions" style="display:flex; gap:8px; flex-wrap:wrap">
-              ${p.sizes.map(size => `
-                <button class="size-btn" onclick="selectSize('${size}', event)" style="padding:8px 15px; border:1px solid #ddd; background:#fff; cursor:pointer; border-radius:4px">${size}</button>
-              `).join('')}
-            </div>
-          </div>
-          ` : ''}
+          ${p.category === 'Fashion'? `
+  ${p.sizes && p.sizes.length > 0? `
+  <div style="margin:15px 0">
+    <p><b>Select Size:</b></p>
+    <div id="sizeOptions" style="display:flex; gap:8px; flex-wrap:wrap">
+      ${p.sizes.map(size => `
+        <button class="size-btn" onclick="selectSize('${size}', event)" style="padding:8px 15px; border:1px solid #ddd; background:#fff; cursor:pointer; border-radius:4px">${size}</button>
+      `).join('')}
+    </div>
+  </div>
+  ` : ''}
+
+  ${p.colors && p.colors.length > 0? `
+  <div style="margin:15px 0">
+    <p><b>Select Color:</b></p>
+    <div id="colorOptions" style="display:flex; gap:10px; flex-wrap:wrap">
+      ${p.colors.map(color => `
+        <button class="color-btn" onclick="selectColor('${color}', event)" title="${color}" style="padding:8px 15px; border:1px solid #ddd; background:#fff; cursor:pointer; border-radius:20px">${color}</button>
+      `).join('')}
+    </div>
+  </div>
+  ` : ''}
+` : ''}
 
           <br>
           <button onclick="addToCart('${productId}')" style="padding:12px 30px; background:#ff9f00; border:none; font-size:16px; cursor:pointer; margin-right:10px; border-radius:4px">Add to Cart</button>
@@ -109,16 +122,30 @@ window.selectSize = function(size, event) {
   event.target.style.border = '2px solid #2874f0';
   event.target.style.background = '#e3f2fd';
 }
+let selectedColor = ''; // add this on top with selectedSize
 
+window.selectColor = function(color, event) {
+  selectedColor = color;
+  document.querySelectorAll('.color-btn').forEach(btn => {
+    btn.style.border = '1px solid #ddd';
+    btn.style.background = '#fff';
+  });
+  event.target.style.border = '2px solid #2874f0';
+  event.target.style.background = '#e3f2fd';
+}
 window.addToCart = function(id) {
-  if(currentProduct.category === 'Fashion' && !selectedSize){
+  if(currentProduct.category === 'Fashion' &&!selectedSize){
     alert('Please select a size');
     return;
   }
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
-  cart.push({id: id, size: selectedSize || 'NA'});
+  cart.push({
+    id: id,
+    size: selectedSize || 'NA',
+    color: selectedColor || 'NA'
+  });
   localStorage.setItem('cart', JSON.stringify(cart));
-  alert('Added to Cart - Size: ' + (selectedSize || 'NA'));
+  alert('Added to Cart - Size: ' + (selectedSize || 'NA') + ' Color: ' + (selectedColor || 'NA'));
 }
 
 loadProduct();
