@@ -91,12 +91,24 @@ async function loadProduct() {
 window.changeImage = function(src) {
   document.getElementById('mainImg').src = src;
 }
-
+let selectedSize = '';
+window.selectSize = function(size) {
+  selectedSize = size;
+  // remove active from all
+  document.querySelectorAll('.size-btn').forEach(btn => btn.style.border = '1px solid #ddd');
+  // add active to clicked
+  event.target.style.border = '2px solid #2874f0';
+  event.target.style.background = '#e3f2fd';
+}
 window.addToCart = function(id) {
+  if(!selectedSize && (p.sizes && p.sizes.length > 0)){
+    alert('Please select a size');
+    return;
+  }
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
-  cart.push(id);
+  cart.push({id: id, size: selectedSize}); // save as object now
   localStorage.setItem('cart', JSON.stringify(cart));
-  alert('Added to Cart!');
+  alert('Added to Cart - Size: ' + selectedSize);
 }
 
 loadProduct();
