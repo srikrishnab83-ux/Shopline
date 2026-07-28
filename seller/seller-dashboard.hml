@@ -1,2 +1,66 @@
-<!DOCTYPE html><html><head><title>Seller Dashboard</title><link rel="stylesheet" href="../css/style.css"></head>
-<body><h1 style="text-align:center; padding:100px;">Seller Dashboard - Coming Soon</h1></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Seller Dashboard - Shopline Kerala</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .dashboard{max-width:1200px; margin:20px auto; padding:20px}
+    .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:15px; margin-bottom:30px}
+    .stat-card{background:#2874f0; color:#fff; padding:20px; border-radius:8px; text-align:center}
+    .orders-table{width:100%; background:#fff; border-radius:8px; overflow:hidden}
+    .orders-table th{background:#f5f5f5; padding:12px; text-align:left}
+    .orders-table td{padding:12px; border-bottom:1px solid #eee}
+    .btn-logout{background:#d32f2f; color:#fff; padding:8px 15px; border:none; border-radius:4px; cursor:pointer; float:right}
+  </style>
+</head>
+<body>
+  <div class="top-bar"><p>Seller Panel - Shopline Kerala</p></div>
+  <header class="navbar">
+    <div class="container">
+      <div class="logo">Shopline<span>Kerala</span> Seller</div>
+      <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <div class="dashboard">
+    <h2>📊 Dashboard</h2>
+    <div class="stats">
+      <div class="stat-card"><h3 id="totalOrders">0</h3><p>Total Orders</p></div>
+      <div class="stat-card" style="background:#fb641b"><h3 id="newOrders">0</h3><p>New Orders</p></div>
+      <div class="stat-card" style="background:#388e3c"><h3 id="totalRevenue">₹0</h3><p>Total Revenue</p></div>
+      <div class="stat-card" style="background:#9c27b0"><h3 id="totalProducts">0</h3><p>Products Sold</p></div>
+    </div>
+    <table class="orders-table"><thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Amount</th><th>Status</th></tr></thead><tbody id="ordersList"></tbody></table>
+  </div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// CHECK LOGIN FIRST
+onAuthStateChanged(auth, (user) => {
+  if (!user) window.location.href = 'login.html'; // not logged in
+  else loadOrders();
+});
+
+window.logout = function(){
+  signOut(auth).then(() => window.location.href = 'login.html');
+}
+
+async function loadOrders() {
+  const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
+  const snap = await getDocs(q);
+  // ... same order display code as before
+  // copy the displayOrders function from previous dashboard
+}
+loadOrders();
+</script>
+</body>
+</html>
