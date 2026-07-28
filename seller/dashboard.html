@@ -5,28 +5,41 @@
   <title>Seller Dashboard - Shopline Kerala</title>
   <link rel="stylesheet" href="../css/style.css">
   <style>
-    .dashboard{max-width:1200px; margin:20px auto; padding:20px}
-    .tabs{display:flex; gap:10px; margin-bottom:20px; border-bottom:2px solid #eee}
-    .tab-btn{padding:12px 20px; border:none; background:none; cursor:pointer; font-size:16px; font-weight:bold}
-    .tab-btn.active{border-bottom:3px solid #2874f0; color:#2874f0}
-    .tab-content{display:none}
-    .tab-content.active{display:block}
-    .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:15px; margin-bottom:30px}
-    .stat-card{background:#2874f0; color:#fff; padding:20px; border-radius:8px; text-align:center}
-    .orders-table, .products-table{width:100%; background:#fff; border-radius:8px; overflow:hidden; margin-top:15px}
-    .orders-table th, .products-table th{background:#f5f5f5; padding:12px; text-align:left}
-    .orders-table td, .products-table td{padding:12px; border-bottom:1px solid #eee}
-    .form-grid{display:grid; grid-template-columns:1fr 1fr; gap:15px}
-    .form-group{display:flex; flex-direction:column}
-    .form-group label{font-weight:bold; margin-bottom:5px; font-size:14px}
-    .form-group input, .form-group select, .form-group textarea{padding:10px; border:1px solid #ddd; border-radius:4px}
-    .btn-save{padding:12px 30px; background:#388e3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:16px; margin-top:15px}
-    .btn-logout{background:#d32f2f; color:#fff; padding:8px 15px; border:none; border-radius:4px; cursor:pointer; float:right}
-    .btn-delete{background:#d32f2f; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer}
+   .dashboard{max-width:1200px; margin:20px auto; padding:20px}
+   .tabs{display:flex; gap:10px; margin-bottom:20px; border-bottom:2px solid #eee; flex-wrap:wrap}
+   .tab-btn{padding:12px 20px; border:none; background:none; cursor:pointer; font-size:16px; font-weight:bold}
+   .tab-btn.active{border-bottom:3px solid #2874f0; color:#2874f0}
+   .tab-content{display:none}
+   .tab-content.active{display:block}
+   .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:15px; margin-bottom:30px}
+   .stat-card{background:#2874f0; color:#fff; padding:20px; border-radius:8px; text-align:center}
+   .orders-table,.products-table{width:100%; background:#fff; border-radius:8px; overflow:hidden; margin-top:15px; font-size:14px}
+   .orders-table th,.products-table th{background:#f5f5f5; padding:12px; text-align:left}
+   .orders-table td,.products-table td{padding:12px; border-bottom:1px solid #eee}
+   .form-grid{display:grid; grid-template-columns:1fr 1fr; gap:15px}
+   .form-group{display:flex; flex-direction:column}
+   .form-group label{font-weight:bold; margin-bottom:5px; font-size:14px}
+   .form-group input,.form-group select,.form-group textarea{padding:10px; border:1px solid #ddd; border-radius:4px}
+   .btn-save{padding:12px 30px; background:#388e3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:16px; margin-top:15px}
+   .btn-logout{background:#d32f2f; color:#fff; padding:8px 15px; border:none; border-radius:4px; cursor:pointer; float:right}
+   .btn-delete{background:#d32f2f; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer}
+   .btn-add{background:#2874f0; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer}
+
+    /* NEW FEATURES CSS */
+   .img-preview{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap}
+   .img-preview img{width:100px; height:100px; object-fit:cover; border:1px solid #ddd; border-radius:4px}
+   .size-grid,.color-grid{display:flex; gap:10px; flex-wrap:wrap; margin-top:8px}
+   .chip{padding:8px 12px; border:2px solid #ddd; border-radius:20px; cursor:pointer; background:#fff}
+   .chip.active{border-color:#2874f0; background:#e3f2fd; color:#2874f0; font-weight:bold}
+   .variant-table{width:100%; margin-top:10px; background:#fff; border:1px solid #ddd}
+   .variant-table th{background:#f5f5f5; padding:8px; font-size:12px}
+   .variant-table td{padding:6px}
+   .note{background:#fff3cd; padding:10px; border-left:4px solid #ffc107; margin:15px 0; font-size:13px}
+   .price-box{background:#e8f5e9; padding:15px; border-radius:8px; margin-top:10px}
   </style>
 </head>
 <body>
-  <div class="top-bar"><p>Seller Panel - Shopline Kerala</p></div>
+  <div class="top-bar"><p>Seller Panel - Shopline Kerala | Payment: Delivered + 2-3 days + Return period over</p></div>
   <header class="navbar">
     <div class="container">
       <div class="logo">Shopline<span>Kerala</span> Seller</div>
@@ -62,17 +75,29 @@
     <!-- ADD PRODUCT TAB -->
     <div id="add" class="tab-content">
       <h2>Add New Product</h2>
+      <div class="note"><b>Note:</b> Delivery payment will be credited to you in 2-3 days after successful delivery and return period is over.</div>
+
       <form id="addProductForm" onsubmit="addProduct(event)">
         <div class="form-grid">
           <div class="form-group"><label>Product Name *</label><input id="pName" required></div>
-          <div class="form-group"><label>Product Image URL *</label><input id="pImage" placeholder="https://i.imgur.com/..." required></div>
-          <div class="form-group"><label>Price ₹ *</label><input id="pPrice" type="number" required></div>
-          <div class="form-group"><label>Old Price ₹</label><input id="pOldPrice" type="number"></div>
-          <div class="form-group"><label>Discount %</label><input id="pDiscount" type="number"></div>
-          <div class="form-group"><label>Category *</label><input id="pCategory" placeholder="Electronics" required></div>
-          <div class="form-group"><label>Subcategory</label><input id="pSubcategory" placeholder="Mobile"></div>
+
           <div class="form-group">
-            <label>District *</label>
+            <label>Category *</label>
+            <div style="display:flex; gap:5px">
+              <select id="pCategory" onchange="loadSubCat()" required><option value="">Select</option></select>
+              <button type="button" class="btn-add" onclick="addNewCategory()">+New</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Sub Category *</label>
+            <div style="display:flex; gap:5px">
+              <select id="pSubcategory" required><option value="">Select Category First</option></select>
+              <button type="button" class="btn-add" onclick="addNewSubCategory()">+New</button>
+            </div>
+          </div>
+
+          <div class="form-group"><label>District *</label>
             <select id="pDistrict" required>
               <option value="">Select District</option>
               <option>Kasaragod</option><option>Kannur</option><option>Wayanad</option><option>Kozhikode</option>
@@ -82,6 +107,51 @@
             </select>
           </div>
         </div>
+
+        <!-- PRICE WITH CONVENIENCE FEE -->
+        <div class="price-box">
+          <h4>Price Details</h4>
+          <div class="form-grid">
+            <div class="form-group"><label>Your Selling Price ₹ *</label><input id="pPrice" type="number" oninput="calcPrice()" required></div>
+            <div class="form-group"><label>Old Price ₹</label><input id="pOldPrice" type="number"></div>
+          </div>
+          <p>Platform Fee: ₹20 | <b>Customer Pays: ₹<span id="customerPrice">0</span></b></p>
+        </div>
+
+        <!-- IMAGE UPLOAD 1-4 -->
+        <div class="form-group">
+          <label>Product Images * Upload 1 to 4 images</label>
+          <input type="file" id="pImages" accept="image/*" multiple onchange="previewImages(event)">
+          <div class="img-preview" id="imgPreview"></div>
+        </div>
+
+        <!-- SIZE SELECTOR -->
+        <div class="form-group">
+          <label>Sizes</label>
+          <div class="size-grid" id="sizeGrid"></div>
+          <div style="display:flex; gap:5px; margin-top:8px">
+            <input id="extraSize" placeholder="Add custom size like 38">
+            <button type="button" class="btn-add" onclick="addExtraSize()">+ Add Size</button>
+          </div>
+        </div>
+
+        <!-- SIZE MEASUREMENTS TABLE -->
+        <div id="sizeMeasureBox" style="display:none">
+          <h4>Size Measurements - for Fashion</h4>
+          <table class="variant-table" id="sizeTable"><thead><tr><th>Size</th><th>Length</th><th>Width</th><th>Bottom</th></tr></thead><tbody></tbody></table>
+        </div>
+
+        <!-- COLOR SELECTOR -->
+        <div class="form-group">
+          <label>Colors</label>
+          <div class="color-grid" id="colorGrid"></div>
+          <div style="display:flex; gap:5px; margin-top:8px">
+            <input type="color" id="extraColor">
+            <input id="colorName" placeholder="Color Name">
+            <button type="button" class="btn-add" onclick="addExtraColor()">+ Add Color</button>
+          </div>
+        </div>
+
         <div class="form-group"><label>Description</label><textarea id="pDesc" rows="4"></textarea></div>
         <button type="submit" class="btn-save">Save Product</button>
       </form>
@@ -91,18 +161,26 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, orderBy, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc, orderBy, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
+const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart", storageBucket: "willwin-cart.appspot.com"};
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 let currentUser = null;
+let selectedSizes = [];
+let selectedColors = [];
+let uploadedImages = [];
+
+const defaultSizes = ['XS','S','M','L','XL','XXL','XXXL'];
+const defaultColors = [{name:'Red',code:'#FF0000'},{name:'Blue',code:'#0000FF'},{name:'Black',code:'#000000'},{name:'White',code:'#FFFFFF'},{name:'Green',code:'#008000'},{name:'Yellow',code:'#FFFF00'}];
 
 // LOGIN CHECK
 onAuthStateChanged(auth, (user) => {
   if (!user) window.location.href = 'login.html';
-  else { currentUser = user; loadOrders(); loadProducts(); }
+  else { currentUser = user; loadOrders(); loadProducts(); loadCategories(); renderSizeColor(); }
 });
 
 window.logout = () => signOut(auth).then(() => window.location.href = 'login.html');
@@ -113,15 +191,143 @@ window.openTab = (tab) => {
   event.target.classList.add('active');
 }
 
-// LOAD ORDERS
+// PRICE CALC
+window.calcPrice = () => {
+  const price = Number(document.getElementById('pPrice').value)||0;
+  document.getElementById('customerPrice').innerText = price + 20;
+}
+
+// IMAGE PREVIEW
+window.previewImages = (e) => {
+  uploadedImages = Array.from(e.target.files).slice(0,4);
+  const box = document.getElementById('imgPreview'); box.innerHTML='';
+  uploadedImages.forEach(f => {
+    const reader = new FileReader();
+    reader.onload = ev => box.innerHTML += `<img src="${ev.target.result}">`;
+    reader.readAsDataURL(f);
+  })
+}
+
+// SIZE + COLOR RENDER
+function renderSizeColor(){
+  const sizeGrid = document.getElementById('sizeGrid'); sizeGrid.innerHTML='';
+  defaultSizes.forEach(s => sizeGrid.innerHTML += `<div class="chip" onclick="toggleSize('${s}')">${s}</div>`);
+
+  const colorGrid = document.getElementById('colorGrid'); colorGrid.innerHTML='';
+  defaultColors.forEach(c => colorGrid.innerHTML += `<div class="chip" style="background:${c.code}; color:#fff" onclick="toggleColor('${c.name}','${c.code}')">${c.name}</div>`);
+}
+
+window.toggleSize = (s) => {
+  selectedSizes.includes(s)? selectedSizes=selectedSizes.filter(x=>x!=s) : selectedSizes.push(s);
+  renderSizeColor(); updateSizeTable();
+  document.getElementById('sizeMeasureBox').style.display = selectedSizes.length>0? 'block' : 'none';
+}
+window.toggleColor = (n,c) => {
+  selectedColors.find(x=>x.name==n)? selectedColors=selectedColors.filter(x=>x.name!=n) : selectedColors.push({name:n,code:c});
+  renderSizeColor();
+}
+window.addExtraSize = () => {
+  const val = document.getElementById('extraSize').value.toUpperCase();
+  if(val &&!selectedSizes.includes(val)){ selectedSizes.push(val); document.getElementById('extraSize').value=''; renderSizeColor(); updateSizeTable(); }
+}
+window.addExtraColor = () => {
+  const code = document.getElementById('extraColor').value;
+  const name = document.getElementById('colorName').value;
+  if(name &&!selectedColors.find(x=>x.name==name)){ selectedColors.push({name,code}); document.getElementById('colorName').value=''; renderSizeColor(); }
+}
+
+function updateSizeTable(){
+  const tbody = document.querySelector('#sizeTable tbody'); tbody.innerHTML='';
+  selectedSizes.forEach(s => {
+    tbody.innerHTML += `<tr>
+      <td><b>${s}</b></td>
+      <td><input data-size="${s}" data-field="length" placeholder="cm"></td>
+      <td><input data-size="${s}" data-field="width" placeholder="cm"></td>
+      <td><input data-size="${s}" data-field="bottom" placeholder="cm"></td>
+    </tr>`;
+  })
+}
+
+// CATEGORY LOAD - FILTERED BY PARENT
+async function loadCategories(){
+  const snap = await getDocs(collection(db, "categories"));
+  const sel = document.getElementById('pCategory'); sel.innerHTML='<option value="">Select</option>';
+  snap.forEach(d=>{ if(!d.data().parent) sel.innerHTML += `<option value="${d.id}">${d.data().name}</option>` });
+}
+window.loadSubCat = async () => {
+  const catId = document.getElementById('pCategory').value;
+  const snap = await getDocs(collection(db, "categories"));
+  const sel = document.getElementById('pSubcategory'); sel.innerHTML='<option value="">Select</option>';
+  snap.forEach(d=>{ if(d.data().parent==catId) sel.innerHTML += `<option value="${d.id}">${d.data().name}</option>` });
+}
+window.addNewCategory = async () => {
+  const name = prompt("New Category Name:");
+  if(name) await addDoc(collection(db,"categories"),{name,parent:null}); loadCategories();
+}
+window.addNewSubCategory = async () => {
+  const parent = document.getElementById('pCategory').value;
+  if(!parent) return alert("Select Category first");
+  const name = prompt("New SubCategory Name:");
+  if(name) await addDoc(collection(db,"categories"),{name,parent}); loadSubCat();
+}
+
+// UPLOAD IMAGES TO STORAGE
+async function uploadAllImages(){
+  const urls = [];
+  for(let i=0; i<uploadedImages.length; i++){
+    const fileRef = ref(storage, `products/${currentUser.uid}/${Date.now()}_${i}`);
+    const snap = await uploadBytes(fileRef, uploadedImages[i]);
+    urls.push(await getDownloadURL(snap.ref));
+  }
+  return urls;
+}
+
+// ADD PRODUCT
+window.addProduct = async function(e){
+  e.preventDefault();
+  if(uploadedImages.length==0) return alert("Upload atleast 1 image");
+
+  const imageUrls = await uploadAllImages();
+  const measurements = {};
+  document.querySelectorAll('#sizeTable input').forEach(inp=>{
+    const s = inp.dataset.size; if(!measurements[s]) measurements[s]={};
+    measurements[s][inp.dataset.field] = inp.value;
+  })
+
+  const product = {
+    name: pName.value,
+    images: imageUrls, // array of 1-4 images
+    price: Number(pPrice.value),
+    customerPrice: Number(pPrice.value)+20, // +20 convenience fee
+    oldPrice: Number(pOldPrice.value)||0,
+    categoryId: pCategory.value,
+    subcategoryId: pSubcategory.value,
+    district: pDistrict.value,
+    description: pDesc.value,
+    sizes: selectedSizes,
+    colors: selectedColors,
+    measurements: measurements,
+    sellerId: currentUser.uid,
+    createdAt: serverTimestamp()
+  };
+  await addDoc(collection(db, "products"), product);
+  alert('Product Added Successfully!');
+  document.getElementById('addProductForm').reset();
+  selectedSizes=[]; selectedColors=[]; uploadedImages=[]; document.getElementById('imgPreview').innerHTML='';
+  loadProducts(); openTab('products');
+}
+
+// LOAD ORDERS + PRODUCTS same as before with sellerId filter
+async function loadOrders() { /* same code as your old file */ }
+async function loadProducts() { /* same code as your old file */ }
+window.deleteProduct = async function(id){ if(confirm('Delete?')){ await deleteDoc(doc(db, "products", id)); loadProducts(); }}
+
+// PASTE YOUR OLD loadOrders and loadProducts FUNCTIONS HERE
 async function loadOrders() {
   const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
   const snap = await getDocs(q);
-  let total=0, newC=0, revenue=0;
-  let html='';
-  snap.forEach(d => {
-    const o = d.data();
-    total++; if(o.status==="New Order") newC++; revenue+=o.finalTotal;
+  let total=0, newC=0, revenue=0; let html='';
+  snap.forEach(d => { const o = d.data(); total++; if(o.status==="New Order") newC++; revenue+=o.finalTotal;
     html += `<tr><td>#${d.id.substring(0,6)}</td><td>${o.customer.name}<br><small>${o.customer.phone}</small></td><td>${o.items.length} items</td><td>₹${o.finalTotal}</td><td>${o.status}</td></tr>`;
   });
   document.getElementById('totalOrders').innerText=total;
@@ -129,53 +335,15 @@ async function loadOrders() {
   document.getElementById('totalRevenue').innerText='₹'+revenue.toLocaleString();
   document.getElementById('ordersList').innerHTML=html || '<tr><td colspan="5">No orders</td></tr>';
 }
-
-// LOAD PRODUCTS - ONLY OWN PRODUCTS
 async function loadProducts() {
   const snap = await getDocs(collection(db, "products"));
   let count=0, html='';
-  snap.forEach(d => {
-    const p = d.data();
-    if(p.sellerId === currentUser.uid){ // filter by seller
-      count++;
-      html += `<tr>
-        <td><img src="${p.image}" width="50"></td>
-        <td>${p.name}</td>
-        <td>₹${p.price}</td>
-        <td>${p.category}</td>
-        <td>${p.district}</td>
-        <td><button class="btn-delete" onclick="deleteProduct('${d.id}')">Delete</button></td>
-      </tr>`;
-    }
-  });
+  snap.forEach(d => { const p = d.data(); if(p.sellerId === currentUser.uid){
+    count++;
+    html += `<tr><td><img src="${p.images[0]}" width="50"></td><td>${p.name}</td><td>₹${p.customerPrice}</td><td>${p.categoryId}</td><td>${p.district}</td><td><button class="btn-delete" onclick="deleteProduct('${d.id}')">Delete</button></td></tr>`;
+  }});
   document.getElementById('totalProducts').innerText=count;
   document.getElementById('productsList').innerHTML=html || '<tr><td colspan="6">No products yet. Add one!</td></tr>';
-}
-
-// ADD PRODUCT - WITH SELLERID
-window.addProduct = async function(e){
-  e.preventDefault();
-  const product = {
-    name: pName.value, image: pImage.value, price: Number(pPrice.value), 
-    oldPrice: Number(pOldPrice.value)||0, discount: Number(pDiscount.value)||0,
-    category: pCategory.value, subcategory: pSubcategory.value, 
-    district: pDistrict.value, description: pDesc.value, 
-    sellerId: currentUser.uid, // <-- key line
-    createdAt: serverTimestamp()
-  };
-  await addDoc(collection(db, "products"), product);
-  alert('Product Added Successfully!');
-  document.getElementById('addProductForm').reset();
-  loadProducts();
-  openTab('products');
-}
-
-// DELETE PRODUCT
-window.deleteProduct = async function(id){
-  if(confirm('Delete this product?')){
-    await deleteDoc(doc(db, "products", id));
-    loadProducts();
-  }
 }
 </script>
 </body>
