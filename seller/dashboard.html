@@ -22,7 +22,6 @@
   .btn-save{padding:12px 30px; background:#388e3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:16px; margin-top:15px}
   .btn-logout{background:#d32f2f; color:#fff; padding:8px 15px; border:none; border-radius:4px; cursor:pointer; float:right}
   .btn-delete{background:#d32f2f; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer}
-  .btn-add{background:#2874f0; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer}
   .img-preview{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap}
   .img-preview img{width:100px; height:100px; object-fit:cover; border:1px solid #ddd; border-radius:4px}
   .size-grid,.color-grid{display:flex; gap:10px; flex-wrap:wrap; margin-top:8px}
@@ -72,20 +71,31 @@
         <div class="form-grid">
           <div class="form-group"><label>Product Name *</label><input id="pName" required></div>
 
+          <!-- MANUAL CATEGORY INPUT -->
           <div class="form-group">
             <label>Category *</label>
-            <div style="display:flex; gap:5px">
-              <select id="pCategory" onchange="loadSubCat()" required><option value="">Select</option></select>
-              <button type="button" class="btn-add" onclick="addNewCategory()">+New</button>
-            </div>
+            <input id="pCategory" list="categoryList" placeholder="Type or Select" required>
+            <datalist id="categoryList">
+              <option value="Men">
+              <option value="Women">
+              <option value="Kids">
+              <option value="Electronics">
+              <option value="Home">
+              <option value="Beauty">
+            </datalist>
           </div>
 
           <div class="form-group">
             <label>Sub Category *</label>
-            <div style="display:flex; gap:5px">
-              <select id="pSubcategory" required><option value="">Select Category First</option></select>
-              <button type="button" class="btn-add" onclick="addNewSubCategory()">+New</button>
-            </div>
+            <input id="pSubcategory" list="subCategoryList" placeholder="Type or Select" required>
+            <datalist id="subCategoryList">
+              <option value="Shirts">
+              <option value="T-Shirts">
+              <option value="Jeans">
+              <option value="Saree">
+              <option value="Kurtis">
+              <option value="Mobiles">
+            </datalist>
           </div>
 
           <div class="form-group"><label>District *</label>
@@ -119,7 +129,7 @@
           <div class="size-grid" id="sizeGrid"></div>
           <div style="display:flex; gap:5px; margin-top:8px">
             <input id="extraSize" placeholder="Add custom size like 38">
-            <button type="button" class="btn-add" onclick="addExtraSize()">+ Add Size</button>
+            <button type="button" class="btn-add" style="background:#2874f0; color:#fff; padding:6px 10px; border:none; border-radius:4px" onclick="addExtraSize()">+ Add Size</button>
           </div>
         </div>
 
@@ -134,7 +144,7 @@
           <div style="display:flex; gap:5px; margin-top:8px; align-items:center">
             <input type="color" id="extraColor" value="#ff0000">
             <input id="colorName" placeholder="Color Name e.g. Maroon">
-            <button type="button" class="btn-add" onclick="addExtraColor()">+ Add Color</button>
+            <button type="button" style="background:#2874f0; color:#fff; padding:6px 10px; border:none; border-radius:4px" onclick="addExtraColor()">+ Add Color</button>
           </div>
         </div>
 
@@ -167,7 +177,7 @@ onAuthStateChanged(auth, (user) => {
   if (!user) window.location.href = 'login.html';
   else {
     currentUser = user;
-    loadOrders(); loadProducts(); loadCategories(); renderSizeColor();
+    loadOrders(); loadProducts(); renderSizeColor();
   }
 });
 
@@ -184,9 +194,8 @@ window.calcPrice = () => {
   document.getElementById('customerPrice').innerText = price + 20;
 }
 
-// FIX 2: ALLOW 4 IMAGES + SHOW ALL PREVIEWS
 window.previewImages = (e) => {
-  uploadedImages = Array.from(e.target.files).slice(0,4); // max 4
+  uploadedImages = Array.from(e.target.files).slice(0,4);
   const box = document.getElementById('imgPreview'); box.innerHTML='';
   uploadedImages.forEach(f => {
     const reader = new FileReader();
@@ -220,7 +229,6 @@ window.toggleColor = (n,c, el) => {
   selectedColors.find(x=>x.name==n)? selectedColors=selectedColors.filter(x=>x.name!=n) : selectedColors.push({name:n,code:c});
 }
 
-// FIX 3: READ COLOR PICKER VALUE
 window.addExtraColor = () => {
   const code = document.getElementById('extraColor').value;
   const name = document.getElementById('colorName').value.trim();
@@ -248,29 +256,6 @@ function updateSizeTable(){
   })
 }
 
-// FIX 1: REFRESH CATEGORIES AFTER ADD
-async function loadCategories(){
-  const snap = await getDocs(collection(db, "categories"));
-  const sel = document.getElementById('pCategory'); sel.innerHTML='<option value="">Select</option>';
-  snap.forEach(d=>{ if(!d.data().parent) sel.innerHTML += `<option value="${d.id}">${d.data().name}</option>` });
-}
-window.loadSubCat = async () => {
-  const catId = document.getElementById('pCategory').value;
-  const snap = await getDocs(collection(db, "categories"));
-  const sel = document.getElementById('pSubcategory'); sel.innerHTML='<option value="">Select</option>';
-  snap.forEach(d=>{ if(d.data().parent==catId) sel.innerHTML += `<option value="${d.id}">${d.data().name}</option>` });
-}
-window.addNewCategory = async () => {
-  const name = prompt("New Category Name:");
-  if(name) { await addDoc(collection(db,"categories"),{name,parent:null}); await loadCategories(); } // await added
-}
-window.addNewSubCategory = async () => {
-  const parent = document.getElementById('pCategory').value;
-  if(!parent) return alert("Select Category first");
-  const name = prompt("New SubCategory Name:");
-  if(name) { await addDoc(collection(db,"categories"),{name,parent}); await loadSubCat(); } // await added
-}
-
 async function uploadAllImages(){
   const urls = [];
   for(let i=0; i<uploadedImages.length; i++){
@@ -295,8 +280,10 @@ window.addProduct = async function(e){
   const product = {
     name: pName.value, images: imageUrls,
     price: Number(pPrice.value), customerPrice: Number(pPrice.value)+20,
-    oldPrice: Number(pOldPrice.value)||0, categoryId: pCategory.value,
-    subcategoryId: pSubcategory.value, district: pDistrict.value,
+    oldPrice: Number(pOldPrice.value)||0, 
+    category: pCategory.value,  // CHANGED: now string
+    subcategory: pSubcategory.value, // CHANGED: now string
+    district: pDistrict.value,
     description: pDesc.value, sizes: selectedSizes, colors: selectedColors,
     measurements: measurements, sellerId: currentUser.uid, createdAt: serverTimestamp()
   };
@@ -324,7 +311,7 @@ async function loadProducts() {
   let count=0, html='';
   snap.forEach(d => { const p = d.data(); if(p.sellerId === currentUser.uid){
     count++;
-    html += `<tr><td><img src="${p.images[0]}" width="50"></td><td>${p.name}</td><td>₹${p.customerPrice}</td><td>${p.categoryId}</td><td>${p.district}</td><td><button class="btn-delete" onclick="deleteProduct('${d.id}')">Delete</button></td></tr>`;
+    html += `<tr><td><img src="${p.images[0]}" width="50"></td><td>${p.name}</td><td>₹${p.customerPrice}</td><td>${p.category}</td><td>${p.district}</td><td><button class="btn-delete" onclick="deleteProduct('${d.id}')">Delete</button></td></tr>`;
   }});
   document.getElementById('totalProducts').innerText=count;
   document.getElementById('productsList').innerHTML=html || '<tr><td colspan="6">No products yet. Add one!</td></tr>';
