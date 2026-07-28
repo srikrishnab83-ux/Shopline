@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Orders - Shopline Kerala</title>
+  <style>
+    body{font-family:Arial; background:#f5f5f5; padding:20px}
+    h1{background:#2874f0; color:#fff; padding:15px; border-radius:4px}
+    .order-box{background:#fff; padding:15px; margin:15px 0; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1)}
+    .order-header{display:flex; justify-content:space-between; border-bottom:1px solid #eee; padding-bottom:10px}
+    .status{padding:5px 10px; border-radius:4px; font-weight:bold}
+    .status.New{ background:#fff3cd; color:#856404 }
+    .item{padding:8px 0; border-bottom:1px dashed #eee}
+    .address{margin-top:10px; background:#f9f9f9; padding:10px; border-radius:4px}
+    .total{font-size:18px; font-weight:bold; color:green; text-align:right}
+  </style>
+</head>
+<body>
+  <h1>📦 Shopline Kerala - All Orders</h1>
+  <div id="ordersList">Loading orders...</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+async function loadOrders() {
+  const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
+  const querySnapshot = await getDocs(q);
+  const ordersList = document.getElementById('ordersList');
+  
+  if(querySnapshot.empty){
+    ordersList.innerHTML = "<p>No orders yet</p>";
+    return;
+  }
+  
+  ordersList.innerHTML = '';
+  querySnapshot.forEach((doc) => {
+    const o = doc.data();
+    const date = o.createdAt.toDate().toLocaleString("en-IN");
+    
+    let itemsHTML = '';
+    o.items.forEach(item => {
+      itemsHTML += `<div class="item">${item.name} - Qty:${item.qty} - Size:${item.size} - Color:${item.color} - ₹${item.price}</div>`;
+    });
+    
+    ordersList.innerHTML += `
+      <div class="order-box">
+        <div class="order-header">
+          <div><b>Order ID:</b> ${doc.id}<br><b>Date:</b> ${date}</div>
+          <div><span class="status ${o.status}">${o.status}</span><br><b>Total:</b> ₹${o.finalTotal}</div>
+        </div>
+        <div class="address">
+          <b>Customer:</b> ${o.customer.name} | ${o.customer.phone}<br>
+          <b>Address:</b> ${o.customer.street}, ${o.customer.district}, ${o.customer.state} - ${o.customer.pincode}<br>
+          <b>Landmark:</b> ${o.customer.landmark || 'NA'}
+        </div>
+        <h4>Items:</h4>
+        ${itemsHTML}
+        <p class="total">Product: ₹${o.productTotal} + Shipping: ₹${o.shippingCharge} = ₹${o.finalTotal}</p>
+      </div>
+    `;
+  });
+}
+loadOrders();
+</script>
+</body>
+</html>
