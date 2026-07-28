@@ -7,29 +7,30 @@
     body{font-family:Arial; background:#f5f5f5; padding:20px}
     h1{background:#2874f0; color:#fff; padding:15px; border-radius:4px}
     .order-box{background:#fff; padding:15px; margin:15px 0; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1)}
-    .order-header{display:flex; justify-content:space-between; border-bottom:1px solid #eee; padding-bottom:10px}
-    .status{padding:5px 10px; border-radius:4px; font-weight:bold}
-    .status.New{ background:#fff3cd; color:#856404 }
+    .order-header{display:flex; justify-content:space-between; border-bottom:1px solid #eee; padding-bottom:10px; flex-wrap:wrap}
+    .status{padding:5px 10px; border-radius:4px; font-weight:bold; background:#fff3cd; color:#856404}
     .item{padding:8px 0; border-bottom:1px dashed #eee}
-    .address{margin-top:10px; background:#f9f9f9; padding:10px; border-radius:4px}
+    .address{margin-top:10px; background:#f9f9f9; padding:10px; border-radius:4px; font-size:14px}
     .total{font-size:18px; font-weight:bold; color:green; text-align:right}
+    .refresh-btn{background:#fb641b; color:#fff; border:none; padding:10px 20px; border-radius:4px; cursor:pointer; margin-bottom:10px}
   </style>
 </head>
 <body>
   <h1>📦 Shopline Kerala - All Orders</h1>
+  <button class="refresh-btn" onclick="loadOrders()">🔄 Refresh Orders</button>
   <div id="ordersList">Loading orders...</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 async function loadOrders() {
-  const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
-  const querySnapshot = await getDocs(q);
+  document.getElementById('ordersList').innerHTML = "Loading orders...";
+  const querySnapshot = await getDocs(collection(db, "orders")); // No orderBy
   const ordersList = document.getElementById('ordersList');
   
   if(querySnapshot.empty){
@@ -37,28 +38,35 @@ async function loadOrders() {
     return;
   }
   
-  ordersList.innerHTML = '';
+  let orders = [];
   querySnapshot.forEach((doc) => {
-    const o = doc.data();
-    const date = o.createdAt.toDate().toLocaleString("en-IN");
+    orders.push({id: doc.id, ...doc.data()});
+  });
+  
+  // Sort manually - newest first. Handles missing createdAt
+  orders.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+  
+  ordersList.innerHTML = '';
+  orders.forEach((o) => {
+    const date = o.createdAt ? o.createdAt.toDate().toLocaleString("en-IN") : "Just Now";
     
     let itemsHTML = '';
     o.items.forEach(item => {
-      itemsHTML += `<div class="item">${item.name} - Qty:${item.qty} - Size:${item.size} - Color:${item.color} - ₹${item.price}</div>`;
+      itemsHTML += `<div class="item"><b>${item.name}</b> - Qty:${item.qty} - Size:${item.size} - Color:${item.color} - <b>₹${item.price}</b></div>`;
     });
     
     ordersList.innerHTML += `
       <div class="order-box">
         <div class="order-header">
-          <div><b>Order ID:</b> ${doc.id}<br><b>Date:</b> ${date}</div>
-          <div><span class="status ${o.status}">${o.status}</span><br><b>Total:</b> ₹${o.finalTotal}</div>
+          <div><b>Order ID:</b> ${o.id}<br><b>Date:</b> ${date}</div>
+          <div><span class="status">${o.status || 'New Order'}</span><br><b>Total:</b> ₹${o.finalTotal}</div>
         </div>
         <div class="address">
           <b>Customer:</b> ${o.customer.name} | ${o.customer.phone}<br>
           <b>Address:</b> ${o.customer.street}, ${o.customer.district}, ${o.customer.state} - ${o.customer.pincode}<br>
           <b>Landmark:</b> ${o.customer.landmark || 'NA'}
         </div>
-        <h4>Items:</h4>
+        <h4 style="margin-top:10px">Items:</h4>
         ${itemsHTML}
         <p class="total">Product: ₹${o.productTotal} + Shipping: ₹${o.shippingCharge} = ₹${o.finalTotal}</p>
       </div>
