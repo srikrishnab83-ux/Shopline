@@ -3,55 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <title>Seller Dashboard - Shopline Kerala</title>
-  <link rel="stylesheet" href="../css/style.css">
   <style>
-   .dashboard{max-width:1200px; margin:20px auto; padding:20px}
-   .tabs{display:flex; gap:10px; margin-bottom:20px; border-bottom:2px solid #eee; flex-wrap:wrap}
-   .tab-btn{padding:12px 20px; border:none; background:none; cursor:pointer; font-size:16px; font-weight:bold}
-   .tab-btn.active{border-bottom:3px solid #2874f0; color:#2874f0}
-   .tab-content{display:none}
-   .tab-content.active{display:block}
-   .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:15px; margin-bottom:30px}
-   .stat-card{background:#2874f0; color:#fff; padding:20px; border-radius:8px; text-align:center}
-   .orders-table,.products-table{width:100%; background:#fff; border-radius:8px; overflow:hidden; margin-top:15px; font-size:14px}
-   .orders-table th,.products-table th{background:#f5f5f5; padding:12px; text-align:left}
-   .orders-table td,.products-table td{padding:12px; border-bottom:1px solid #eee}
-   .form-grid{display:grid; grid-template-columns:1fr 1fr; gap:15px}
-   .form-group{display:flex; flex-direction:column}
-   .form-group label{font-weight:bold; margin-bottom:5px; font-size:14px}
-   .form-group input,.form-group select,.form-group textarea{padding:10px; border:1px solid #ddd; border-radius:4px}
-   .btn-save{padding:12px 30px; background:#388e3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:16px; margin-top:15px}
-   .btn-logout{background:#d32f2f; color:#fff; padding:8px 15px; border:none; border-radius:4px; cursor:pointer; float:right}
-   .btn-delete{background:#d32f2f; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer}
-   .btn-add{background:#2874f0; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer}
-
-    /* NEW FEATURES CSS */
-   .img-preview{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap}
-   .img-preview img{width:100px; height:100px; object-fit:cover; border:1px solid #ddd; border-radius:4px}
-   .size-grid,.color-grid{display:flex; gap:10px; flex-wrap:wrap; margin-top:8px}
-   .chip{padding:8px 12px; border:2px solid #ddd; border-radius:20px; cursor:pointer; background:#fff}
-   .chip.active{border-color:#2874f0; background:#e3f2fd; color:#2874f0; font-weight:bold}
-   .variant-table{width:100%; margin-top:10px; background:#fff; border:1px solid #ddd}
-   .variant-table th{background:#f5f5f5; padding:8px; font-size:12px}
-   .variant-table td{padding:6px}
-   .note{background:#fff3cd; padding:10px; border-left:4px solid #ffc107; margin:15px 0; font-size:13px}
-   .price-box{background:#e8f5e9; padding:15px; border-radius:8px; margin-top:10px}
+  .dashboard{max-width:1200px; margin:20px auto; padding:20px}
+  .tabs{display:flex; gap:10px; margin-bottom:20px; border-bottom:2px solid #eee; flex-wrap:wrap}
+  .tab-btn{padding:12px 20px; border:none; background:none; cursor:pointer; font-size:16px; font-weight:bold}
+  .tab-btn.active{border-bottom:3px solid #2874f0; color:#2874f0}
+  .tab-content{display:none}
+  .tab-content.active{display:block}
+  .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:15px; margin-bottom:30px}
+  .stat-card{background:#2874f0; color:#fff; padding:20px; border-radius:8px; text-align:center}
+  .orders-table,.products-table{width:100%; background:#fff; border-radius:8px; overflow:hidden; margin-top:15px; font-size:14px}
+  .orders-table th,.products-table th{background:#f5f5f5; padding:12px; text-align:left}
+  .orders-table td,.products-table td{padding:12px; border-bottom:1px solid #eee}
+  .form-grid{display:grid; grid-template-columns:1fr 1fr; gap:15px}
+  .form-group{display:flex; flex-direction:column}
+  .form-group label{font-weight:bold; margin-bottom:5px; font-size:14px}
+  .form-group input,.form-group select,.form-group textarea{padding:10px; border:1px solid #ddd; border-radius:4px}
+  .btn-save{padding:12px 30px; background:#388e3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:16px; margin-top:15px}
+  .btn-logout{background:#d32f2f; color:#fff; padding:8px 15px; border:none; border-radius:4px; cursor:pointer; float:right}
+  .btn-delete{background:#d32f2f; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer}
+  .btn-add{background:#2874f0; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer}
+  .img-preview{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap}
+  .img-preview img{width:100px; height:100px; object-fit:cover; border:1px solid #ddd; border-radius:4px}
+  .size-grid,.color-grid{display:flex; gap:10px; flex-wrap:wrap; margin-top:8px}
+  .chip{padding:8px 12px; border:2px solid #ddd; border-radius:20px; cursor:pointer; background:#fff}
+  .chip.active{border-color:#2874f0; background:#e3f2fd; color:#2874f0; font-weight:bold}
+  .variant-table{width:100%; margin-top:10px; background:#fff; border:1px solid #ddd}
+  .variant-table th{background:#f5f5f5; padding:8px; font-size:12px}
+  .variant-table td{padding:6px}
+  .note{background:#fff3cd; padding:10px; border-left:4px solid #ffc107; margin:15px 0; font-size:13px}
+  .price-box{background:#e8f5e9; padding:15px; border-radius:8px; margin-top:10px}
   </style>
 </head>
 <body>
-  <div class="top-bar"><p>Seller Panel - Shopline Kerala | Payment: Delivered + 2-3 days + Return period over</p></div>
-  <header class="navbar">
-    <div class="container">
-      <div class="logo">Shopline<span>Kerala</span> Seller</div>
+  <div class="top-bar" style="background:#232f3e; color:#fff; padding:8px; text-align:center; font-size:12px">Seller Panel - Shopline Kerala | Payment: Delivered + 2-3 days + Return period over</div>
+  <header class="navbar" style="background:#2874f0; color:#fff; padding:15px">
+    <div style="max-width:1200px; margin:auto; display:flex; justify-content:space-between">
+      <div class="logo">Shopline<span style="color:#ffe500">Kerala</span> Seller</div>
       <button class="btn-logout" onclick="logout()">Logout</button>
     </div>
   </header>
 
   <div class="dashboard">
     <div class="tabs">
-      <button class="tab-btn active" onclick="openTab('orders')">📦 Orders</button>
-      <button class="tab-btn" onclick="openTab('products')">🛍️ My Products</button>
-      <button class="tab-btn" onclick="openTab('add')">➕ Add Product</button>
+      <button class="tab-btn active" onclick="openTab('orders', event)">📦 Orders</button>
+      <button class="tab-btn" onclick="openTab('products', event)">🛍️ My Products</button>
+      <button class="tab-btn" onclick="openTab('add', event)">➕ Add Product</button>
     </div>
 
     <!-- ORDERS TAB -->
@@ -63,13 +60,13 @@
         <div class="stat-card" style="background:#388e3c"><h3 id="totalRevenue">₹0</h3><p>Revenue</p></div>
         <div class="stat-card" style="background:#9c27b0"><h3 id="totalProducts">0</h3><p>My Products</p></div>
       </div>
-      <table class="orders-table"><thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Amount</th><th>Status</th></tr></thead><tbody id="ordersList"></tbody></table>
+      <table class="orders-table"><thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Amount</th><th>Status</th></tr></thead><tbody id="ordersList"><tr><td colspan="5">Loading...</td></tr></tbody></table>
     </div>
 
     <!-- PRODUCTS TAB -->
     <div id="products" class="tab-content">
       <h2>My Products</h2>
-      <table class="products-table"><thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Category</th><th>District</th><th>Action</th></tr></thead><tbody id="productsList"></tbody></table>
+      <table class="products-table"><thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Category</th><th>District</th><th>Action</th></tr></thead><tbody id="productsList"><tr><td colspan="6">Loading...</td></tr></tbody></table>
     </div>
 
     <!-- ADD PRODUCT TAB -->
@@ -108,7 +105,6 @@
           </div>
         </div>
 
-        <!-- PRICE WITH CONVENIENCE FEE -->
         <div class="price-box">
           <h4>Price Details</h4>
           <div class="form-grid">
@@ -118,14 +114,12 @@
           <p>Platform Fee: ₹20 | <b>Customer Pays: ₹<span id="customerPrice">0</span></b></p>
         </div>
 
-        <!-- IMAGE UPLOAD 1-4 -->
         <div class="form-group">
           <label>Product Images * Upload 1 to 4 images</label>
           <input type="file" id="pImages" accept="image/*" multiple onchange="previewImages(event)">
           <div class="img-preview" id="imgPreview"></div>
         </div>
 
-        <!-- SIZE SELECTOR -->
         <div class="form-group">
           <label>Sizes</label>
           <div class="size-grid" id="sizeGrid"></div>
@@ -135,13 +129,11 @@
           </div>
         </div>
 
-        <!-- SIZE MEASUREMENTS TABLE -->
         <div id="sizeMeasureBox" style="display:none">
           <h4>Size Measurements - for Fashion</h4>
           <table class="variant-table" id="sizeTable"><thead><tr><th>Size</th><th>Length</th><th>Width</th><th>Bottom</th></tr></thead><tbody></tbody></table>
         </div>
 
-        <!-- COLOR SELECTOR -->
         <div class="form-group">
           <label>Colors</label>
           <div class="color-grid" id="colorGrid"></div>
@@ -161,7 +153,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc, orderBy, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, orderBy, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart", storageBucket: "willwin-cart.appspot.com"};
@@ -175,20 +167,28 @@ let selectedColors = [];
 let uploadedImages = [];
 
 const defaultSizes = ['XS','S','M','L','XL','XXL','XXXL'];
-const defaultColors = [{name:'Red',code:'#FF0000'},{name:'Blue',code:'#0000FF'},{name:'Black',code:'#000000'},{name:'White',code:'#FFFFFF'},{name:'Green',code:'#008000'},{name:'Yellow',code:'#FFFF00'}];
+const defaultColors = [{name:'Red',code:'#FF0000'},{name:'Blue',code:'#0000FF'},{name:'Black',code:'#000'},{name:'White',code:'#FFFFFF'},{name:'Green',code:'#008000'},{name:'Yellow',code:'#FFFF00'}];
 
 // LOGIN CHECK
 onAuthStateChanged(auth, (user) => {
   if (!user) window.location.href = 'login.html';
-  else { currentUser = user; loadOrders(); loadProducts(); loadCategories(); renderSizeColor(); }
+  else {
+    currentUser = user;
+    loadOrders();
+    loadProducts();
+    loadCategories().catch(e=>console.log("No categories yet"));
+    renderSizeColor();
+  }
 });
 
 window.logout = () => signOut(auth).then(() => window.location.href = 'login.html');
-window.openTab = (tab) => {
+
+// FIX 1: PASS EVENT
+window.openTab = (tab, evt) => {
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById(tab).classList.add('active');
-  event.target.classList.add('active');
+  evt.target.classList.add('active');
 }
 
 // PRICE CALC
@@ -211,20 +211,21 @@ window.previewImages = (e) => {
 // SIZE + COLOR RENDER
 function renderSizeColor(){
   const sizeGrid = document.getElementById('sizeGrid'); sizeGrid.innerHTML='';
-  defaultSizes.forEach(s => sizeGrid.innerHTML += `<div class="chip" onclick="toggleSize('${s}')">${s}</div>`);
+  defaultSizes.forEach(s => sizeGrid.innerHTML += `<div class="chip" onclick="toggleSize('${s}', this)">${s}</div>`);
 
   const colorGrid = document.getElementById('colorGrid'); colorGrid.innerHTML='';
-  defaultColors.forEach(c => colorGrid.innerHTML += `<div class="chip" style="background:${c.code}; color:#fff" onclick="toggleColor('${c.name}','${c.code}')">${c.name}</div>`);
+  defaultColors.forEach(c => colorGrid.innerHTML += `<div class="chip" style="background:${c.code}; color:#fff" onclick="toggleColor('${c.name}','${c.code}', this)">${c.name}</div>`);
 }
 
-window.toggleSize = (s) => {
+window.toggleSize = (s, el) => {
+  el.classList.toggle('active');
   selectedSizes.includes(s)? selectedSizes=selectedSizes.filter(x=>x!=s) : selectedSizes.push(s);
-  renderSizeColor(); updateSizeTable();
+  updateSizeTable();
   document.getElementById('sizeMeasureBox').style.display = selectedSizes.length>0? 'block' : 'none';
 }
-window.toggleColor = (n,c) => {
+window.toggleColor = (n,c, el) => {
+  el.classList.toggle('active');
   selectedColors.find(x=>x.name==n)? selectedColors=selectedColors.filter(x=>x.name!=n) : selectedColors.push({name:n,code:c});
-  renderSizeColor();
 }
 window.addExtraSize = () => {
   const val = document.getElementById('extraSize').value.toUpperCase();
@@ -248,11 +249,13 @@ function updateSizeTable(){
   })
 }
 
-// CATEGORY LOAD - FILTERED BY PARENT
+// CATEGORY LOAD
 async function loadCategories(){
-  const snap = await getDocs(collection(db, "categories"));
-  const sel = document.getElementById('pCategory'); sel.innerHTML='<option value="">Select</option>';
-  snap.forEach(d=>{ if(!d.data().parent) sel.innerHTML += `<option value="${d.id}">${d.data().name}</option>` });
+  try{
+    const snap = await getDocs(collection(db, "categories"));
+    const sel = document.getElementById('pCategory'); sel.innerHTML='<option value="">Select</option>';
+    snap.forEach(d=>{ if(!d.data().parent) sel.innerHTML += `<option value="${d.id}">${d.data().name}</option>` });
+  }catch(e){ console.log("Create categories collection first") }
 }
 window.loadSubCat = async () => {
   const catId = document.getElementById('pCategory').value;
@@ -262,16 +265,16 @@ window.loadSubCat = async () => {
 }
 window.addNewCategory = async () => {
   const name = prompt("New Category Name:");
-  if(name) await addDoc(collection(db,"categories"),{name,parent:null}); loadCategories();
+  if(name) { await addDoc(collection(db,"categories"),{name,parent:null}); loadCategories(); }
 }
 window.addNewSubCategory = async () => {
   const parent = document.getElementById('pCategory').value;
   if(!parent) return alert("Select Category first");
   const name = prompt("New SubCategory Name:");
-  if(name) await addDoc(collection(db,"categories"),{name,parent}); loadSubCat();
+  if(name) { await addDoc(collection(db,"categories"),{name,parent}); loadSubCat(); }
 }
 
-// UPLOAD IMAGES TO STORAGE
+// UPLOAD IMAGES
 async function uploadAllImages(){
   const urls = [];
   for(let i=0; i<uploadedImages.length; i++){
@@ -295,34 +298,21 @@ window.addProduct = async function(e){
   })
 
   const product = {
-    name: pName.value,
-    images: imageUrls, // array of 1-4 images
-    price: Number(pPrice.value),
-    customerPrice: Number(pPrice.value)+20, // +20 convenience fee
-    oldPrice: Number(pOldPrice.value)||0,
-    categoryId: pCategory.value,
-    subcategoryId: pSubcategory.value,
-    district: pDistrict.value,
-    description: pDesc.value,
-    sizes: selectedSizes,
-    colors: selectedColors,
-    measurements: measurements,
-    sellerId: currentUser.uid,
-    createdAt: serverTimestamp()
+    name: pName.value, images: imageUrls,
+    price: Number(pPrice.value), customerPrice: Number(pPrice.value)+20,
+    oldPrice: Number(pOldPrice.value)||0, categoryId: pCategory.value,
+    subcategoryId: pSubcategory.value, district: pDistrict.value,
+    description: pDesc.value, sizes: selectedSizes, colors: selectedColors,
+    measurements: measurements, sellerId: currentUser.uid, createdAt: serverTimestamp()
   };
   await addDoc(collection(db, "products"), product);
   alert('Product Added Successfully!');
   document.getElementById('addProductForm').reset();
   selectedSizes=[]; selectedColors=[]; uploadedImages=[]; document.getElementById('imgPreview').innerHTML='';
-  loadProducts(); openTab('products');
+  loadProducts(); openTab('products', event);
 }
 
-// LOAD ORDERS + PRODUCTS same as before with sellerId filter
-async function loadOrders() { /* same code as your old file */ }
-async function loadProducts() { /* same code as your old file */ }
-window.deleteProduct = async function(id){ if(confirm('Delete?')){ await deleteDoc(doc(db, "products", id)); loadProducts(); }}
-
-// PASTE YOUR OLD loadOrders and loadProducts FUNCTIONS HERE
+// LOAD DATA
 async function loadOrders() {
   const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
   const snap = await getDocs(q);
@@ -345,6 +335,7 @@ async function loadProducts() {
   document.getElementById('totalProducts').innerText=count;
   document.getElementById('productsList').innerHTML=html || '<tr><td colspan="6">No products yet. Add one!</td></tr>';
 }
+window.deleteProduct = async function(id){ if(confirm('Delete?')){ await deleteDoc(doc(db, "products", id)); loadProducts(); }}
 </script>
 </body>
 </html>
