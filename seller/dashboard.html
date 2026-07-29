@@ -6,38 +6,39 @@
   <script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>
   <link rel="stylesheet" href="../css/style.css">
   <style>
- .dashboard{max-width:1200px; margin:20px auto; padding:20px}
- .tabs{display:flex; gap:10px; margin-bottom:20px; border-bottom:2px solid #eee; flex-wrap:wrap}
- .tab-btn{padding:12px 20px; border:none; background:none; cursor:pointer; font-size:16px; font-weight:bold}
- .tab-btn.active{border-bottom:3px solid #2874f0; color:#2874f0}
- .tab-content{display:none}
- .tab-content.active{display:block}
- .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:15px; margin-bottom:30px}
- .stat-card{background:#2874f0; color:#fff; padding:20px; border-radius:8px; text-align:center}
- .orders-table,.products-table{width:100%; background:#fff; border-radius:8px; overflow:hidden; margin-top:15px; font-size:14px}
- .orders-table th,.products-table th{background:#f5f5f5; padding:12px; text-align:left}
- .orders-table td,.products-table td{padding:12px; border-bottom:1px solid #eee}
- .form-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px}
- .form-group{display:flex; flex-direction:column}
- .form-group label{font-weight:bold; margin-bottom:5px; font-size:14px}
- .form-group input,.form-group select,.form-group textarea{padding:10px; border:1px solid #ddd; border-radius:4px}
- .btn-save{padding:12px 30px; background:#388e3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:16px; margin-top:15px}
- .btn-logout{background:#d32f2f; color:#fff; padding:8px 15px; border:none; border-radius:4px; cursor:pointer;}
- .btn-back{background:#555; color:#fff; padding:8px 15px; border:none; border-radius:4px; cursor:pointer; margin-right:8px}
- .btn-delete{background:#d32f2f; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer}
- .btn-add{background:#2874f0; color:#fff; padding:8px 12px; border:none; border-radius:4px; cursor:pointer}
- .btn-upload{padding:10px 20px; background:#2874f0; color:#fff; border:none; border-radius:4px; cursor:pointer; font-weight:bold; width:100%}
+.dashboard{max-width:1200px; margin:20px auto; padding:20px}
+.tabs{display:flex; gap:10px; margin-bottom:20px; border-bottom:2px solid #eee; flex-wrap:wrap}
+.tab-btn{padding:12px 20px; border:none; background:none; cursor:pointer; font-size:16px; font-weight:bold}
+.tab-btn.active{border-bottom:3px solid #2874f0; color:#2874f0}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.stats{display:grid; grid-template-columns:repeat(4,1fr); gap:15px; margin-bottom:30px}
+.stat-card{background:#2874f0; color:#fff; padding:20px; border-radius:8px; text-align:center}
+.orders-table,.products-table{width:100%; background:#fff; border-radius:8px; overflow:hidden; margin-top:15px; font-size:14px}
+.orders-table th,.products-table th{background:#f5f5f5; padding:12px; text-align:left}
+.orders-table td,.products-table td{padding:12px; border-bottom:1px solid #eee}
+.form-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px}
+.form-group{display:flex; flex-direction:column}
+.form-group label{font-weight:bold; margin-bottom:5px; font-size:14px}
+.form-group input,.form-group select,.form-group textarea{padding:10px; border:1px solid #ddd; border-radius:4px}
+.btn-save{padding:12px 30px; background:#388e3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:16px; margin-top:15px}
+.btn-logout{background:#d32f2f; color:#fff; padding:8px 15px; border:none; border-radius:4px; cursor:pointer;}
+.btn-back{background:#555; color:#fff; padding:8px 15px; border:none; border-radius:4px; cursor:pointer; margin-right:8px}
+.btn-delete{background:#d32f2f; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer}
+.btn-add{background:#2874f0; color:#fff; padding:8px 12px; border:none; border-radius:4px; cursor:pointer}
+.btn-upload{padding:10px 20px; background:#2874f0; color:#fff; border:none; border-radius:4px; cursor:pointer; font-weight:bold; width:100%}
 
- .img-preview{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap}
- .img-box{position:relative}
- .img-box img{width:100px; height:100px; object-fit:cover; border:1px solid #ddd; border-radius:4px}
- .img-box span{position:absolute; top:-8px; right:-8px; background:red; color:#fff; cursor:pointer; padding:2px 6px; border-radius:50%; font-size:12px}
- .size-grid,.color-grid{display:flex; gap:10px; flex-wrap:wrap; margin-top:8px}
- .chip{padding:8px 12px; border:2px solid #ddd; border-radius:20px; cursor:pointer; background:#fff; display:flex; align-items:center; gap:5px}
- .chip.active{border-color:#2874f0; background:#e3f2fd; color:#2874f0; font-weight:bold}
- .note{background:#fff3cd; padding:10px; border-left:4px solid #ffc107; margin:15px 0; font-size:13px}
- .price-box{background:#e8f5e9; padding:15px; border-radius:8px; margin-top:10px}
- .section-title{margin-top:20px; margin-bottom:10px; color:#2874f0; border-bottom:1px solid #ddd; padding-bottom:5px}
+.img-preview{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap}
+.img-box{position:relative}
+.img-box img{width:100px; height:100px; object-fit:cover; border:1px solid #ddd; border-radius:4px}
+.img-box span{position:absolute; top:-8px; right:-8px; background:red; color:#fff; cursor:pointer; padding:2px 6px; border-radius:50%; font-size:12px}
+.size-grid,.color-grid{display:flex; gap:10px; flex-wrap:wrap; margin-top:8px}
+.chip{padding:8px 12px; border:2px solid #ddd; border-radius:20px; cursor:pointer; background:#fff; display:flex; align-items:center; gap:5px}
+.chip.active{border-color:#2874f0; background:#e3f2fd; color:#2874f0; font-weight:bold}
+.note{background:#fff3cd; padding:10px; border-left:4px solid #ffc107; margin:15px 0; font-size:13px}
+.price-box{background:#e8f5e9; padding:15px; border-radius:8px; margin-top:10px}
+.section-title{margin-top:20px; margin-bottom:10px; color:#2874f0; border-bottom:1px solid #ddd; padding-bottom:5px}
+ @media(max-width:768px){.form-grid,.stats{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -88,7 +89,21 @@
           <div class="form-group"><label>Product Name *</label><input id="pName" required></div>
           <div class="form-group"><label>Brand</label><input id="pBrand"></div>
           <div class="form-group"><label>Category *</label>
-            <select id="pCategory" onchange="loadSubCat()" required><option value="">Select</option><option>Men</option><option>Women</option><option>Kids</option></select>
+            <select id="pCategory" onchange="loadSubCat()" required>
+              <option value="">Select Category</option>
+              <option>Mobiles</option>
+              <option>Fashion</option>
+              <option>Electronics</option>
+              <option>Home</option>
+              <option>Grocery</option>
+              <option>Beauty</option>
+              <option>Furniture</option>
+              <option>Toys</option>
+              <option>Sports</option>
+              <option>Books</option>
+              <option>Automotive</option>
+              <option>Jewelry</option>
+            </select>
           </div>
           <div class="form-group"><label>Sub Category *</label><select id="pSubcategory" required><option value="">Select Category First</option></select></div>
 
@@ -115,8 +130,6 @@
         </div>
 
         <h3 class="section-title">3. Variants - Size & Color</h3>
-
-        <!-- SIZE ADDER -->
         <div class="form-group">
           <label>Sizes</label>
           <div class="size-grid" id="sizeGrid"></div>
@@ -126,7 +139,6 @@
           </div>
         </div>
 
-        <!-- COLOR ADDER -->
         <div class="form-group">
           <label>Colors</label>
           <div class="color-grid" id="colorGrid"></div>
@@ -163,7 +175,22 @@ let currentUser = null;
 let selectedSizes = [];
 let selectedColors = [];
 let uploadedUrls = [];
-const subCategories = {"Men": ["Shirts", "T-Shirts", "Jeans", "Pants"], "Women": ["Saree", "Kurtis", "Dress", "Tops"], "Kids": ["Frocks", "T-Shirts", "Shorts"]};
+
+// UPDATED: 12 CATEGORIES + 40 SUBCATEGORIES
+const subCategories = {
+  "Mobiles": ["Smartphones", "Feature Phones", "Mobile Accessories", "Tablets", "Power Banks"],
+  "Fashion": ["Men's Wear", "Women's Wear", "Kids Wear", "T-Shirts", "Shirts", "Jeans", "Kurtis", "Sarees", "Dresses", "Footwear", "Bags"],
+  "Electronics": ["TV", "Smart TV", "Laptops", "Headphones", "Speakers", "Camera", "Smart Watch"],
+  "Home": ["Kitchen", "Furniture", "Tables", "Chairs", "Bedding", "Decor", "Mixer Grinder"],
+  "Grocery": ["Rice", "Oil", "Spices", "Snacks", "Beverages", "Fruits & Vegetables", "Dairy"],
+  "Beauty": ["Makeup", "Skincare", "Haircare", "Perfumes", "Men's Grooming"],
+  "Furniture": ["Sofa", "Bed", "Wardrobe", "Dining Table", "Study Table"],
+  "Toys": ["Baby Toys", "Educational Toys", "Dolls", "Action Figures"],
+  "Sports": ["Cricket", "Football", "Gym Equipment", "Yoga", "Cycles"],
+  "Books": ["School Books", "Novels", "Stationery", "Art Supplies"],
+  "Automotive": ["Bike Accessories", "Car Accessories", "Helmets"],
+  "Jewelry": ["Gold Jewelry", "Silver Jewelry", "Bangles", "Earrings"]
+};
 
 // LOGIN CHECK
 auth.onAuthStateChanged(user => {
@@ -185,7 +212,7 @@ function openTab(evt, tab){
 function loadSubCat(){
   const cat = document.getElementById('pCategory').value;
   const sub = document.getElementById('pSubcategory');
-  sub.innerHTML='<option value="">Select</option>';
+  sub.innerHTML='<option value="">Select Subcategory</option>';
   if(subCategories[cat]){ subCategories[cat].forEach(s => sub.innerHTML += `<option>${s}</option>`); }
 }
 
@@ -263,11 +290,11 @@ function addProduct(e){
     document.getElementById('imgPreview').innerHTML='';
     renderSizeColor();
     loadProducts();
-    document.querySelector('.tab-btn:nth-child(2)').click(); // go to products tab
+    document.querySelector('.tab-btn:nth-child(2)').click();
   });
 }
 
-// PASTE YOUR OLD loadOrders and loadProducts HERE
+// LOAD ORDERS + PRODUCTS
 async function loadOrders() {
   const snap = await db.collection("orders").orderBy("createdAt", "desc").get();
   let total=0, newC=0, revenue=0; let html='';
