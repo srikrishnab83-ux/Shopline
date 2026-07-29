@@ -63,31 +63,22 @@
           <select id="pSubcategory" required><option value="">Select Category First</option></select>
         </div>
         <div class="form-group">
-  <label>District *</label>
-  <select id="pDistrict" required>
-    <option value="">Select District</option>
-    <option value="Thiruvananthapuram">Thiruvananthapuram</option>
-    <option value="Kollam">Kollam</option>
-    <option value="Pathanamthitta">Pathanamthitta</option>
-    <option value="Alappuzha">Alappuzha</option>
-    <option value="Kottayam">Kottayam</option>
-    <option value="Idukki">Idukki</option>
-    <option value="Ernakulam">Ernakulam</option>
-    <option value="Thrissur">Thrissur</option>
-    <option value="Palakkad">Palakkad</option>
-    <option value="Malappuram">Malappuram</option>
-    <option value="Kozhikode">Kozhikode</option>
-    <option value="Wayanad">Wayanad</option>
-    <option value="Kannur">Kannur</option>
-    <option value="Kasaragod">Kasaragod</option>
-  </select>
+          <label>District *</label>
+          <select id="pDistrict" required>
+            <option value="">Select District</option>
+            <option value="Thiruvananthapuram">Thiruvananthapuram</option><option value="Kollam">Kollam</option><option value="Pathanamthitta">Pathanamthitta</option>
+            <option value="Alappuzha">Alappuzha</option><option value="Kottayam">Kottayam</option><option value="Idukki">Idukki</option>
+            <option value="Ernakulam">Ernakulam</option><option value="Thrissur">Thrissur</option><option value="Palakkad">Palakkad</option>
+            <option value="Malappuram">Malappuram</option><option value="Kozhikode">Kozhikode</option><option value="Wayanad">Wayanad</option>
+            <option value="Kannur">Kannur</option><option value="Kasaragod">Kasaragod</option>
+          </select>
         </div>
       </div>
 
       <h3 class="section-title">2. Price & Stock</h3>
       <div class="form-grid">
         <div class="form-group"><label>Your Selling Price ₹ *</label><input id="pPrice" type="number" onkeyup="calcPrice()" required></div>
-        <div class="form-group"><label>Old Price ₹</label><input id="pOldPrice" type="number"></div>
+        <div class="form-group"><label>Old Price ₹ MRP</label><input id="pOldPrice" type="number"></div>
         <div class="form-group"><label>Stock Quantity *</label><input id="pStockQty" type="number" value="10" required></div>
       </div>
       <div class="price-box"><p>Platform Fee: ₹20 | <b>Customer Pays: ₹<span id="customerPrice">0</span></b></p></div>
@@ -106,26 +97,10 @@
 
       <h3 class="section-title">4. Product Attributes</h3>
       <div class="form-grid">
-        <div class="form-group">
-          <label>Fabric / Material</label>
-          <select id="pFabric">
-            <option value="">Select</option><option>Cotton</option><option>Polyester</option><option>Denim</option><option>Linen</option><option>Silk</option><option>Rayon</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Sleeve Type</label>
-          <select id="pSleeve">
-            <option value="">Select</option><option>Full Sleeve</option><option>Half Sleeve</option><option>3/4 Sleeve</option><option>Sleeveless</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Fit Type</label>
-          <select id="pFit"><option value="">Select</option><option>Regular Fit</option><option>Slim Fit</option><option>Loose Fit</option><option>Oversized</option></select>
-        </div>
-        <div class="form-group">
-          <label>Pattern</label>
-          <select id="pPattern"><option value="">Select</option><option>Solid</option><option>Printed</option><option>Striped</option><option>Checked</option><option>Embroidered</option></select>
-        </div>
+        <div class="form-group"><label>Fabric / Material</label><select id="pFabric"><option value="">Select</option><option>Cotton</option><option>Polyester</option><option>Denim</option><option>Linen</option><option>Silk</option><option>Rayon</option></select></div>
+        <div class="form-group"><label>Sleeve Type</label><select id="pSleeve"><option value="">Select</option><option>Full Sleeve</option><option>Half Sleeve</option><option>3/4 Sleeve</option><option>Sleeveless</option></select></div>
+        <div class="form-group"><label>Fit Type</label><select id="pFit"><option value="">Select</option><option>Regular Fit</option><option>Slim Fit</option><option>Loose Fit</option><option>Oversized</option></select></div>
+        <div class="form-group"><label>Pattern</label><select id="pPattern"><option value="">Select</option><option>Solid</option><option>Printed</option><option>Striped</option><option>Checked</option><option>Embroidered</option></select></div>
       </div>
 
       <h3 class="section-title">5. Variants</h3>
@@ -164,12 +139,14 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 
 <script>
-const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
+const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart", storageBucket: "willwin-cart.appspot.com"};
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
+const storage = firebase.storage(); // <-- ADDED THIS
 
 let selectedSizes = [];
 let selectedColors = [];
@@ -203,7 +180,7 @@ function renderSizeColor(){
   selectedSizes.forEach(function(s){ if(!['XS','S','M','L','XL','XXL'].includes(s)){ sizeGrid.innerHTML += '<span class="chip active" onclick="toggleSize(\'' + s + '\')">' + s + ' X</span>'; } });
 
   var colorGrid = document.getElementById('colorGrid'); colorGrid.innerHTML='';
-  selectedColors.forEach(function(c){ colorGrid.innerHTML += '<span class="chip active" style="background:' + c.code + '; color:#fff">' + c.name + ' <span onclick="removeColor(\'' + c.name + '\')">X</span></span>'; });
+  selectedColors.forEach(function(c){ colorGrid.innerHTML += '<span class="chip active" style="background:' + c.code + '; color:#fff; border-color:' + c.code + '">' + c.name + ' <span onclick="removeColor(\'' + c.name + '\')" style="margin-left:5px;cursor:pointer">X</span></span>'; });
 }
 function toggleSize(s){ selectedSizes.includes(s)? selectedSizes=selectedSizes.filter(function(x){return x!=s}) : selectedSizes.push(s); renderSizeColor(); }
 function addExtraSize(){ var val=document.getElementById('extraSize').value.trim().toUpperCase(); if(val &&!selectedSizes.includes(val)){ selectedSizes.push(val); document.getElementById('extraSize').value=''; renderSizeColor(); } else { alert("Enter unique size"); } }
@@ -226,12 +203,11 @@ function addProduct(e){
     var product = {
       name: document.getElementById('pName').value,
       brand: document.getElementById('pBrand').value,
-      images: imageUrls, // <-- REAL IMAGES NOW
-      price: Number(document.getElementById('pPrice').value),
-      customerPrice: Number(document.getElementById('pPrice').value)+20,
+      images: imageUrls,
+      price: Number(document.getElementById('pPrice').value), // seller price
+      customerPrice: Number(document.getElementById('pPrice').value)+20, // what customer sees
       oldPrice: Number(document.getElementById('pOldPrice').value)||0,
-      stockQty: Number(document.getElementById('pStockQty').value), // <-- QUANTITY
-      stock: Number(document.getElementById('pStockQty').value) > 0, // <-- true/false
+      stockQty: Number(document.getElementById('pStockQty').value),
       category: document.getElementById('pCategory').value,
       subcategory: document.getElementById('pSubcategory').value,
       district: document.getElementById('pDistrict').value,
@@ -248,12 +224,13 @@ function addProduct(e){
     };
 
     db.collection("products").add(product).then(function(){
-      alert('✅ Product Added with Images!');
+      alert('✅ Product Added Successfully!');
       document.getElementById('addProductForm').reset();
       selectedSizes=[]; selectedColors=[]; uploadedImages=[];
       document.getElementById('imgPreview').innerHTML='';
+      document.getElementById('customerPrice').innerText='0';
       renderSizeColor();
-    });
+    }).catch(function(error){ alert("❌ Save Error: " + error.message); });
   }).catch(function(error){ alert("❌ Upload Error: " + error.message); });
 }
 </script>
