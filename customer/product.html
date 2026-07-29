@@ -46,7 +46,7 @@ header a{color:#fff; text-decoration:none; font-weight:bold; font-size:18px}
 
 <header>
   <div><a href="index.html">Shopline<span style="color:#ffe500">Kerala</span></a></div>
-  <div><a href="cart.html">🛒 Cart</a></div>
+  <div><a href="cart.html" id="cartLink">🛒 Cart(0)</a></div>
 </header>
 
 <div class="container">
@@ -93,6 +93,7 @@ header a{color:#fff; text-decoration:none; font-weight:bold; font-size:18px}
           <b>Pattern:</b> <span id="productPattern">N/A</span>
           <b>Weight:</b> <span id="productWeight">N/A</span>
           <b>Brand:</b> <span id="productBrand">N/A</span>
+          <b>District:</b> <span id="productDistrict">N/A</span>
         </div>
       </div>
 
@@ -121,6 +122,8 @@ let currentProduct;
 let selectedSize = '';
 let selectedColor = '';
 
+updateCartCount();
+
 if(productId){
   db.collection("products").doc(productId).get().then(function(doc){
     if(doc.exists){
@@ -130,6 +133,12 @@ if(productId){
       alert("Product not found");
     }
   });
+}
+
+function updateCartCount(){
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  let totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+  document.getElementById('cartLink').innerText = `🛒 Cart(${totalQty})`;
 }
 
 function loadProduct(p){
@@ -143,14 +152,14 @@ function loadProduct(p){
   }
   document.getElementById('productThumbs').innerHTML = thumbHtml;
 
-  // 2. PRICE + DISCOUNT
-  var discount = 0;
-  if(p.oldPrice > 0 && p.oldPrice > p.price){
-    discount = Math.round(((p.oldPrice - p.price)/p.oldPrice)*100);
-  }
+  // 2. PRICE + DISCOUNT - USING customerPrice
+  var price = p.customerPrice || p.price || 0;
+  var oldPrice = p.oldPrice || price;
+  var discount = oldPrice > price? Math.round(((oldPrice - price)/oldPrice)*100) : 0;
+
   document.getElementById('productName').innerText = p.name;
-  document.getElementById('productPrice').innerText = '₹' + p.customerPrice;
-  document.getElementById('productOldPrice').innerText = p.oldPrice > 0? '₹' + p.oldPrice : '';
+  document.getElementById('productPrice').innerText = '₹' + Number(price).toLocaleString();
+  document.getElementById('productOldPrice').innerText = oldPrice > price? '₹' + Number(oldPrice).toLocaleString() : '';
   document.getElementById('productDiscount').innerText = discount > 0? discount + '% off' : '';
 
   // 3. STOCK
@@ -193,11 +202,13 @@ function loadProduct(p){
   document.getElementById('productPattern').innerText = p.pattern || 'N/A';
   document.getElementById('productWeight').innerText = p.weight || 'N/A';
   document.getElementById('productBrand').innerText = p.brand || 'N/A';
+  document.getElementById('productDistrict').innerText = p.district || 'N/A';
 
   // 8. DESCRIPTION
   document.getElementById('productDescription').innerText = p.description || 'No description provided';
 }
 
+// FIXED: querySelectorAll now correct
 function selectSize(el, size){
   document.querySelectorAll('#productSizes.chip').forEach(function(c){ c.classList.remove('active') });
   el.classList.add('active');
@@ -222,24 +233,27 @@ function addToCart(){
   if(currentProduct.colors && currentProduct.colors.length > 0 &&!selectedColor) return alert("Please select a color");
 
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  let variant = selectedSize + ' / ' + selectedColor;
   let cartItem = {
     id: productId,
     name: currentProduct.name,
     image: currentProduct.images[0],
     price: currentProduct.customerPrice,
-    size: selectedSize,
-    color: selectedColor,
+    size: selectedSize || 'NA',
+    color: selectedColor || 'NA',
+    variant: variant,
     qty: 1
   };
   let existing = cart.find(item => item.id == cartItem.id && item.size == cartItem.size && item.color == cartItem.color);
   if(existing){ existing.qty += 1; } else { cart.push(cartItem); }
   localStorage.setItem('cart', JSON.stringify(cart));
   alert('✅ Added to cart: ' + currentProduct.name);
-  window.location.href = 'cart.html';
+  updateCartCount();
 }
 
 function buyNow(){
   addToCart();
+  window.location.href = 'cart.html';
 }
 </script>
 </body>
