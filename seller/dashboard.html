@@ -62,8 +62,25 @@
           <label>Sub Category *</label>
           <select id="pSubcategory" required><option value="">Select Category First</option></select>
         </div>
-        <div class="form-group"><label>District *</label>
-          <select id="pDistrict" required><option value="">Select</option><option>Kannur</option><option>Kozhikode</option><option>Ernakulam</option></select>
+        <div class="form-group">
+  <label>District *</label>
+  <select id="pDistrict" required>
+    <option value="">Select District</option>
+    <option value="Thiruvananthapuram">Thiruvananthapuram</option>
+    <option value="Kollam">Kollam</option>
+    <option value="Pathanamthitta">Pathanamthitta</option>
+    <option value="Alappuzha">Alappuzha</option>
+    <option value="Kottayam">Kottayam</option>
+    <option value="Idukki">Idukki</option>
+    <option value="Ernakulam">Ernakulam</option>
+    <option value="Thrissur">Thrissur</option>
+    <option value="Palakkad">Palakkad</option>
+    <option value="Malappuram">Malappuram</option>
+    <option value="Kozhikode">Kozhikode</option>
+    <option value="Wayanad">Wayanad</option>
+    <option value="Kannur">Kannur</option>
+    <option value="Kasaragod">Kasaragod</option>
+  </select>
         </div>
       </div>
 
@@ -195,39 +212,49 @@ function removeColor(name){ selectedColors=selectedColors.filter(function(x){ret
 
 function addProduct(e){
   e.preventDefault();
-  var weight = document.getElementById('pWeight').value + document.getElementById('pWeightUnit').value;
+  if(uploadedImages.length === 0) return alert("Upload at least 1 image");
 
-  var product = {
-    name: document.getElementById('pName').value,
-    brand: document.getElementById('pBrand').value,
-    images: ["https://via.placeholder.com/400x400.png?text=No+Image"],
-    price: Number(document.getElementById('pPrice').value),
-    customerPrice: Number(document.getElementById('pPrice').value)+20,
-    oldPrice: Number(document.getElementById('pOldPrice').value)||0,
-    stockQty: Number(document.getElementById('pStockQty').value),
-    category: document.getElementById('pCategory').value,
-    subcategory: document.getElementById('pSubcategory').value,
-    district: document.getElementById('pDistrict').value,
-    description: document.getElementById('pDesc').value,
-    sizes: selectedSizes,
-    colors: selectedColors,
-    weight: weight, // "250g" or "1kg"
-    fabric: document.getElementById('pFabric').value,
-    sleeve: document.getElementById('pSleeve').value,
-    fit: document.getElementById('pFit').value,
-    pattern: document.getElementById('pPattern').value,
-    stock: true,
-    sellerId: auth.currentUser.uid,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  };
+  var uploadPromises = [];
+  uploadedImages.forEach(function(file){
+    var storageRef = storage.ref('products/' + auth.currentUser.uid + '/' + Date.now() + '_' + file.name);
+    uploadPromises.push(storageRef.put(file).then(function(snap){ return snap.ref.getDownloadURL(); }));
+  });
 
-  db.collection("products").add(product).then(function(){
-    alert('✅ Product Added with all details!');
-    document.getElementById('addProductForm').reset();
-    selectedSizes=[]; selectedColors=[]; uploadedImages=[];
-    document.getElementById('imgPreview').innerHTML='';
-    renderSizeColor();
-  }).catch(function(error){ alert("❌ Error: " + error.message); });
+  Promise.all(uploadPromises).then(function(imageUrls){
+    var weight = document.getElementById('pWeight').value + document.getElementById('pWeightUnit').value;
+
+    var product = {
+      name: document.getElementById('pName').value,
+      brand: document.getElementById('pBrand').value,
+      images: imageUrls, // <-- REAL IMAGES NOW
+      price: Number(document.getElementById('pPrice').value),
+      customerPrice: Number(document.getElementById('pPrice').value)+20,
+      oldPrice: Number(document.getElementById('pOldPrice').value)||0,
+      stockQty: Number(document.getElementById('pStockQty').value), // <-- QUANTITY
+      stock: Number(document.getElementById('pStockQty').value) > 0, // <-- true/false
+      category: document.getElementById('pCategory').value,
+      subcategory: document.getElementById('pSubcategory').value,
+      district: document.getElementById('pDistrict').value,
+      description: document.getElementById('pDesc').value,
+      sizes: selectedSizes,
+      colors: selectedColors,
+      weight: weight,
+      fabric: document.getElementById('pFabric').value,
+      sleeve: document.getElementById('pSleeve').value,
+      fit: document.getElementById('pFit').value,
+      pattern: document.getElementById('pPattern').value,
+      sellerId: auth.currentUser.uid,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    db.collection("products").add(product).then(function(){
+      alert('✅ Product Added with Images!');
+      document.getElementById('addProductForm').reset();
+      selectedSizes=[]; selectedColors=[]; uploadedImages=[];
+      document.getElementById('imgPreview').innerHTML='';
+      renderSizeColor();
+    });
+  }).catch(function(error){ alert("❌ Upload Error: " + error.message); });
 }
 </script>
 </body>
