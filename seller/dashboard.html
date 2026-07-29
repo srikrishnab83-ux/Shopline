@@ -77,15 +77,7 @@
         <div class="stat-card" style="background:#9c27b0"><h3 id="totalProducts">0</h3><p>My Products</p></div>
       </div>
       <table class="orders-table">
-        <thead>
-          <tr>
-            <th>Order ID</th>
-            <th>Customer</th>
-            <th>Items</th>
-            <th>Amount</th>
-            <th>Action</th> <!-- REMOVED STATUS, ADDED ACTION -->
-          </tr>
-        </thead>
+        <thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Amount</th><th>Action</th></tr></thead>
         <tbody id="ordersList"></tbody>
       </table>
     </div>
@@ -108,7 +100,7 @@
       </table>
     </div>
 
-    <!-- PRODUCTS TAB - REMOVED STATUS -->
+    <!-- PRODUCTS TAB -->
     <div id="products" class="tab-content">
       <h2>My Products</h2>
       <table class="products-table">
@@ -260,9 +252,25 @@ function renderSizeColor(){
 }
 
 function toggleSize(s){ selectedSizes.includes(s)? selectedSizes=selectedSizes.filter(x=>x!=s) : selectedSizes.push(s); renderSizeColor(); }
-function addExtraSize(){ const val = document.getElementById('extraSize').value.toUpperCase().trim(); if(!val){ alert("Enter size"); return; } if(!selectedSizes.includes(val)){ selectedSizes.push(val); document.getElementById('extraSize').value=''; renderSizeColor(); }
+
+function addExtraSize(){ 
+  const val = document.getElementById('extraSize').value.toUpperCase().trim(); 
+  if(!val){ alert("Enter size"); return; } 
+  if(!selectedSizes.includes(val)){ selectedSizes.push(val); document.getElementById('extraSize').value=''; renderSizeColor(); }
+} // FIXED: ADDED MISSING }
+
 function removeSize(s){ selectedSizes=selectedSizes.filter(x=>x!=s); renderSizeColor(); }
-function addExtraColor(){ const code = document.getElementById('extraColor').value; const name = document.getElementById('colorName').value.trim(); if(!name){ alert("Please enter color name"); return; } if(selectedColors.find(x=>x.name.toLowerCase()==name.toLowerCase())){ alert("Color already added"); return; } selectedColors.push({name:name, code:code}); document.getElementById('colorName').value=''; renderSizeColor(); }
+
+function addExtraColor(){ 
+  const code = document.getElementById('extraColor').value; 
+  const name = document.getElementById('colorName').value.trim(); 
+  if(!name){ alert("Please enter color name"); return; } 
+  if(selectedColors.find(x=>x.name.toLowerCase()==name.toLowerCase())){ alert("Color already added"); return; } 
+  selectedColors.push({name:name, code:code}); 
+  document.getElementById('colorName').value=''; 
+  renderSizeColor(); 
+}
+
 function removeColor(name){ selectedColors=selectedColors.filter(x=>x.name!=name); renderSizeColor(); }
 
 var cloudName = "omve98do";
@@ -296,92 +304,92 @@ function addProduct(e){
     document.getElementById('imgPreview').innerHTML='';
     renderSizeColor();
     loadProducts();
-    document.querySelector('.tab-btn:nth-child(4)').click();
-  });
+    document.querySelectorAll('.tab-btn')[3].click();
+  }).catch(err => alert("Error: " + err.message));
 }
 
-// UPDATED: LOAD ORDERS WITH DELETE + CANCEL
 async function loadOrders() {
-  const snap = await db.collection("orders").orderBy("createdAt", "desc").get();
-  let total=0, active=0, cancelled=0, returns=0, revenue=0; 
-  let html='', cancelledHtml='', returnHtml='';
+  try{
+    const snap = await db.collection("orders").orderBy("createdAt", "desc").get();
+    let total=0, active=0, cancelled=0, returns=0, revenue=0; 
+    let html='', cancelledHtml='', returnHtml='';
 
-  snap.forEach(d => { 
-    const o = d.data(); 
-    total++;
-    revenue += o.finalTotal || 0;
+    snap.forEach(d => { 
+      const o = d.data(); 
+      total++;
+      revenue += o.finalTotal || 0;
 
-    if(o.status === 'Cancelled'){
-      cancelled++;
-      cancelledHtml += `<tr><td>#${d.id.substring(0,6)}</td><td>${o.customer.name}</td><td>${o.items.length} items</td><td>₹${o.finalTotal}</td><td><span class="badge-cancel">${o.cancelReason || 'User Cancelled'}</span></td></tr>`;
-    }
-    else if(o.status === 'Returned'){
-      returns++;
-      returnHtml += `<tr><td>#${d.id.substring(0,6)}</td><td>${o.customer.name}</td><td>${o.items.length} items</td><td>₹${o.finalTotal}</td><td><span class="badge-return">${o.returnReason || 'Return Request'}</span></td></tr>`;
-    }
-    else{
-      active++;
-      html += `<tr>
-        <td>#${d.id.substring(0,6)}</td>
-        <td>${o.customer.name}<br><small>${o.customer.phone}</small></td>
-        <td>${o.items.length} items</td>
-        <td>₹${o.finalTotal}</td>
-        <td>
-          <button class="btn-cancel" onclick="cancelOrder('${d.id}')">Cancel</button>
-          <button class="btn-delete" onclick="deleteOrder('${d.id}')">Delete</button>
-        </td>
-      </tr>`;
-    }
-  });
+      if(o.status === 'Cancelled'){
+        cancelled++;
+        cancelledHtml += `<tr><td>#${d.id.substring(0,6)}</td><td>${o.customer.name}</td><td>${o.items.length} items</td><td>₹${o.finalTotal}</td><td><span class="badge-cancel">${o.cancelReason || 'User Cancelled'}</span></td></tr>`;
+      }
+      else if(o.status === 'Returned'){
+        returns++;
+        returnHtml += `<tr><td>#${d.id.substring(0,6)}</td><td>${o.customer.name}</td><td>${o.items.length} items</td><td>₹${o.finalTotal}</td><td><span class="badge-return">${o.returnReason || 'Return Request'}</span></td></tr>`;
+      }
+      else{
+        active++;
+        html += `<tr>
+          <td>#${d.id.substring(0,6)}</td>
+          <td>${o.customer.name}<br><small>${o.customer.phone}</small></td>
+          <td>${o.items.length} items</td>
+          <td>₹${o.finalTotal}</td>
+          <td>
+            <button class="btn-cancel" onclick="cancelOrder('${d.id}')">Cancel</button>
+            <button class="btn-delete" onclick="deleteOrder('${d.id}')">Delete</button>
+          </td>
+        </tr>`;
+      }
+    });
 
-  document.getElementById('totalOrders').innerText=total;
-  document.getElementById('newOrders').innerText=active;
-  document.getElementById('cancelledCount').innerText=cancelled;
-  document.getElementById('returnCount').innerText=returns;
-  document.getElementById('totalRevenue').innerText='₹'+revenue.toLocaleString();
-  
-  document.getElementById('ordersList').innerHTML=html || '<tr><td colspan="5">No active orders</td></tr>';
-  document.getElementById('cancelledList').innerHTML=cancelledHtml || '<tr><td colspan="5">No cancelled orders</td></tr>';
-  document.getElementById('returnList').innerHTML=returnHtml || '<tr><td colspan="5">No return orders</td></tr>';
+    document.getElementById('totalOrders').innerText=total;
+    document.getElementById('newOrders').innerText=active;
+    document.getElementById('cancelledCount').innerText=cancelled;
+    document.getElementById('returnCount').innerText=returns;
+    document.getElementById('totalRevenue').innerText='₹'+revenue.toLocaleString();
+    
+    document.getElementById('ordersList').innerHTML=html || '<tr><td colspan="5">No active orders</td></tr>';
+    document.getElementById('cancelledList').innerHTML=cancelledHtml || '<tr><td colspan="5">No cancelled orders</td></tr>';
+    document.getElementById('returnList').innerHTML=returnHtml || '<tr><td colspan="5">No return orders</td></tr>';
+  }catch(e){ console.log("Orders error:", e) }
 }
 
-// UPDATED: PRODUCTS TABLE - REMOVED STATUS
 async function loadProducts() {
-  const snap = await db.collection("products").get();
-  let count=0, html='';
-  snap.forEach(d => { const p = d.data(); if(p.sellerId === currentUser.uid){
-    count++;
-    html += `<tr>
-      <td><img src="${p.images[0]}" width="50"></td>
-      <td>${p.name}</td>
-      <td>₹${p.customerPrice}</td>
-      <td>${p.category}</td>
-      <td>${p.district}</td>
-      <td>${p.stockQty}</td>
-      <td><button class="btn-delete" onclick="deleteProduct('${d.id}')">Delete</button></td>
-    </tr>`;
-  }});
-  document.getElementById('totalProducts').innerText=count;
-  document.getElementById('productsList').innerHTML=html || '<tr><td colspan="7">No products yet. Add one!</td></tr>';
+  try{
+    const snap = await db.collection("products").get();
+    let count=0, html='';
+    snap.forEach(d => { const p = d.data(); if(p.sellerId === currentUser.uid){
+      count++;
+      html += `<tr>
+        <td><img src="${p.images[0]}" width="50"></td>
+        <td>${p.name}</td>
+        <td>₹${p.customerPrice}</td>
+        <td>${p.category}</td>
+        <td>${p.district}</td>
+        <td>${p.stockQty}</td>
+        <td><button class="btn-delete" onclick="deleteProduct('${d.id}')">Delete</button></td>
+      </tr>`;
+    }});
+    document.getElementById('totalProducts').innerText=count;
+    document.getElementById('productsList').innerHTML=html || '<tr><td colspan="7">No products yet. Add one!</td></tr>';
+  }catch(e){ console.log("Products error:", e) }
 }
 
 function deleteProduct(id){ if(confirm('Delete this product?')){ db.collection("products").doc(id).delete().then(loadProducts); }}
 
-// NEW: CANCEL ORDER
 function cancelOrder(id){
   let reason = prompt("Enter cancellation reason:");
   if(reason){
     db.collection("orders").doc(id).update({
       status: 'Cancelled',
       cancelReason: reason
-    }).then(()=>{ alert('Order Cancelled'); loadOrders(); });
+    }).then(()=>{ alert('Order Cancelled'); loadOrders(); }).catch(e=>alert(e.message));
   }
 }
 
-// NEW: DELETE ORDER PERMANENTLY
 function deleteOrder(id){
   if(confirm('Delete this order permanently?')){
-    db.collection("orders").doc(id).delete().then(()=>{ alert('Order Deleted'); loadOrders(); });
+    db.collection("orders").doc(id).delete().then(()=>{ alert('Order Deleted'); loadOrders(); }).catch(e=>alert(e.message));
   }
 }
 </script>
