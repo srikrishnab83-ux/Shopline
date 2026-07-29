@@ -87,13 +87,22 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"; // ADDED AUTH
 
 const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app); // ADDED
 
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let productTotal = 0;
+let currentUserId = null; // ADDED
+
+onAuthStateChanged(auth, (user) => { // ADDED: Get logged in user
+  if(user){
+    currentUserId = user.uid;
+  }
+});
 
 function loadCart() {
   const cartList = document.getElementById('cartList');
@@ -174,18 +183,22 @@ window.checkout = async function(){
   if(phone.length!== 10) return alert('Enter 10 digit mobile number');
   if(pincode.length!== 6) return alert('Enter 6 digit pincode');
   if(cart.length === 0) return alert('Cart is empty');
+  if(!currentUserId) return alert('Please login to place order'); // ADDED CHECK
 
   let shippingCharge = productTotal > 999? 0 : parseInt(document.querySelector('input[name="shipping"]:checked').value);
 
-  // NEW: GET ALL UNIQUE SELLER IDS FROM CART
+  // GET ALL UNIQUE SELLER IDS FROM CART
   let sellerIds = [...new Set(cart.map(item => item.sellerId).filter(id => id))];
 
   await addDoc(collection(db, "orders"), {
+    customerId: currentUserId, // ADDED: For return rules
     customer: {name, phone, street, district, state, pincode, landmark},
     items: cart,
-    sellerIds: sellerIds, // <-- ADDED FOR RULES SECURITY
+    sellerIds: sellerIds,
     productTotal, shippingCharge, finalTotal: productTotal + shippingCharge,
-    status: "New Order", createdAt: serverTimestamp()
+    status: "New Order", 
+    returnStatus: "none", // ADDED: For return tracking
+    createdAt: serverTimestamp()
   });
 
   alert(`Order Placed Successfully! Total: ₹${productTotal + shippingCharge}`);
