@@ -1,295 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Seller Dashboard - Shopline Kerala</title>
-  <script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>
-  <link rel="stylesheet" href="../css/style.css">
-  <style>
- .dashboard{max-width:1200px; margin:20px auto; padding:20px}
- .tabs{display:flex; gap:10px; margin-bottom:20px; border-bottom:2px solid #eee; flex-wrap:wrap}
- .tab-btn{padding:12px 20px; border:none; background:none; cursor:pointer; font-size:16px; font-weight:bold}
- .tab-btn.active{border-bottom:3px solid #2874f0; color:#2874f0}
- .tab-content{display:none}
- .tab-content.active{display:block}
- .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:15px; margin-bottom:30px}
- .stat-card{background:#2874f0; color:#fff; padding:20px; border-radius:8px; text-align:center}
- .orders-table,.products-table{width:100%; background:#fff; border-radius:8px; overflow:hidden; margin-top:15px; font-size:14px}
- .orders-table th,.products-table th{background:#f5f5f5; padding:12px; text-align:left}
- .orders-table td,.products-table td{padding:12px; border-bottom:1px solid #eee}
- .form-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px}
- .form-group{display:flex; flex-direction:column}
- .form-group label{font-weight:bold; margin-bottom:5px; font-size:14px}
- .form-group input,.form-group select,.form-group textarea{padding:10px; border:1px solid #ddd; border-radius:4px}
- .btn-save{padding:12px 30px; background:#388e3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:16px; margin-top:15px}
- .btn-logout{background:#d32f2f; color:#fff; padding:8px 15px; border:none; border-radius:4px; cursor:pointer;}
- .btn-back{background:#555; color:#fff; padding:8px 15px; border:none; border-radius:4px; cursor:pointer; margin-right:8px}
- .btn-delete{background:#d32f2f; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer}
- .btn-add{background:#2874f0; color:#fff; padding:8px 12px; border:none; border-radius:4px; cursor:pointer}
- .btn-upload{padding:10px 20px; background:#2874f0; color:#fff; border:none; border-radius:4px; cursor:pointer; font-weight:bold; width:100%}
-
- .img-preview{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap}
- .img-box{position:relative}
- .img-box img{width:100px; height:100px; object-fit:cover; border:1px solid #ddd; border-radius:4px}
- .img-box span{position:absolute; top:-8px; right:-8px; background:red; color:#fff; cursor:pointer; padding:2px 6px; border-radius:50%; font-size:12px}
- .size-grid,.color-grid{display:flex; gap:10px; flex-wrap:wrap; margin-top:8px}
- .chip{padding:8px 12px; border:2px solid #ddd; border-radius:20px; cursor:pointer; background:#fff; display:flex; align-items:center; gap:5px}
- .chip.active{border-color:#2874f0; background:#e3f2fd; color:#2874f0; font-weight:bold}
- .note{background:#fff3cd; padding:10px; border-left:4px solid #ffc107; margin:15px 0; font-size:13px}
- .price-box{background:#e8f5e9; padding:15px; border-radius:8px; margin-top:10px}
- .section-title{margin-top:20px; margin-bottom:10px; color:#2874f0; border-bottom:1px solid #ddd; padding-bottom:5px}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seller Dashboard - Shopline Kerala</title>
+<style>
+body{font-family:Arial; background:#f1f3f6; padding:20px}
+.container{max-width:800px; margin:auto; background:#fff; padding:20px; border-radius:8px}
+input, select, textarea{width:100%; padding:10px; margin:8px 0; border:1px solid #ddd; border-radius:4px}
+label{font-weight:bold; margin-top:10px; display:block}
+.btn{background:#fb641b; color:#fff; padding:12px; border:none; border-radius:4px; cursor:pointer; width:100%; font-weight:bold}
+.preview img{width:100px; height:100px; object-fit:cover; margin:5px; border:1px solid #ddd}
+</style>
 </head>
 <body>
-  <div class="top-bar"><p>Seller Panel - Shopline Kerala | Payment: Delivered + 2-3 days + Return period over</p></div>
-  <header class="navbar">
-    <div class="container" style="display:flex; justify-content:space-between; align-items:center">
-      <div class="logo">Shopline<span>Kerala</span> Seller</div>
-      <div>
-        <button class="btn-back" onclick="goHome()">⬅ Back to Home</button>
-        <button class="btn-logout" onclick="logout()">Logout</button>
-      </div>
-    </div>
-  </header>
+<div class="container">
+  <h2>Add New Product</h2>
 
-  <div class="dashboard">
-    <div class="tabs">
-      <button class="tab-btn active" onclick="openTab(event,'orders')">📦 Orders</button>
-      <button class="tab-btn" onclick="openTab(event,'products')">🛍️ My Products</button>
-      <button class="tab-btn" onclick="openTab(event,'add')">➕ Add Product</button>
-    </div>
+  <label>Product Name</label>
+  <input type="text" id="name" placeholder="Ex: Cotton Kurti for Women">
 
-    <!-- ORDERS TAB -->
-    <div id="orders" class="tab-content active">
-      <h2>Recent Orders</h2>
-      <div class="stats">
-        <div class="stat-card"><h3 id="totalOrders">0</h3><p>Total Orders</p></div>
-        <div class="stat-card" style="background:#fb641b"><h3 id="newOrders">0</h3><p>New Orders</p></div>
-        <div class="stat-card" style="background:#388e3c"><h3 id="totalRevenue">₹0</h3><p>Revenue</p></div>
-        <div class="stat-card" style="background:#9c27b0"><h3 id="totalProducts">0</h3><p>My Products</p></div>
-      </div>
-      <table class="orders-table"><thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Amount</th><th>Status</th></tr></thead><tbody id="ordersList"></tbody></table>
-    </div>
+  <label>Upload Images - From Cloudinary</label>
+  <input type="file" id="images" multiple accept="image/*">
+  <div class="preview" id="preview"></div>
 
-    <!-- PRODUCTS TAB -->
-    <div id="products" class="tab-content">
-      <h2>My Products</h2>
-      <table class="products-table"><thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Category</th><th>District</th><th>Action</th></tr></thead><tbody id="productsList"></tbody></table>
-    </div>
+  <label>Category</label>
+  <select id="category" required>
+    <option value="">Select Category</option>
+    <option value="Mobiles">Mobiles</option>
+    <option value="Fashion">Fashion</option>
+    <option value="Electronics">Electronics</option>
+    <option value="Home">Home & Kitchen</option>
+    <option value="Grocery">Grocery</option>
+    <option value="Beauty">Beauty & Personal Care</option>
+    <option value="Furniture">Furniture</option>
+    <option value="Toys">Toys & Baby</option>
+    <option value="Sports">Sports & Fitness</option>
+    <option value="Books">Books & Stationery</option>
+    <option value="Automotive">Automotive</option>
+    <option value="Jewelry">Jewelry</option>
+  </select>
 
-    <!-- ADD PRODUCT TAB -->
-    <div id="add" class="tab-content">
-      <h2>Add New Product</h2>
-      <div class="note"><b>Note:</b> Delivery payment will be credited to you in 2-3 days after successful delivery and return period is over.</div>
+  <label>Subcategory</label>
+  <select id="subcategory" required>
+    <option value="">Select Subcategory</option>
+  </select>
 
-      <form id="addProductForm" onsubmit="addProduct(event)">
-        <h3 class="section-title">1. Basic Details</h3>
-        <div class="form-grid">
-          <div class="form-group"><label>Product Name *</label><input id="pName" required></div>
-          <div class="form-group"><label>Brand</label><input id="pBrand"></div>
-          <div class="form-group"><label>Category *</label>
-            <select id="pCategory" onchange="loadSubCat()" required><option value="">Select</option><option>Men</option><option>Women</option><option>Kids</option></select>
-          </div>
-          <div class="form-group"><label>Sub Category *</label><select id="pSubcategory" required><option value="">Select Category First</option></select></div>
+  <label>District</label>
+  <select id="district" required>
+    <option value="">Select District</option>
+    <option>Thiruvananthapuram</option><option>Kollam</option><option>Pathanamthitta</option>
+    <option>Alappuzha</option><option>Kottayam</option><option>Idukki</option>
+    <option>Ernakulam</option><option>Thrissur</option><option>Palakkad</option>
+    <option>Malappuram</option><option>Kozhikode</option><option>Wayanad</option>
+    <option>Kannur</option><option>Kasaragod</option>
+  </select>
 
-          <div class="form-group"><label>District *</label>
-            <select id="pDistrict" required>
-              <option value="">Select District</option>
-              <option>Thiruvananthapuram</option><option>Kollam</option><option>Pathanamthitta</option>
-              <option>Alappuzha</option><option>Kottayam</option><option>Idukki</option>
-              <option>Ernakulam</option><option>Thrissur</option><option>Palakkad</option>
-              <option>Malappuram</option><option>Kozhikode</option><option>Wayanad</option>
-              <option>Kannur</option><option>Kasaragod</option>
-            </select>
-          </div>
-        </div>
+  <label>Selling Price - Customer</label>
+  <input type="number" id="customerPrice" placeholder="₹499">
 
-        <h3 class="section-title">2. Price & Stock</h3>
-        <div class="price-box">
-          <div class="form-grid">
-            <div class="form-group"><label>Your Selling Price ₹ *</label><input id="pPrice" type="number" oninput="calcPrice()" required></div>
-            <div class="form-group"><label>Old Price ₹</label><input id="pOldPrice" type="number"></div>
-            <div class="form-group"><label>Stock Quantity *</label><input id="pStockQty" type="number" value="10" required></div>
-          </div>
-          <p>Platform Fee: ₹20 | <b>Customer Pays: ₹<span id="customerPrice">0</span></b></p>
-        </div>
+  <label>Old Price - For Discount</label>
+  <input type="number" id="oldPrice" placeholder="₹999">
 
-        <h3 class="section-title">3. Variants - Size & Color</h3>
+  <label>Stock Quantity</label>
+  <input type="number" id="stockQty" placeholder="10">
 
-        <!-- SIZE ADDER -->
-        <div class="form-group">
-          <label>Sizes</label>
-          <div class="size-grid" id="sizeGrid"></div>
-          <div style="display:flex; gap:8px; margin-top:8px">
-            <input id="extraSize" placeholder="Add custom size e.g. 38, 40" style="flex:1">
-            <button type="button" class="btn-add" onclick="addExtraSize()">+ Add Size</button>
-          </div>
-        </div>
+  <label>Description</label>
+  <textarea id="description" rows="4" placeholder="Product details..."></textarea>
 
-        <!-- COLOR ADDER -->
-        <div class="form-group">
-          <label>Colors</label>
-          <div class="color-grid" id="colorGrid"></div>
-          <div style="display:flex; gap:8px; margin-top:10px; align-items:center; flex-wrap:wrap">
-            <input type="color" id="extraColor" value="#ff0000" style="width:50px; height:40px; border:2px solid #ddd; border-radius:4px; cursor:pointer">
-            <input id="colorName" placeholder="Color Name e.g. Red, Navy Blue" style="flex:1">
-            <button type="button" class="btn-add" onclick="addExtraColor()">+ Add Color</button>
-          </div>
-        </div>
-
-        <h3 class="section-title">4. Images & Description</h3>
-        <div class="form-group">
-          <label>Product Images * Max 4</label>
-          <button type="button" class="btn-upload" onclick="openUpload()">📷 Upload From Gallery</button>
-          <input type="hidden" id="cloudinaryUrls">
-          <div class="img-preview" id="imgPreview"></div>
-        </div>
-        <div class="form-group"><label>Description</label><textarea id="pDesc" rows="4"></textarea></div>
-        <button type="submit" class="btn-save">Save Product</button>
-      </form>
-    </div>
-  </div>
+  <button class="btn" onclick="addProduct()">Add Product</button>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
 const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
 const db = firebase.firestore();
 
-let currentUser = null;
-let selectedSizes = [];
-let selectedColors = [];
-let uploadedUrls = [];
-const subCategories = {"Men": ["Shirts", "T-Shirts", "Jeans", "Pants"], "Women": ["Saree", "Kurtis", "Dress", "Tops"], "Kids": ["Frocks", "T-Shirts", "Shorts"]};
+// CLOUDINARY CONFIG
+const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/omve98do/image/upload";
+const CLOUDINARY_UPLOAD_PRESET = "shoplinekerala";
 
-// LOGIN CHECK
-auth.onAuthStateChanged(user => {
-  if (!user) location.href = 'login.html';
-  else { currentUser = user; loadOrders(); loadProducts(); renderSizeColor(); }
-});
-
-function logout(){ auth.signOut().then(() => location.href = 'login.html'); }
-function goHome(){ location.href = '../index.html'; }
-
-function openTab(evt, tab){
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(tab).classList.add('active');
-  evt.currentTarget.classList.add('active');
+// CATEGORIES + SUBCATEGORIES
+const subcats = {
+  "Mobiles": ["Smartphones", "Feature Phones", "Mobile Accessories", "Tablets", "Power Banks"],
+  "Fashion": ["Men's Wear", "Women's Wear", "Kids Wear", "T-Shirts", "Shirts", "Jeans", "Kurtis", "Sarees", "Dresses", "Footwear", "Bags"],
+  "Electronics": ["TV", "Smart TV", "Laptops", "Headphones", "Speakers", "Camera", "Smart Watch", "Tablet"],
+  "Home": ["Kitchen", "Furniture", "Tables", "Chairs", "Bedding", "Decor", "Mixer Grinder", "Cookware"],
+  "Grocery": ["Rice", "Oil", "Spices", "Snacks", "Beverages", "Fruits & Vegetables", "Dairy", "Tea & Coffee"],
+  "Beauty": ["Makeup", "Skincare", "Haircare", "Perfumes", "Men's Grooming", "Bath & Body"],
+  "Furniture": ["Sofa", "Bed", "Wardrobe", "Dining Table", "Study Table", "Cupboard"],
+  "Toys": ["Baby Toys", "Educational Toys", "Dolls", "Action Figures", "Games"],
+  "Sports": ["Cricket", "Football", "Gym Equipment", "Yoga", "Cycles", "Badminton"],
+  "Books": ["School Books", "Novels", "Stationery", "Art Supplies", "Magazines"],
+  "Automotive": ["Bike Accessories", "Car Accessories", "Helmets", "Car Care"],
+  "Jewelry": ["Gold Jewelry", "Silver Jewelry", "Bangles", "Earrings", "Necklace"]
 }
 
-// SUBCATEGORY LOAD
-function loadSubCat(){
-  const cat = document.getElementById('pCategory').value;
-  const sub = document.getElementById('pSubcategory');
-  sub.innerHTML='<option value="">Select</option>';
-  if(subCategories[cat]){ subCategories[cat].forEach(s => sub.innerHTML += `<option>${s}</option>`); }
+document.getElementById('category').onchange = function(){
+  let cat = this.value;
+  let sub = document.getElementById('subcategory');
+  sub.innerHTML = '<option value="">Select Subcategory</option>';
+  if(subcats[cat]){
+    subcats[cat].forEach(s => {
+      sub.innerHTML += `<option value="${s}">${s}</option>`
+    })
+  }
 }
-
-// PRICE CALC
-function calcPrice(){ const price = Number(document.getElementById('pPrice').value)||0; document.getElementById('customerPrice').innerText = price + 20; }
-
-// SIZE + COLOR FUNCTIONS
-function renderSizeColor(){
-  const sizeGrid = document.getElementById('sizeGrid');
-  sizeGrid.innerHTML='';
-  ['S','M','L','XL','XXL'].forEach(s => {
-    const active = selectedSizes.includes(s)? 'active':'';
-    sizeGrid.innerHTML += `<div class="chip ${active}" onclick="toggleSize('${s}')">${s} ${selectedSizes.includes(s)? '<span onclick="removeSize(\''+s+'\'); event.stopPropagation();" style="cursor:pointer">X</span>' : ''}</div>`;
-  });
-
-  const colorGrid = document.getElementById('colorGrid');
-  colorGrid.innerHTML='';
-  selectedColors.forEach(c => {
-    colorGrid.innerHTML += `<div class="chip active" style="background:${c.code}; color:#fff">${c.name} <span onclick="removeColor('${c.name}')" style="cursor:pointer; font-weight:bold">X</span></div>`;
-  });
-}
-
-function toggleSize(s){
-  selectedSizes.includes(s)? selectedSizes=selectedSizes.filter(x=>x!=s) : selectedSizes.push(s);
-  renderSizeColor();
-}
-function addExtraSize(){
-  const val = document.getElementById('extraSize').value.toUpperCase().trim();
-  if(!val){ alert("Enter size"); return; }
-  if(!selectedSizes.includes(val)){ selectedSizes.push(val); document.getElementById('extraSize').value=''; renderSizeColor(); }
-}
-function removeSize(s){ selectedSizes=selectedSizes.filter(x=>x!=s); renderSizeColor(); }
-
-function addExtraColor(){
-  const code = document.getElementById('extraColor').value;
-  const name = document.getElementById('colorName').value.trim();
-  if(!name){ alert("Please enter color name"); return; }
-  if(selectedColors.find(x=>x.name.toLowerCase()==name.toLowerCase())){ alert("Color already added"); return; }
-  selectedColors.push({name:name, code:code});
-  document.getElementById('colorName').value='';
-  renderSizeColor();
-}
-function removeColor(name){ selectedColors=selectedColors.filter(x=>x.name!=name); renderSizeColor(); }
 
 // CLOUDINARY UPLOAD
-var cloudName = "omve98do";
-var uploadPreset = "shopline_unsigned";
-function openUpload(){
-  if(uploadedUrls.length >= 4) return alert("Max 4 images allowed");
-  cloudinary.openUploadWidget({cloudName, uploadPreset, sources: ["local", "camera"], multiple: true, maxFiles: 4 - uploadedUrls.length},
-  (error, result) => {
-    if(!error && result.event === "success"){
-      uploadedUrls.push(result.info.secure_url);
-      document.getElementById('cloudinaryUrls').value = uploadedUrls.join(",");
-      document.getElementById('imgPreview').innerHTML += `<div class="img-box"><img src="${result.info.secure_url}"><span onclick="removeImg('${result.info.secure_url}')">X</span></div>`;
-    }
-  });
+document.getElementById('images').onchange = async function(e){
+  let files = e.target.files;
+  let preview = document.getElementById('preview');
+  preview.innerHTML = '';
+  for(let file of files){
+    let formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+    let res = await fetch(CLOUDINARY_URL, {method:'POST', body:formData});
+    let data = await res.json();
+    preview.innerHTML += `<img src="${data.secure_url}">`;
+  }
 }
-function removeImg(url){ uploadedUrls = uploadedUrls.filter(u => u!= url); document.getElementById('imgPreview').innerHTML = ''; uploadedUrls.forEach(u => document.getElementById('imgPreview').innerHTML += `<div class="img-box"><img src="${u}"><span onclick="removeImg('${u}')">X</span></div>`); }
 
-// ADD PRODUCT
-function addProduct(e){
-  e.preventDefault();
-  if(uploadedUrls.length==0) return alert("Upload atleast 1 image");
+async function addProduct(){
+  let files = document.getElementById('images').files;
+  let imageUrls = [];
+
+  // Upload to Cloudinary
+  for(let file of files){
+    let formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+    let res = await fetch(CLOUDINARY_URL, {method:'POST', body:formData});
+    let data = await res.json();
+    imageUrls.push(data.secure_url);
+  }
+
   let product = {
-    name: pName.value, brand: pBrand.value, images: uploadedUrls, price: Number(pPrice.value),
-    customerPrice: Number(pPrice.value)+20, oldPrice: Number(pOldPrice.value)||0, stockQty: Number(pStockQty.value),
-    category: pCategory.value, subcategory: pSubcategory.value, district: pDistrict.value, description: pDesc.value,
-    sizes: selectedSizes, colors: selectedColors, sellerId: currentUser.uid, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    name: document.getElementById('name').value,
+    images: imageUrls, // SAVE AS ARRAY
+    category: document.getElementById('category').value,
+    subcategory: document.getElementById('subcategory').value,
+    district: document.getElementById('district').value,
+    customerPrice: Number(document.getElementById('customerPrice').value),
+    oldPrice: Number(document.getElementById('oldPrice').value),
+    stockQty: Number(document.getElementById('stockQty').value),
+    description: document.getElementById('description').value,
+    createdAt: new Date()
   };
-  db.collection("products").add(product).then(() => {
-    alert('✅ Product Added Successfully!');
-    document.getElementById('addProductForm').reset();
-    selectedSizes=[]; selectedColors=[]; uploadedUrls=[];
-    document.getElementById('imgPreview').innerHTML='';
-    renderSizeColor();
-    loadProducts();
-    document.querySelector('.tab-btn:nth-child(2)').click(); // go to products tab
-  });
-}
 
-// PASTE YOUR OLD loadOrders and loadProducts HERE
-async function loadOrders() {
-  const snap = await db.collection("orders").orderBy("createdAt", "desc").get();
-  let total=0, newC=0, revenue=0; let html='';
-  snap.forEach(d => { const o = d.data(); total++; if(o.status==="New Order") newC++; revenue+=o.finalTotal;
-    html += `<tr><td>#${d.id.substring(0,6)}</td><td>${o.customer.name}<br><small>${o.customer.phone}</small></td><td>${o.items.length} items</td><td>₹${o.finalTotal}</td><td>${o.status}</td></tr>`;
-  });
-  document.getElementById('totalOrders').innerText=total;
-  document.getElementById('newOrders').innerText=newC;
-  document.getElementById('totalRevenue').innerText='₹'+revenue.toLocaleString();
-  document.getElementById('ordersList').innerHTML=html || '<tr><td colspan="5">No orders</td></tr>';
+  await db.collection("products").add(product);
+  alert("Product Added Successfully!");
+  location.reload();
 }
-async function loadProducts() {
-  const snap = await db.collection("products").get();
-  let count=0, html='';
-  snap.forEach(d => { const p = d.data(); if(p.sellerId === currentUser.uid){
-    count++;
-    html += `<tr><td><img src="${p.images[0]}" width="50"></td><td>${p.name}</td><td>₹${p.customerPrice}</td><td>${p.category}</td><td>${p.district}</td><td><button class="btn-delete" onclick="deleteProduct('${d.id}')">Delete</button></td></tr>`;
-  }});
-  document.getElementById('totalProducts').innerText=count;
-  document.getElementById('productsList').innerHTML=html || '<tr><td colspan="6">No products yet. Add one!</td></tr>';
-}
-function deleteProduct(id){ if(confirm('Delete?')){ db.collection("products").doc(id).delete().then(loadProducts); }}
 </script>
 </body>
 </html>
