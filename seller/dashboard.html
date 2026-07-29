@@ -1,258 +1,234 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Seller Dashboard - Shopline Kerala</title>
-  <style>
+<meta charset="UTF-8">
+<title>Seller Dashboard - Shopline Kerala</title>
+<style>
 .dashboard{max-width:1200px; margin:20px auto; padding:20px}
 .tabs{display:flex; gap:10px; margin-bottom:20px; border-bottom:2px solid #eee}
 .tab-btn{padding:12px 20px; border:none; background:none; cursor:pointer; font-size:16px; font-weight:bold}
 .tab-btn.active{border-bottom:3px solid #2874f0; color:#2874f0}
 .tab-content{display:none}
 .tab-content.active{display:block}
-.orders-table,.products-table{width:100%; background:#fff; border-radius:8px; margin-top:15px; font-size:14px; border-collapse:collapse}
-.orders-table th,.products-table th{background:#f5f5f5; padding:12px; text-align:left}
-.orders-table td,.products-table td{padding:12px; border-bottom:1px solid #eee}
-.form-grid{display:grid; grid-template-columns:1fr 1fr; gap:15px}
+.form-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px}
 .form-group{display:flex; flex-direction:column}
 .form-group label{font-weight:bold; margin-bottom:5px; font-size:14px}
 .form-group input,.form-group select,.form-group textarea{padding:10px; border:1px solid #ddd; border-radius:4px}
 .btn-save{padding:12px 30px; background:#388e3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:16px; margin-top:15px}
 .btn-logout{background:#d32f2f; color:#fff; padding:8px 15px; border:none; border-radius:4px; cursor:pointer; float:right}
-.btn-delete{background:#d32f2f; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer; margin-right:5px}
-.btn-ship{background:#ff9f00; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer; margin-right:5px}
+.btn-add{background:#ff9f00; color:#fff; padding:8px 12px; border:none; border-radius:4px; cursor:pointer}
 .img-preview{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap}
 .img-box{position:relative}
 .img-box img{width:100px; height:100px; object-fit:cover; border:1px solid #ddd; border-radius:4px}
 .img-remove{position:absolute; top:-8px; right:-8px; background:red; color:#fff; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer}
-.chip{padding:8px 12px; border:2px solid #ddd; border-radius:20px; cursor:pointer; background:#fff; display:inline-block; margin:3px; position:relative}
+.chip{padding:8px 12px; border:2px solid #ddd; border-radius:20px; cursor:pointer; background:#fff; display:inline-block; margin:3px}
 .chip.active{border-color:#2874f0; background:#e3f2fd; color:#2874f0}
 .price-box{background:#e8f5e9; padding:15px; border-radius:8px; margin-top:10px}
-.status-select{padding:6px; border:1px solid #ddd; border-radius:4px}
-.stock-toggle{background:#388e3c; color:#fff; padding:4px 8px; border:none; border-radius:4px; cursor:pointer}
-.stock-toggle.off{background:#9e9e9e}
-  </style>
+.section-title{margin-top:20px; margin-bottom:10px; color:#2874f0; border-bottom:1px solid #ddd; padding-bottom:5px}
+</style>
 </head>
 <body>
-  <div style="background:#232f3e; color:#fff; padding:8px; text-align:center; font-size:12px">Seller Panel - Shopline Kerala</div>
-  <header style="background:#2874f0; color:#fff; padding:15px">
-    <div style="max-width:1200px; margin:auto; display:flex; justify-content:space-between">
-      <div>Shopline<span style="color:#ffe500">Kerala</span> Seller</div>
-      <button class="btn-logout" onclick="logout()">Logout</button>
-    </div>
-  </header>
+<div style="background:#232f3e; color:#fff; padding:8px; text-align:center">Seller Panel - Shopline Kerala</div>
+<header style="background:#2874f0; color:#fff; padding:15px">
+  <div style="max-width:1200px; margin:auto; display:flex; justify-content:space-between">
+    <div>Shopline<span style="color:#ffe500">Kerala</span> Seller</div>
+    <button class="btn-logout" onclick="logout()">Logout</button>
+  </div>
+</header>
 
-  <div class="dashboard">
-    <div class="tabs">
-      <button class="tab-btn active" onclick="openTab('orders')">📦 Orders</button>
-      <button class="tab-btn" onclick="openTab('products')">🛍️ My Products</button>
-      <button class="tab-btn" onclick="openTab('add')">➕ Add Product</button>
-    </div>
-
-    <div id="orders" class="tab-content active">
-      <h2>Recent Orders</h2>
-      <table class="orders-table"><thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead><tbody id="ordersList"></tbody></table>
-    </div>
-
-    <div id="products" class="tab-content">
-      <h2>My Products</h2>
-      <table class="products-table"><thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Category</th><th>Stock</th><th>Action</th></tr></thead><tbody id="productsList"></tbody></table>
-    </div>
-
-    <div id="add" class="tab-content">
-      <h2>Add New Product</h2>
-      <form id="addProductForm" onsubmit="addProduct(event)">
-        <div class="form-grid">
-          <div class="form-group"><label>Product Name *</label><input id="pName" required></div>
-          <div class="form-group"><label>Category *</label><input id="pCategory" required></div>
-          <div class="form-group"><label>Sub Category *</label><input id="pSubcategory" required></div>
-          <div class="form-group"><label>District *</label><select id="pDistrict" required><option value="">Select</option><option>Kannur</option><option>Kozhikode</option></select></div>
-        </div>
-        <div class="price-box">
-          <h4>Price Details</h4>
-          <div class="form-grid">
-            <div class="form-group"><label>Your Selling Price ₹ *</label><input id="pPrice" type="number" onkeyup="calcPrice()" required></div>
-            <div class="form-group"><label>Old Price ₹</label><input id="pOldPrice" type="number"></div>
-          </div>
-          <p>Platform Fee: ₹20 | <b>Customer Pays: ₹<span id="customerPrice">0</span></b></p>
-        </div>
-        <div class="form-group">
-          <label>Product Images *</label>
-          <input type="file" id="pImages" accept="image/*" multiple onchange="previewImages(event)">
-          <div class="img-preview" id="imgPreview"></div>
-        </div>
-        <div class="form-group"><label>Sizes</label><div id="sizeGrid"></div><input id="extraSize" placeholder="Add size"><button type="button" onclick="addExtraSize()">+ Add</button></div>
-        <div class="form-group"><label>Colors</label><div id="colorGrid"></div><input type="color" id="extraColor"><input id="colorName" placeholder="Color Name"><button type="button" onclick="addExtraColor()">+ Add</button></div>
-        <div class="form-group"><label>Description</label><textarea id="pDesc" rows="4"></textarea></div>
-        <button type="submit" class="btn-save">Save Product</button>
-      </form>
-    </div>
+<div class="dashboard">
+  <div class="tabs">
+    <button class="tab-btn active" onclick="openTab('add')">➕ Add Product</button>
   </div>
 
-<script>
-const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart", storageBucket: "willwin-cart.appspot.com"};
-</script>
+  <div id="add" class="tab-content active">
+    <h2>Add New Product</h2>
+    <form id="addProductForm" onsubmit="addProduct(event)">
+
+      <h3 class="section-title">1. Basic Details</h3>
+      <div class="form-grid">
+        <div class="form-group"><label>Product Name *</label><input id="pName" required></div>
+        <div class="form-group"><label>Brand</label><input id="pBrand" placeholder="e.g. H&M, Local"></div>
+        <div class="form-group">
+          <label>Category *</label>
+          <select id="pCategory" onchange="updateSubcategory()" required>
+            <option value="">Select Category</option>
+            <option value="Men">Men's Fashion</option>
+            <option value="Women">Women's Fashion</option>
+            <option value="Kids">Kids</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Sub Category *</label>
+          <select id="pSubcategory" required><option value="">Select Category First</option></select>
+        </div>
+        <div class="form-group"><label>District *</label>
+          <select id="pDistrict" required><option value="">Select</option><option>Kannur</option><option>Kozhikode</option><option>Ernakulam</option></select>
+        </div>
+      </div>
+
+      <h3 class="section-title">2. Price & Stock</h3>
+      <div class="form-grid">
+        <div class="form-group"><label>Your Selling Price ₹ *</label><input id="pPrice" type="number" onkeyup="calcPrice()" required></div>
+        <div class="form-group"><label>Old Price ₹</label><input id="pOldPrice" type="number"></div>
+        <div class="form-group"><label>Stock Quantity *</label><input id="pStockQty" type="number" value="10" required></div>
+      </div>
+      <div class="price-box"><p>Platform Fee: ₹20 | <b>Customer Pays: ₹<span id="customerPrice">0</span></b></p></div>
+
+      <h3 class="section-title">3. Shipping Details</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Product Weight *</label>
+          <div style="display:flex; gap:5px">
+            <input id="pWeight" type="number" placeholder="250" required>
+            <select id="pWeightUnit"><option value="g">Grams</option><option value="kg">KG</option></select>
+          </div>
+          <small>Weight after packing. Used for courier charge</small>
+        </div>
+      </div>
+
+      <h3 class="section-title">4. Product Attributes</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Fabric / Material</label>
+          <select id="pFabric">
+            <option value="">Select</option><option>Cotton</option><option>Polyester</option><option>Denim</option><option>Linen</option><option>Silk</option><option>Rayon</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Sleeve Type</label>
+          <select id="pSleeve">
+            <option value="">Select</option><option>Full Sleeve</option><option>Half Sleeve</option><option>3/4 Sleeve</option><option>Sleeveless</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Fit Type</label>
+          <select id="pFit"><option value="">Select</option><option>Regular Fit</option><option>Slim Fit</option><option>Loose Fit</option><option>Oversized</option></select>
+        </div>
+        <div class="form-group">
+          <label>Pattern</label>
+          <select id="pPattern"><option value="">Select</option><option>Solid</option><option>Printed</option><option>Striped</option><option>Checked</option><option>Embroidered</option></select>
+        </div>
+      </div>
+
+      <h3 class="section-title">5. Variants</h3>
+      <div class="form-group">
+        <label>Sizes</label>
+        <div id="sizeGrid"></div>
+        <div style="display:flex; gap:5px; margin-top:8px">
+          <input id="extraSize" placeholder="Add custom size e.g. 32">
+          <button type="button" class="btn-add" onclick="addExtraSize()">+ Add Size</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Colors</label>
+        <div id="colorGrid"></div>
+        <div style="display:flex; gap:5px; margin-top:8px; align-items:center">
+          <input type="color" id="extraColor" value="#000">
+          <input id="colorName" placeholder="Color Name e.g. Navy Blue">
+          <button type="button" class="btn-add" onclick="addExtraColor()">+ Add Color</button>
+        </div>
+      </div>
+
+      <h3 class="section-title">6. Images & Description</h3>
+      <div class="form-group">
+        <label>Product Images * Upload 1 to 4</label>
+        <input type="file" id="pImages" accept="image/*" multiple onchange="previewImages(event)">
+        <div class="img-preview" id="imgPreview"></div>
+      </div>
+      <div class="form-group"><label>Description</label><textarea id="pDesc" rows="4" placeholder="Product features, care instructions etc"></textarea></div>
+
+      <button type="submit" class="btn-save">Save Product</button>
+    </form>
+  </div>
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+
 <script>
+const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
-const storage = firebase.storage();
-let currentUser = null;
+
 let selectedSizes = [];
 let selectedColors = [];
 let uploadedImages = [];
-const orderStatuses = ['Order Received','Ready to Dispatch','Shipped','Delivered','Payment Pending','Payment Received','Return Requested','Cancelled'];
 
-auth.onAuthStateChanged(function(user){
-  if(!user) location.href='login.html';
-  else{ currentUser=user; loadOrders(); loadProducts(); renderSizeColor(); }
-});
+const categories = {
+  "Men": ["Shirts", "T-Shirts", "Jeans", "Trousers", "Kurta"],
+  "Women": ["Saree", "Kurtis", "Dress", "Leggings", "Tops"],
+  "Kids": ["Boys Tshirt", "Girls Dress", "Frocks", "Shorts"]
+};
 
+auth.onAuthStateChanged(function(user){ if(!user) location.href='login.html'; else{ renderSizeColor(); } });
 function logout(){ auth.signOut().then(function(){ location.href='login.html'; }); }
-function openTab(tab){
-  document.querySelectorAll('.tab-content').forEach(function(t){ t.classList.remove('active'); });
-  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
-  document.getElementById(tab).classList.add('active');
-  event.target.classList.add('active');
+function openTab(tab){ document.querySelectorAll('.tab-content').forEach(function(t){ t.classList.remove('active'); }); document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); }); document.getElementById(tab).classList.add('active'); }
+
+function updateSubcategory(){
+  var cat = document.getElementById('pCategory').value;
+  var sub = document.getElementById('pSubcategory');
+  sub.innerHTML = '<option value="">Select Subcategory</option>';
+  if(categories[cat]){ categories[cat].forEach(function(s){ sub.innerHTML += '<option value="' + s + '">' + s + '</option>'; }); }
 }
 
-function calcPrice(){
-  var price = Number(document.getElementById('pPrice').value)||0;
-  document.getElementById('customerPrice').innerText = price + 20;
-}
+function calcPrice(){ var price = Number(document.getElementById('pPrice').value)||0; document.getElementById('customerPrice').innerText = price + 20; }
 
-function previewImages(e){
-  uploadedImages = Array.from(e.target.files).slice(0,4);
-  var box = document.getElementById('imgPreview'); box.innerHTML='';
-  uploadedImages.forEach(function(f, i){
-    var reader = new FileReader();
-    reader.onload = function(ev){
-      box.innerHTML += '<div class="img-box"><img src="' + ev.target.result + '"><button type="button" class="img-remove" onclick="removeImage(' + i + ')">X</button></div>';
-    };
-    reader.readAsDataURL(f);
-  });
-}
+function previewImages(e){ uploadedImages = Array.from(e.target.files).slice(0,4); var box = document.getElementById('imgPreview'); box.innerHTML=''; uploadedImages.forEach(function(f, i){ var reader = new FileReader(); reader.onload = function(ev){ box.innerHTML += '<div class="img-box"><img src="' + ev.target.result + '"><button type="button" class="img-remove" onclick="removeImage(' + i + ')">X</button></div>'; }; reader.readAsDataURL(f); }); }
 function removeImage(index){ uploadedImages.splice(index,1); document.getElementById('pImages').value=''; previewImages({target:{files:uploadedImages}}); }
 
 function renderSizeColor(){
   var sizeGrid = document.getElementById('sizeGrid'); sizeGrid.innerHTML='';
-  ['XS','S','M','L','XL'].forEach(function(s){
-    var active = selectedSizes.includes(s)? 'active' : '';
-    sizeGrid.innerHTML += '<span class="chip ' + active + '" onclick="toggleSize(\'' + s + '\')">' + s + '</span>';
-  });
+  ['XS','S','M','L','XL','XXL'].forEach(function(s){ var active = selectedSizes.includes(s)? 'active' : ''; sizeGrid.innerHTML += '<span class="chip ' + active + '" onclick="toggleSize(\'' + s + '\')">' + s + '</span>'; });
+  selectedSizes.forEach(function(s){ if(!['XS','S','M','L','XL','XXL'].includes(s)){ sizeGrid.innerHTML += '<span class="chip active" onclick="toggleSize(\'' + s + '\')">' + s + ' X</span>'; } });
+
   var colorGrid = document.getElementById('colorGrid'); colorGrid.innerHTML='';
-  selectedColors.forEach(function(c){
-    colorGrid.innerHTML += '<span class="chip active" style="background:' + c.code + '; color:#fff">' + c.name + '<span onclick="removeColor(\'' + c.name + '\')"> X</span></span>';
-  });
+  selectedColors.forEach(function(c){ colorGrid.innerHTML += '<span class="chip active" style="background:' + c.code + '; color:#fff">' + c.name + ' <span onclick="removeColor(\'' + c.name + '\')">X</span></span>'; });
 }
-function toggleSize(s){ selectedSizes.includes(s)? selectedSizes=selectedSizes.filter(function(x){return x!=s}): selectedSizes.push(s); renderSizeColor(); }
-function addExtraColor(){ var code=document.getElementById('extraColor').value; var name=document.getElementById('colorName').value; if(name){ selectedColors.push({name:name,code:code}); document.getElementById('colorName').value=''; renderSizeColor(); }}
+function toggleSize(s){ selectedSizes.includes(s)? selectedSizes=selectedSizes.filter(function(x){return x!=s}) : selectedSizes.push(s); renderSizeColor(); }
+function addExtraSize(){ var val=document.getElementById('extraSize').value.trim().toUpperCase(); if(val &&!selectedSizes.includes(val)){ selectedSizes.push(val); document.getElementById('extraSize').value=''; renderSizeColor(); } else { alert("Enter unique size"); } }
+function addExtraColor(){ var code=document.getElementById('extraColor').value; var name=document.getElementById('colorName').value.trim(); if(!name) return alert("Enter Color Name"); if(!selectedColors.find(function(x){return x.name==name})){ selectedColors.push({name:name,code:code}); document.getElementById('colorName').value=''; renderSizeColor(); } else { alert("Color already added"); } }
 function removeColor(name){ selectedColors=selectedColors.filter(function(x){return x.name!=name}); renderSizeColor(); }
-function addExtraSize(){ var val=document.getElementById('extraSize').value.toUpperCase(); if(val &&!selectedSizes.includes(val)){ selectedSizes.push(val); document.getElementById('extraSize').value=''; renderSizeColor(); }}
 
 function addProduct(e){
   e.preventDefault();
-  var imageUrls = ["https://via.placeholder.com/400x400.png?text=No+Image"];
+  var weight = document.getElementById('pWeight').value + document.getElementById('pWeightUnit').value;
+
   var product = {
-    name: document.getElementById('pName').value, images: imageUrls,
-    price: Number(document.getElementById('pPrice').value), customerPrice: Number(document.getElementById('pPrice').value)+20,
-    category: document.getElementById('pCategory').value, subcategory: document.getElementById('pSubcategory').value,
-    district: document.getElementById('pDistrict').value, description: document.getElementById('pDesc').value, 
-    sizes: selectedSizes, colors: selectedColors, stock: true, sellerId: currentUser.uid, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    name: document.getElementById('pName').value,
+    brand: document.getElementById('pBrand').value,
+    images: ["https://via.placeholder.com/400x400.png?text=No+Image"],
+    price: Number(document.getElementById('pPrice').value),
+    customerPrice: Number(document.getElementById('pPrice').value)+20,
+    oldPrice: Number(document.getElementById('pOldPrice').value)||0,
+    stockQty: Number(document.getElementById('pStockQty').value),
+    category: document.getElementById('pCategory').value,
+    subcategory: document.getElementById('pSubcategory').value,
+    district: document.getElementById('pDistrict').value,
+    description: document.getElementById('pDesc').value,
+    sizes: selectedSizes,
+    colors: selectedColors,
+    weight: weight, // "250g" or "1kg"
+    fabric: document.getElementById('pFabric').value,
+    sleeve: document.getElementById('pSleeve').value,
+    fit: document.getElementById('pFit').value,
+    pattern: document.getElementById('pPattern').value,
+    stock: true,
+    sellerId: auth.currentUser.uid,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
   };
+
   db.collection("products").add(product).then(function(){
-    alert('Product Added!');
+    alert('✅ Product Added with all details!');
     document.getElementById('addProductForm').reset();
-    selectedSizes=[]; selectedColors=[]; uploadedImages=[]; document.getElementById('imgPreview').innerHTML='';
-    loadProducts(); openTab('products');
-  }).catch(function(error){ alert("Error: " + error.message); });
+    selectedSizes=[]; selectedColors=[]; uploadedImages=[];
+    document.getElementById('imgPreview').innerHTML='';
+    renderSizeColor();
+  }).catch(function(error){ alert("❌ Error: " + error.message); });
 }
-
-function updateOrderStatus(id, status){
-  db.collection("orders").doc(id).update({status:status}).then(function(){ alert("Status: " + status); loadOrders(); });
-}
-
-function downloadLabel(order){
-  var paymentMethod = order.paymentMethod || "COD";
-  var paymentBadge = paymentMethod === "COD"
-    ? '<div style="background:red; color:#fff; padding:8px; text-align:center; font-size:18px; font-weight:bold; border:3px dashed #fff">CASH ON DELIVERY: ₹' + order.finalTotal + '</div>'
-    : '<div style="background:green; color:#fff; padding:8px; text-align:center; font-size:18px; font-weight:bold">PREPAID: ₹' + order.finalTotal + '</div>';
-
-  var w = window.open('', '', 'height=900,width=800');
-  w.document.write('<html><head><title>Shipping Label - ' + order.id.substring(0,8) + '</title>');
-  w.document.write('<style>body{font-family:Arial; padding:15px} .box{border:2px solid #000; padding:12px; margin-bottom:12px} .header{text-align:center; border-bottom:3px solid #2874f0; padding-bottom:10px; margin-bottom:10px} .header h1{color:#2874f0; margin:0} .grid{display:flex; gap:10px} .grid .box{flex:1}</style>');
-  w.document.write('</head><body>');
-
-  // HEADER
-  w.document.write('<div class="header"><h1>Shopline Kerala</h1><p>Online Shopping | Talipparamba, Kannur, Kerala - 670141</p></div>');
-
-  // PAYMENT BADGE
-  w.document.write(paymentBadge);
-
-  // SHIPPER AND CUSTOMER SIDE BY SIDE
-  w.document.write('<div class="grid">');
-  
-  // SENDER DETAILS
-  w.document.write('<div class="box"><h3>FROM: SENDER DETAILS</h3>');
-  w.document.write('<b>Shopline Kerala</b><br>');
-  w.document.write('Your Store Name<br>'); // Change this to your shop name
-  w.document.write('Talipparamba, Kannur<br>');
-  w.document.write('Kerala - 670141<br>');
-  w.document.write('Phone: +91 9876543210</div>'); // Change to your number
-
-  // RECEIVER DETAILS
-  w.document.write('<div class="box"><h3>TO: DELIVERY DETAILS</h3>');
-  w.document.write('<b>' + (order.customer.name || 'N/A') + '</b><br>');
-  w.document.write((order.customer.address || 'Address not found') + '<br>');
-  w.document.write((order.customer.district || '') + ', Kerala<br>');
-  w.document.write('Phone: ' + (order.customer.phone || 'N/A') + '</div>');
-  
-  w.document.write('</div>');
-
-  // ORDER DETAILS
-  w.document.write('<div class="box"><h3>ORDER DETAILS</h3>');
-  w.document.write('<b>Order ID:</b> #' + order.id.substring(0,8) + '<br>');
-  w.document.write('<b>Total Items:</b> ' + order.items.length + '<br>');
-  w.document.write('<b>Payment Method:</b> ' + paymentMethod + '<br>');
-  w.document.write('<b>Total Amount:</b> ₹' + order.finalTotal + '<br>');
-  w.document.write('<b>Order Date:</b> ' + new Date().toLocaleDateString() + '</div>');
-
-  w.document.write('<p style="text-align:center; font-size:11px; margin-top:20px">*** This is a computer generated shipping label for Shopline Kerala ***</p>');
-  w.document.write('<script>window.print()<\/script>');
-  w.document.write('</body></html>');
-  w.document.close();
-}
-
-function loadOrders(){
-  db.collection("orders").orderBy("createdAt", "desc").get().then(function(snap){
-    var html='';
-    snap.forEach(function(d){ var o=d.data(); o.id=d.id;
-      var statusOptions='';
-      orderStatuses.forEach(function(s){ statusOptions += '<option ' + (o.status==s?'selected':'') + '>' + s + '</option>'; });
-      html += '<tr><td>#' + d.id.substring(0,6) + '</td><td>' + o.customer.name + '</td><td>' + o.items.length + '</td><td>₹' + o.finalTotal + '</td><td><select class="status-select" onchange="updateOrderStatus(\'' + d.id + '\', this.value)">' + statusOptions + '</select></td><td><button class="btn-ship" onclick="downloadLabel(' + JSON.stringify(o).replace(/"/g, '&quot;') + ')">Label</button><button class="btn-delete" onclick="deleteOrder(\'' + d.id + '\')">Delete</button></td></tr>';
-    });
-    document.getElementById('ordersList').innerHTML=html || '<tr><td colspan="6">No orders</td></tr>';
-  });
-}
-
-function deleteOrder(id){ if(confirm('Delete?')){ db.collection("orders").doc(id).delete().then(loadOrders); }}
-
-function toggleStock(id, stock){ db.collection("products").doc(id).update({stock:!stock}).then(loadProducts); }
-
-function loadProducts(){
-  db.collection("products").get().then(function(snap){
-    var html='';
-    snap.forEach(function(d){ var p=d.data(); if(p.sellerId === currentUser.uid){
-      html += '<tr><td><img src="' + p.images[0] + '" width="50"></td><td>' + p.name + '</td><td>₹' + p.customerPrice + '</td><td>' + p.category + '</td><td><button class="stock-toggle ' + (p.stock?'':'off') + '" onclick="toggleStock(\'' + d.id + '\', ' + p.stock + ')">' + (p.stock?'In Stock':'Out') + '</button></td><td><button class="btn-delete" onclick="deleteProduct(\'' + d.id + '\')">Delete</button></td></tr>';
-    }});
-    document.getElementById('productsList').innerHTML=html || '<tr><td colspan="6">No products</td></tr>';
-  });
-}
-function deleteProduct(id){ if(confirm('Delete?')){ db.collection("products").doc(id).delete().then(loadProducts); }}
 </script>
 </body>
 </html>
