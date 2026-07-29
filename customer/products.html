@@ -12,6 +12,8 @@
     .add-cart-btn{background:#fb641b; color:#fff; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; width:100%; margin-top:8px; font-weight:bold}
     .product-card{padding:10px; border:1px solid #eee; border-radius:8px; background:#fff}
     .product-card:hover{box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+    .oldPrice{text-decoration:line-through; color:#878787; font-size:12px; margin-left:5px}
+    .discount{color:#388e3c; font-size:12px; font-weight:bold}
   </style>
 </head>
 <body>
@@ -167,16 +169,24 @@ function displayProducts(products) {
     return;
   }
   products.forEach(p => {
+    // FIX 1: CLOUDINARY IMAGE
+    const img = p.images && p.images[0]? p.images[0] : 'img/no-image.jpg';
+    // FIX 2: USE customerPrice NOT price
+    const price = p.customerPrice || p.price || 0;
+    const oldPrice = p.oldPrice || price;
+    // FIX 3: CALCULATE DISCOUNT
+    const discount = oldPrice > price ? Math.round((1 - price/oldPrice)*100) : 0;
+
     container.innerHTML += `
       <div class="product-card" data-name="${p.name}">
-        <div onclick="location.href='product.html?id=${p.id}'" style="cursor:pointer">
-          <img src="${p.image}" style="width:100%; height:200px; object-fit:cover">
+        <div onclick="location.href='../product.html?id=${p.id}'" style="cursor:pointer">
+          <img src="${img}" style="width:100%; height:200px; object-fit:cover">
           <h3>${p.name}</h3>
-          <p class="price">₹${Number(p.price).toLocaleString()} <span class="oldPrice">₹${Number(p.oldPrice).toLocaleString()}</span></p>
-          <p style="color:green">${p.discount}% off</p>
-          <p><small>${p.subcategory} ${p.sub_subcategory ? ' > ' + p.sub_subcategory : ''}</small></p>
+          <p class="price">₹${Number(price).toLocaleString()} <span class="oldPrice">${oldPrice > price ? '₹'+Number(oldPrice).toLocaleString() : ''}</span></p>
+          <p class="discount">${discount > 0 ? discount+'% off' : ''}</p>
+          <p><small>📍 ${p.district} | ${p.category} > ${p.subcategory}</small></p>
         </div>
-        <button class="add-cart-btn" onclick="quickAddToCart('${p.id}', '${p.name}', '${p.image}', ${p.price})">Add to Cart</button>
+        <button class="add-cart-btn" onclick="quickAddToCart('${p.id}', '${p.name}', '${img}', ${price})">Add to Cart</button>
       </div>
     `;
   });
@@ -234,9 +244,9 @@ function applyFilters() {
   if(categoryFilter.value != 'all') filtered = filtered.filter(p => p.category == categoryFilter.value);
   if(subcategoryFilter.value != 'all') filtered = filtered.filter(p => p.subcategory == subcategoryFilter.value);
   
-  if(priceFilter.value == '0-1000') filtered = filtered.filter(p => p.price <= 1000);
-  if(priceFilter.value == '1000-5000') filtered = filtered.filter(p => p.price > 1000 && p.price <= 5000);
-  if(priceFilter.value == '5000+') filtered = filtered.filter(p => p.price > 5000);
+  if(priceFilter.value == '0-1000') filtered = filtered.filter(p => (p.customerPrice || p.price) <= 1000);
+  if(priceFilter.value == '1000-5000') filtered = filtered.filter(p => (p.customerPrice || p.price) > 1000 && (p.customerPrice || p.price) <= 5000);
+  if(priceFilter.value == '5000+') filtered = filtered.filter(p => (p.customerPrice || p.price) > 5000);
   
   displayProducts(filtered);
 }
