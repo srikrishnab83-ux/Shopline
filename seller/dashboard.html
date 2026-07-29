@@ -5,155 +5,228 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Seller Dashboard - Shopline Kerala</title>
 <style>
-body{font-family:Arial; background:#f1f3f6; padding:20px}
-.container{max-width:800px; margin:auto; background:#fff; padding:20px; border-radius:8px}
-input, select, textarea{width:100%; padding:10px; margin:8px 0; border:1px solid #ddd; border-radius:4px}
-label{font-weight:bold; margin-top:10px; display:block}
-.btn{background:#fb641b; color:#fff; padding:12px; border:none; border-radius:4px; cursor:pointer; width:100%; font-weight:bold}
-.preview img{width:100px; height:100px; object-fit:cover; margin:5px; border:1px solid #ddd}
+.dashboard{max-width:1200px; margin:20px auto; padding:20px}
+.tabs{display:flex; gap:10px; margin-bottom:20px; border-bottom:2px solid #eee}
+.tab-btn{padding:12px 20px; border:none; background:none; cursor:pointer; font-size:16px; font-weight:bold}
+.tab-btn.active{border-bottom:3px solid #2874f0; color:#2874f0}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.form-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px}
+.form-group{display:flex; flex-direction:column}
+.form-group label{font-weight:bold; margin-bottom:5px; font-size:14px}
+.form-group input,.form-group select,.form-group textarea{padding:10px; border:1px solid #ddd; border-radius:4px}
+.btn-save{padding:12px 30px; background:#388e3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:16px; margin-top:15px}
+.btn-logout{background:#d32f2f; color:#fff; padding:8px 15px; border:none; border-radius:4px; cursor:pointer; float:right}
+.btn-add{background:#ff9f00; color:#fff; padding:8px 12px; border:none; border-radius:4px; cursor:pointer}
+.img-preview{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap}
+.img-box{position:relative}
+.img-box img{width:100px; height:100px; object-fit:cover; border:1px solid #ddd; border-radius:4px}
+.img-remove{position:absolute; top:-8px; right:-8px; background:red; color:#fff; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer}
+.chip{padding:8px 12px; border:2px solid #ddd; border-radius:20px; cursor:pointer; background:#fff; display:inline-block; margin:3px}
+.chip.active{border-color:#2874f0; background:#e3f2fd; color:#2874f0}
+.price-box{background:#e8f5e9; padding:15px; border-radius:8px; margin-top:10px}
+.section-title{margin-top:20px; margin-bottom:10px; color:#2874f0; border-bottom:1px solid #ddd; padding-bottom:5px}
 </style>
 </head>
 <body>
-<div class="container">
-  <h2>Add New Product</h2>
+<div style="background:#232f3e; color:#fff; padding:8px; text-align:center">Seller Panel - Shopline Kerala</div>
+<header style="background:#2874f0; color:#fff; padding:15px">
+  <div style="max-width:1200px; margin:auto; display:flex; justify-content:space-between">
+    <div>Shopline<span style="color:#ffe500">Kerala</span> Seller</div>
+    <button class="btn-logout" onclick="logout()">Logout</button>
+  </div>
+</header>
 
-  <label>Product Name</label>
-  <input type="text" id="name" placeholder="Ex: Cotton Kurti for Women">
+<div class="dashboard">
+  <div class="tabs">
+    <button class="tab-btn active" onclick="openTab('add')">➕ Add Product</button>
+  </div>
 
-  <label>Upload Images - From Cloudinary</label>
-  <input type="file" id="images" multiple accept="image/*">
-  <div class="preview" id="preview"></div>
+  <div id="add" class="tab-content active">
+    <h2>Add New Product</h2>
+    <form id="addProductForm" onsubmit="addProduct(event)">
 
-  <label>Category</label>
-  <select id="category" required>
-    <option value="">Select Category</option>
-    <option value="Mobiles">Mobiles</option>
-    <option value="Fashion">Fashion</option>
-    <option value="Electronics">Electronics</option>
-    <option value="Home">Home & Kitchen</option>
-    <option value="Grocery">Grocery</option>
-    <option value="Beauty">Beauty & Personal Care</option>
-    <option value="Furniture">Furniture</option>
-    <option value="Toys">Toys & Baby</option>
-    <option value="Sports">Sports & Fitness</option>
-    <option value="Books">Books & Stationery</option>
-    <option value="Automotive">Automotive</option>
-    <option value="Jewelry">Jewelry</option>
-  </select>
+      <h3 class="section-title">1. Basic Details</h3>
+      <div class="form-grid">
+        <div class="form-group"><label>Product Name *</label><input id="pName" required></div>
+        <div class="form-group"><label>Brand</label><input id="pBrand" placeholder="e.g. H&M, Local"></div>
+        <div class="form-group">
+          <label>Category *</label>
+          <select id="pCategory" onchange="updateSubcategory()" required>
+            <option value="">Select Category</option>
+            <option value="Mobiles">Mobiles</option>
+            <option value="Fashion">Fashion</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Home">Home & Kitchen</option>
+            <option value="Grocery">Grocery</option>
+            <option value="Beauty">Beauty & Personal Care</option>
+            <option value="Furniture">Furniture</option>
+            <option value="Toys">Toys & Baby</option>
+            <option value="Sports">Sports & Fitness</option>
+            <option value="Books">Books & Stationery</option>
+            <option value="Automotive">Automotive</option>
+            <option value="Jewelry">Jewelry</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Sub Category *</label>
+          <select id="pSubcategory" required><option value="">Select Category First</option></select>
+        </div>
+        <div class="form-group">
+          <label>District *</label>
+          <select id="pDistrict" required>
+            <option value="">Select District</option>
+            <option>Thiruvananthapuram</option><option>Kollam</option><option>Pathanamthitta</option>
+            <option>Alappuzha</option><option>Kottayam</option><option>Idukki</option>
+            <option>Ernakulam</option><option>Thrissur</option><option>Palakkad</option>
+            <option>Malappuram</option><option>Kozhikode</option><option>Wayanad</option>
+            <option>Kannur</option><option>Kasaragod</option>
+          </select>
+        </div>
+      </div>
 
-  <label>Subcategory</label>
-  <select id="subcategory" required>
-    <option value="">Select Subcategory</option>
-  </select>
+      <h3 class="section-title">2. Price & Stock</h3>
+      <div class="form-grid">
+        <div class="form-group"><label>Your Selling Price ₹ *</label><input id="pPrice" type="number" onkeyup="calcPrice()" required></div>
+        <div class="form-group"><label>Old Price ₹ MRP</label><input id="pOldPrice" type="number"></div>
+        <div class="form-group"><label>Stock Quantity *</label><input id="pStockQty" type="number" value="10" required></div>
+      </div>
+      <div class="price-box"><p>Platform Fee: ₹20 | <b>Customer Pays: ₹<span id="customerPrice">0</span></b></p></div>
 
-  <label>District</label>
-  <select id="district" required>
-    <option value="">Select District</option>
-    <option>Thiruvananthapuram</option><option>Kollam</option><option>Pathanamthitta</option>
-    <option>Alappuzha</option><option>Kottayam</option><option>Idukki</option>
-    <option>Ernakulam</option><option>Thrissur</option><option>Palakkad</option>
-    <option>Malappuram</option><option>Kozhikode</option><option>Wayanad</option>
-    <option>Kannur</option><option>Kasaragod</option>
-  </select>
+      <h3 class="section-title">3. Variants</h3>
+      <div class="form-group">
+        <label>Sizes</label>
+        <div id="sizeGrid"></div>
+        <div style="display:flex; gap:5px; margin-top:8px">
+          <input id="extraSize" placeholder="Add custom size e.g. 32">
+          <button type="button" class="btn-add" onclick="addExtraSize()">+ Add Size</button>
+        </div>
+      </div>
 
-  <label>Selling Price - Customer</label>
-  <input type="number" id="customerPrice" placeholder="₹499">
+      <div class="form-group">
+        <label>Colors</label>
+        <div id="colorGrid"></div>
+        <div style="display:flex; gap:5px; margin-top:8px; align-items:center">
+          <input type="color" id="extraColor" value="#000">
+          <input id="colorName" placeholder="Color Name e.g. Navy Blue">
+          <button type="button" class="btn-add" onclick="addExtraColor()">+ Add Color</button>
+        </div>
+      </div>
 
-  <label>Old Price - For Discount</label>
-  <input type="number" id="oldPrice" placeholder="₹999">
+      <h3 class="section-title">4. Images & Description</h3>
+      <div class="form-group">
+        <label>Product Images * Upload 1 to 4</label>
+        <input type="file" id="pImages" accept="image/*" multiple onchange="previewImages(event)">
+        <div class="img-preview" id="imgPreview"></div>
+      </div>
+      <div class="form-group"><label>Description</label><textarea id="pDesc" rows="4"></textarea></div>
 
-  <label>Stock Quantity</label>
-  <input type="number" id="stockQty" placeholder="10">
-
-  <label>Description</label>
-  <textarea id="description" rows="4" placeholder="Product details..."></textarea>
-
-  <button class="btn" onclick="addProduct()">Add Product</button>
+      <button type="submit" class="btn-save">Save Product</button>
+    </form>
+  </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
 <script>
 const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
 firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 const db = firebase.firestore();
+
+let selectedSizes = [];
+let selectedColors = [];
+let uploadedImageUrls = []; // now stores Cloudinary URLs
 
 // CLOUDINARY CONFIG
 const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/omve98do/image/upload";
 const CLOUDINARY_UPLOAD_PRESET = "shoplinekerala";
 
-// CATEGORIES + SUBCATEGORIES
-const subcats = {
+const categories = {
   "Mobiles": ["Smartphones", "Feature Phones", "Mobile Accessories", "Tablets", "Power Banks"],
   "Fashion": ["Men's Wear", "Women's Wear", "Kids Wear", "T-Shirts", "Shirts", "Jeans", "Kurtis", "Sarees", "Dresses", "Footwear", "Bags"],
-  "Electronics": ["TV", "Smart TV", "Laptops", "Headphones", "Speakers", "Camera", "Smart Watch", "Tablet"],
-  "Home": ["Kitchen", "Furniture", "Tables", "Chairs", "Bedding", "Decor", "Mixer Grinder", "Cookware"],
-  "Grocery": ["Rice", "Oil", "Spices", "Snacks", "Beverages", "Fruits & Vegetables", "Dairy", "Tea & Coffee"],
-  "Beauty": ["Makeup", "Skincare", "Haircare", "Perfumes", "Men's Grooming", "Bath & Body"],
-  "Furniture": ["Sofa", "Bed", "Wardrobe", "Dining Table", "Study Table", "Cupboard"],
-  "Toys": ["Baby Toys", "Educational Toys", "Dolls", "Action Figures", "Games"],
-  "Sports": ["Cricket", "Football", "Gym Equipment", "Yoga", "Cycles", "Badminton"],
-  "Books": ["School Books", "Novels", "Stationery", "Art Supplies", "Magazines"],
-  "Automotive": ["Bike Accessories", "Car Accessories", "Helmets", "Car Care"],
-  "Jewelry": ["Gold Jewelry", "Silver Jewelry", "Bangles", "Earrings", "Necklace"]
-}
+  "Electronics": ["TV", "Smart TV", "Laptops", "Headphones", "Speakers", "Camera", "Smart Watch"],
+  "Home": ["Kitchen", "Furniture", "Tables", "Chairs", "Bedding", "Decor", "Mixer Grinder"],
+  "Grocery": ["Rice", "Oil", "Spices", "Snacks", "Beverages", "Fruits & Vegetables"],
+  "Beauty": ["Makeup", "Skincare", "Haircare", "Perfumes", "Men's Grooming"],
+  "Furniture": ["Sofa", "Bed", "Wardrobe", "Dining Table", "Study Table"],
+  "Toys": ["Baby Toys", "Educational Toys", "Dolls", "Action Figures"],
+  "Sports": ["Cricket", "Football", "Gym Equipment", "Yoga", "Cycles"],
+  "Books": ["School Books", "Novels", "Stationery", "Art Supplies"],
+  "Automotive": ["Bike Accessories", "Car Accessories", "Helmets"],
+  "Jewelry": ["Gold Jewelry", "Silver Jewelry", "Bangles", "Earrings"]
+};
 
-document.getElementById('category').onchange = function(){
-  let cat = this.value;
-  let sub = document.getElementById('subcategory');
+auth.onAuthStateChanged(function(user){ if(!user) location.href='login.html'; else{ renderSizeColor(); } });
+function logout(){ auth.signOut().then(function(){ location.href='login.html'; }); }
+function openTab(tab){ document.querySelectorAll('.tab-content').forEach(function(t){ t.classList.remove('active'); }); document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); }); document.getElementById(tab).classList.add('active'); }
+
+function updateSubcategory(){
+  var cat = document.getElementById('pCategory').value;
+  var sub = document.getElementById('pSubcategory');
   sub.innerHTML = '<option value="">Select Subcategory</option>';
-  if(subcats[cat]){
-    subcats[cat].forEach(s => {
-      sub.innerHTML += `<option value="${s}">${s}</option>`
-    })
-  }
+  if(categories[cat]){ categories[cat].forEach(function(s){ sub.innerHTML += '<option value="' + s + '">' + s + '</option>'; }); }
 }
 
-// CLOUDINARY UPLOAD
-document.getElementById('images').onchange = async function(e){
-  let files = e.target.files;
-  let preview = document.getElementById('preview');
-  preview.innerHTML = '';
+function calcPrice(){ var price = Number(document.getElementById('pPrice').value)||0; document.getElementById('customerPrice').innerText = price + 20; }
+
+async function previewImages(e){
+  let files = Array.from(e.target.files).slice(0,4);
+  let box = document.getElementById('imgPreview'); box.innerHTML='';
+  uploadedImageUrls = [];
   for(let file of files){
     let formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
     let res = await fetch(CLOUDINARY_URL, {method:'POST', body:formData});
     let data = await res.json();
-    preview.innerHTML += `<img src="${data.secure_url}">`;
+    uploadedImageUrls.push(data.secure_url);
+    box.innerHTML += '<div class="img-box"><img src="' + data.secure_url + '"></div>';
   }
 }
 
-async function addProduct(){
-  let files = document.getElementById('images').files;
-  let imageUrls = [];
+function renderSizeColor(){
+  var sizeGrid = document.getElementById('sizeGrid'); sizeGrid.innerHTML='';
+  ['XS','S','M','L','XL','XXL'].forEach(function(s){ var active = selectedSizes.includes(s)? 'active' : ''; sizeGrid.innerHTML += '<span class="chip ' + active + '" onclick="toggleSize(\'' + s + '\')">' + s + '</span>'; });
+  var colorGrid = document.getElementById('colorGrid'); colorGrid.innerHTML='';
+  selectedColors.forEach(function(c){ colorGrid.innerHTML += '<span class="chip active" style="background:' + c.code + '; color:#fff">' + c.name + ' <span onclick="removeColor(\'' + c.name + '\')">X</span></span>'; });
+}
+function toggleSize(s){ selectedSizes.includes(s)? selectedSizes=selectedSizes.filter(function(x){return x!=s}) : selectedSizes.push(s); renderSizeColor(); }
+function addExtraSize(){ var val=document.getElementById('extraSize').value.trim().toUpperCase(); if(val &&!selectedSizes.includes(val)){ selectedSizes.push(val); document.getElementById('extraSize').value=''; renderSizeColor(); } }
+function addExtraColor(){ var code=document.getElementById('extraColor').value; var name=document.getElementById('colorName').value.trim(); if(!name) return alert("Enter Color Name"); if(!selectedColors.find(function(x){return x.name==name})){ selectedColors.push({name:name,code:code}); document.getElementById('colorName').value=''; renderSizeColor(); } }
+function removeColor(name){ selectedColors=selectedColors.filter(function(x){return x.name!=name}); renderSizeColor(); }
 
-  // Upload to Cloudinary
-  for(let file of files){
-    let formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-    let res = await fetch(CLOUDINARY_URL, {method:'POST', body:formData});
-    let data = await res.json();
-    imageUrls.push(data.secure_url);
-  }
+async function addProduct(e){
+  e.preventDefault();
+  if(uploadedImageUrls.length === 0) return alert("Upload at least 1 image");
 
-  let product = {
-    name: document.getElementById('name').value,
-    images: imageUrls, // SAVE AS ARRAY
-    category: document.getElementById('category').value,
-    subcategory: document.getElementById('subcategory').value,
-    district: document.getElementById('district').value,
-    customerPrice: Number(document.getElementById('customerPrice').value),
-    oldPrice: Number(document.getElementById('oldPrice').value),
-    stockQty: Number(document.getElementById('stockQty').value),
-    description: document.getElementById('description').value,
-    createdAt: new Date()
+  var product = {
+    name: document.getElementById('pName').value,
+    brand: document.getElementById('pBrand').value,
+    images: uploadedImageUrls, // CLOUDINARY URLS
+    price: Number(document.getElementById('pPrice').value),
+    customerPrice: Number(document.getElementById('pPrice').value)+20,
+    oldPrice: Number(document.getElementById('pOldPrice').value)||0,
+    stockQty: Number(document.getElementById('pStockQty').value),
+    category: document.getElementById('pCategory').value,
+    subcategory: document.getElementById('pSubcategory').value,
+    district: document.getElementById('pDistrict').value,
+    description: document.getElementById('pDesc').value,
+    sizes: selectedSizes,
+    colors: selectedColors,
+    sellerId: auth.currentUser.uid,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
   };
 
   await db.collection("products").add(product);
-  alert("Product Added Successfully!");
-  location.reload();
+  alert('✅ Product Added Successfully!');
+  document.getElementById('addProductForm').reset();
+  selectedSizes=[]; selectedColors=[]; uploadedImageUrls=[];
+  document.getElementById('imgPreview').innerHTML='';
+  document.getElementById('customerPrice').innerText='0';
+  renderSizeColor();
 }
 </script>
 </body>
