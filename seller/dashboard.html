@@ -6,38 +6,38 @@
   <script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>
   <link rel="stylesheet" href="../css/style.css">
   <style>
-  .dashboard{max-width:1200px; margin:20px auto; padding:20px}
-  .tabs{display:flex; gap:10px; margin-bottom:20px; border-bottom:2px solid #eee; flex-wrap:wrap}
-  .tab-btn{padding:12px 20px; border:none; background:none; cursor:pointer; font-size:16px; font-weight:bold}
-  .tab-btn.active{border-bottom:3px solid #2874f0; color:#2874f0}
-  .tab-content{display:none}
-  .tab-content.active{display:block}
-  .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:15px; margin-bottom:30px}
-  .stat-card{background:#2874f0; color:#fff; padding:20px; border-radius:8px; text-align:center}
-  .orders-table,.products-table{width:100%; background:#fff; border-radius:8px; overflow:hidden; margin-top:15px; font-size:14px}
-  .orders-table th,.products-table th{background:#f5f5f5; padding:12px; text-align:left}
-  .orders-table td,.products-table td{padding:12px; border-bottom:1px solid #eee}
-  .form-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px}
-  .form-group{display:flex; flex-direction:column}
-  .form-group label{font-weight:bold; margin-bottom:5px; font-size:14px}
-  .form-group input,.form-group select,.form-group textarea{padding:10px; border:1px solid #ddd; border-radius:4px}
-  .btn-save{padding:12px 30px; background:#388e3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:16px; margin-top:15px}
-  .btn-logout{background:#d32f2f; color:#fff; padding:8px 15px; border:none; border-radius:4px; cursor:pointer;}
-  .btn-back{background:#555; color:#fff; padding:8px 15px; border:none; border-radius:4px; cursor:pointer; margin-right:8px}
-  .btn-delete{background:#d32f2f; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer}
-  .btn-add{background:#2874f0; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer}
-  .btn-upload{padding:10px 20px; background:#2874f0; color:#fff; border:none; border-radius:4px; cursor:pointer; font-weight:bold; width:100%}
+ .dashboard{max-width:1200px; margin:20px auto; padding:20px}
+ .tabs{display:flex; gap:10px; margin-bottom:20px; border-bottom:2px solid #eee; flex-wrap:wrap}
+ .tab-btn{padding:12px 20px; border:none; background:none; cursor:pointer; font-size:16px; font-weight:bold}
+ .tab-btn.active{border-bottom:3px solid #2874f0; color:#2874f0}
+ .tab-content{display:none}
+ .tab-content.active{display:block}
+ .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:15px; margin-bottom:30px}
+ .stat-card{background:#2874f0; color:#fff; padding:20px; border-radius:8px; text-align:center}
+ .orders-table,.products-table{width:100%; background:#fff; border-radius:8px; overflow:hidden; margin-top:15px; font-size:14px}
+ .orders-table th,.products-table th{background:#f5f5f5; padding:12px; text-align:left}
+ .orders-table td,.products-table td{padding:12px; border-bottom:1px solid #eee}
+ .form-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px}
+ .form-group{display:flex; flex-direction:column}
+ .form-group label{font-weight:bold; margin-bottom:5px; font-size:14px}
+ .form-group input,.form-group select,.form-group textarea{padding:10px; border:1px solid #ddd; border-radius:4px}
+ .btn-save{padding:12px 30px; background:#388e3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:16px; margin-top:15px}
+ .btn-logout{background:#d32f2f; color:#fff; padding:8px 15px; border:none; border-radius:4px; cursor:pointer;}
+ .btn-back{background:#555; color:#fff; padding:8px 15px; border:none; border-radius:4px; cursor:pointer; margin-right:8px}
+ .btn-delete{background:#d32f2f; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer}
+ .btn-add{background:#2874f0; color:#fff; padding:8px 12px; border:none; border-radius:4px; cursor:pointer}
+ .btn-upload{padding:10px 20px; background:#2874f0; color:#fff; border:none; border-radius:4px; cursor:pointer; font-weight:bold; width:100%}
 
-  .img-preview{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap}
-  .img-box{position:relative}
-  .img-box img{width:100px; height:100px; object-fit:cover; border:1px solid #ddd; border-radius:4px}
-  .img-box span{position:absolute; top:-8px; right:-8px; background:red; color:#fff; cursor:pointer; padding:2px 6px; border-radius:50%; font-size:12px}
-  .size-grid,.color-grid{display:flex; gap:10px; flex-wrap:wrap; margin-top:8px}
-  .chip{padding:8px 12px; border:2px solid #ddd; border-radius:20px; cursor:pointer; background:#fff}
-  .chip.active{border-color:#2874f0; background:#e3f2fd; color:#2874f0; font-weight:bold}
-  .note{background:#fff3cd; padding:10px; border-left:4px solid #ffc107; margin:15px 0; font-size:13px}
-  .price-box{background:#e8f5e9; padding:15px; border-radius:8px; margin-top:10px}
-  .section-title{margin-top:20px; margin-bottom:10px; color:#2874f0; border-bottom:1px solid #ddd; padding-bottom:5px}
+ .img-preview{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap}
+ .img-box{position:relative}
+ .img-box img{width:100px; height:100px; object-fit:cover; border:1px solid #ddd; border-radius:4px}
+ .img-box span{position:absolute; top:-8px; right:-8px; background:red; color:#fff; cursor:pointer; padding:2px 6px; border-radius:50%; font-size:12px}
+ .size-grid,.color-grid{display:flex; gap:10px; flex-wrap:wrap; margin-top:8px}
+ .chip{padding:8px 12px; border:2px solid #ddd; border-radius:20px; cursor:pointer; background:#fff; display:flex; align-items:center; gap:5px}
+ .chip.active{border-color:#2874f0; background:#e3f2fd; color:#2874f0; font-weight:bold}
+ .note{background:#fff3cd; padding:10px; border-left:4px solid #ffc107; margin:15px 0; font-size:13px}
+ .price-box{background:#e8f5e9; padding:15px; border-radius:8px; margin-top:10px}
+ .section-title{margin-top:20px; margin-bottom:10px; color:#2874f0; border-bottom:1px solid #ddd; padding-bottom:5px}
   </style>
 </head>
 <body>
@@ -54,9 +54,9 @@
 
   <div class="dashboard">
     <div class="tabs">
-      <button class="tab-btn active" onclick="openTab('orders')">📦 Orders</button>
-      <button class="tab-btn" onclick="openTab('products')">🛍️ My Products</button>
-      <button class="tab-btn" onclick="openTab('add')">➕ Add Product</button>
+      <button class="tab-btn active" onclick="openTab(event,'orders')">📦 Orders</button>
+      <button class="tab-btn" onclick="openTab(event,'products')">🛍️ My Products</button>
+      <button class="tab-btn" onclick="openTab(event,'add')">➕ Add Product</button>
     </div>
 
     <!-- ORDERS TAB -->
@@ -90,7 +90,7 @@
           <div class="form-group"><label>Category *</label>
             <select id="pCategory" onchange="loadSubCat()" required><option value="">Select</option><option>Men</option><option>Women</option><option>Kids</option></select>
           </div>
-          <div class="form-group"><label>Sub Category *</label><select id="pSubcategory" required></select></div>
+          <div class="form-group"><label>Sub Category *</label><select id="pSubcategory" required><option value="">Select Category First</option></select></div>
 
           <div class="form-group"><label>District *</label>
             <select id="pDistrict" required>
@@ -114,9 +114,28 @@
           <p>Platform Fee: ₹20 | <b>Customer Pays: ₹<span id="customerPrice">0</span></b></p>
         </div>
 
-        <h3 class="section-title">3. Variants</h3>
-        <div class="form-group"><label>Sizes</label><div class="size-grid" id="sizeGrid"></div></div>
-        <div class="form-group"><label>Colors</label><div class="color-grid" id="colorGrid"></div></div>
+        <h3 class="section-title">3. Variants - Size & Color</h3>
+
+        <!-- SIZE ADDER -->
+        <div class="form-group">
+          <label>Sizes</label>
+          <div class="size-grid" id="sizeGrid"></div>
+          <div style="display:flex; gap:8px; margin-top:8px">
+            <input id="extraSize" placeholder="Add custom size e.g. 38, 40" style="flex:1">
+            <button type="button" class="btn-add" onclick="addExtraSize()">+ Add Size</button>
+          </div>
+        </div>
+
+        <!-- COLOR ADDER -->
+        <div class="form-group">
+          <label>Colors</label>
+          <div class="color-grid" id="colorGrid"></div>
+          <div style="display:flex; gap:8px; margin-top:10px; align-items:center; flex-wrap:wrap">
+            <input type="color" id="extraColor" value="#ff0000" style="width:50px; height:40px; border:2px solid #ddd; border-radius:4px; cursor:pointer">
+            <input id="colorName" placeholder="Color Name e.g. Red, Navy Blue" style="flex:1">
+            <button type="button" class="btn-add" onclick="addExtraColor()">+ Add Color</button>
+          </div>
+        </div>
 
         <h3 class="section-title">4. Images & Description</h3>
         <div class="form-group">
@@ -141,8 +160,10 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 
 let currentUser = null;
-let selectedSizes = []; let selectedColors = []; let uploadedUrls = [];
-const subCategories = {"Men": ["Shirts", "T-Shirts", "Jeans"], "Women": ["Saree", "Kurtis", "Dress"], "Kids": ["Frocks", "T-Shirts"]};
+let selectedSizes = [];
+let selectedColors = [];
+let uploadedUrls = [];
+const subCategories = {"Men": ["Shirts", "T-Shirts", "Jeans", "Pants"], "Women": ["Saree", "Kurtis", "Dress", "Tops"], "Kids": ["Frocks", "T-Shirts", "Shorts"]};
 
 // LOGIN CHECK
 auth.onAuthStateChanged(user => {
@@ -151,13 +172,13 @@ auth.onAuthStateChanged(user => {
 });
 
 function logout(){ auth.signOut().then(() => location.href = 'login.html'); }
-function goHome(){ location.href = '../index.html'; } // Back button
+function goHome(){ location.href = '../index.html'; }
 
-function openTab(tab){
+function openTab(evt, tab){
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById(tab).classList.add('active');
-  event.target.classList.add('active');
+  evt.currentTarget.classList.add('active');
 }
 
 // SUBCATEGORY LOAD
@@ -171,15 +192,43 @@ function loadSubCat(){
 // PRICE CALC
 function calcPrice(){ const price = Number(document.getElementById('pPrice').value)||0; document.getElementById('customerPrice').innerText = price + 20; }
 
-// SIZE + COLOR
+// SIZE + COLOR FUNCTIONS
 function renderSizeColor(){
-  const sizeGrid = document.getElementById('sizeGrid'); sizeGrid.innerHTML='';
-  ['S','M','L','XL','XXL'].forEach(s => { const active = selectedSizes.includes(s)? 'active':''; sizeGrid.innerHTML += `<div class="chip ${active}" onclick="toggleSize('${s}')">${s}</div>`; });
-  const colorGrid = document.getElementById('colorGrid'); colorGrid.innerHTML='';
-  selectedColors.forEach(c => { colorGrid.innerHTML += `<div class="chip active" style="background:${c.code}; color:#fff">${c.name} <span onclick="removeColor('${c.name}')" style="cursor:pointer">X</span></div>`; });
+  const sizeGrid = document.getElementById('sizeGrid');
+  sizeGrid.innerHTML='';
+  ['S','M','L','XL','XXL'].forEach(s => {
+    const active = selectedSizes.includes(s)? 'active':'';
+    sizeGrid.innerHTML += `<div class="chip ${active}" onclick="toggleSize('${s}')">${s} ${selectedSizes.includes(s)? '<span onclick="removeSize(\''+s+'\'); event.stopPropagation();" style="cursor:pointer">X</span>' : ''}</div>`;
+  });
+
+  const colorGrid = document.getElementById('colorGrid');
+  colorGrid.innerHTML='';
+  selectedColors.forEach(c => {
+    colorGrid.innerHTML += `<div class="chip active" style="background:${c.code}; color:#fff">${c.name} <span onclick="removeColor('${c.name}')" style="cursor:pointer; font-weight:bold">X</span></div>`;
+  });
 }
-function toggleSize(s){ selectedSizes.includes(s)? selectedSizes=selectedSizes.filter(x=>x!=s) : selectedSizes.push(s); renderSizeColor(); }
-function removeColor(n){ selectedColors=selectedColors.filter(x=>x.name!=n); renderSizeColor(); }
+
+function toggleSize(s){
+  selectedSizes.includes(s)? selectedSizes=selectedSizes.filter(x=>x!=s) : selectedSizes.push(s);
+  renderSizeColor();
+}
+function addExtraSize(){
+  const val = document.getElementById('extraSize').value.toUpperCase().trim();
+  if(!val){ alert("Enter size"); return; }
+  if(!selectedSizes.includes(val)){ selectedSizes.push(val); document.getElementById('extraSize').value=''; renderSizeColor(); }
+}
+function removeSize(s){ selectedSizes=selectedSizes.filter(x=>x!=s); renderSizeColor(); }
+
+function addExtraColor(){
+  const code = document.getElementById('extraColor').value;
+  const name = document.getElementById('colorName').value.trim();
+  if(!name){ alert("Please enter color name"); return; }
+  if(selectedColors.find(x=>x.name.toLowerCase()==name.toLowerCase())){ alert("Color already added"); return; }
+  selectedColors.push({name:name, code:code});
+  document.getElementById('colorName').value='';
+  renderSizeColor();
+}
+function removeColor(name){ selectedColors=selectedColors.filter(x=>x.name!=name); renderSizeColor(); }
 
 // CLOUDINARY UPLOAD
 var cloudName = "omve98do";
@@ -209,13 +258,38 @@ function addProduct(e){
   };
   db.collection("products").add(product).then(() => {
     alert('✅ Product Added Successfully!');
-    document.getElementById('addProductForm').reset(); selectedSizes=[]; selectedColors=[]; uploadedUrls=[]; document.getElementById('imgPreview').innerHTML=''; renderSizeColor(); loadProducts(); openTab('products');
+    document.getElementById('addProductForm').reset();
+    selectedSizes=[]; selectedColors=[]; uploadedUrls=[];
+    document.getElementById('imgPreview').innerHTML='';
+    renderSizeColor();
+    loadProducts();
+    document.querySelector('.tab-btn:nth-child(2)').click(); // go to products tab
   });
 }
 
-// LOAD ORDERS + PRODUCTS
-async function loadOrders() { /* paste your old loadOrders code here */ }
-async function loadProducts() { /* paste your old loadProducts code here */ }
+// PASTE YOUR OLD loadOrders and loadProducts HERE
+async function loadOrders() {
+  const snap = await db.collection("orders").orderBy("createdAt", "desc").get();
+  let total=0, newC=0, revenue=0; let html='';
+  snap.forEach(d => { const o = d.data(); total++; if(o.status==="New Order") newC++; revenue+=o.finalTotal;
+    html += `<tr><td>#${d.id.substring(0,6)}</td><td>${o.customer.name}<br><small>${o.customer.phone}</small></td><td>${o.items.length} items</td><td>₹${o.finalTotal}</td><td>${o.status}</td></tr>`;
+  });
+  document.getElementById('totalOrders').innerText=total;
+  document.getElementById('newOrders').innerText=newC;
+  document.getElementById('totalRevenue').innerText='₹'+revenue.toLocaleString();
+  document.getElementById('ordersList').innerHTML=html || '<tr><td colspan="5">No orders</td></tr>';
+}
+async function loadProducts() {
+  const snap = await db.collection("products").get();
+  let count=0, html='';
+  snap.forEach(d => { const p = d.data(); if(p.sellerId === currentUser.uid){
+    count++;
+    html += `<tr><td><img src="${p.images[0]}" width="50"></td><td>${p.name}</td><td>₹${p.customerPrice}</td><td>${p.category}</td><td>${p.district}</td><td><button class="btn-delete" onclick="deleteProduct('${d.id}')">Delete</button></td></tr>`;
+  }});
+  document.getElementById('totalProducts').innerText=count;
+  document.getElementById('productsList').innerHTML=html || '<tr><td colspan="6">No products yet. Add one!</td></tr>';
+}
+function deleteProduct(id){ if(confirm('Delete?')){ db.collection("products").doc(id).delete().then(loadProducts); }}
 </script>
 </body>
 </html>
