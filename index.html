@@ -141,7 +141,7 @@ db.collection("products").orderBy("createdAt","desc").limit(8).get().then(snap =
 
     html += `
     <div class="product-card" data-name="${p.name}">
-      <a href="product.html?id=${doc.id}"><img src="${img}" alt="${p.name}" onerror="this.src='img/no-image.jpg'"><h3>${p.name}</h3></a>
+      <a href="customer/product.html?id=${doc.id}"><img src="${img}" alt="${p.name}" onerror="this.src='img/no-image.jpg'"><h3>${p.name}</h3></a>
       <p class="price">₹${p.customerPrice} ${oldPrice}</p>${discount}
       <p style="font-size:12px; color:#878787">📍 ${p.district || 'Kerala'}</p>
       <button class="add-cart-btn" onclick="quickAddToCart('${doc.id}', '${p.name}', '${img}', ${p.customerPrice}, '${p.sellerId || ''}')">Add to Cart</button>
