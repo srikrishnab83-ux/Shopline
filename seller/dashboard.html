@@ -178,7 +178,7 @@ function openTab(evt, tab){
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById(tab).classList.add('active');
-  evt.target.classList.add('active');
+  evt.currentTarget.classList.add('active');
 }
 
 // SUBCATEGORY LOAD
@@ -198,7 +198,7 @@ function renderSizeColor(){
   sizeGrid.innerHTML='';
   ['S','M','L','XL','XXL'].forEach(s => {
     const active = selectedSizes.includes(s)? 'active':'';
-    sizeGrid.innerHTML += `<div class="chip ${active}" onclick="toggleSize('${s}')">${s} <span onclick="removeSize('${s}'); event.stopPropagation();" style="cursor:pointer">X</span></div>`;
+    sizeGrid.innerHTML += `<div class="chip ${active}" onclick="toggleSize('${s}')">${s} ${selectedSizes.includes(s)? '<span onclick="removeSize(\''+s+'\'); event.stopPropagation();" style="cursor:pointer">X</span>' : ''}</div>`;
   });
 
   const colorGrid = document.getElementById('colorGrid');
@@ -263,13 +263,33 @@ function addProduct(e){
     document.getElementById('imgPreview').innerHTML='';
     renderSizeColor();
     loadProducts();
-    openTab(event,'products');
+    document.querySelector('.tab-btn:nth-child(2)').click(); // go to products tab
   });
 }
 
-// LOAD ORDERS + PRODUCTS - PASTE YOUR OLD FUNCTIONS HERE
-async function loadOrders() { /* your old code */ }
-async function loadProducts() { /* your old code */ }
+// PASTE YOUR OLD loadOrders and loadProducts HERE
+async function loadOrders() {
+  const snap = await db.collection("orders").orderBy("createdAt", "desc").get();
+  let total=0, newC=0, revenue=0; let html='';
+  snap.forEach(d => { const o = d.data(); total++; if(o.status==="New Order") newC++; revenue+=o.finalTotal;
+    html += `<tr><td>#${d.id.substring(0,6)}</td><td>${o.customer.name}<br><small>${o.customer.phone}</small></td><td>${o.items.length} items</td><td>₹${o.finalTotal}</td><td>${o.status}</td></tr>`;
+  });
+  document.getElementById('totalOrders').innerText=total;
+  document.getElementById('newOrders').innerText=newC;
+  document.getElementById('totalRevenue').innerText='₹'+revenue.toLocaleString();
+  document.getElementById('ordersList').innerHTML=html || '<tr><td colspan="5">No orders</td></tr>';
+}
+async function loadProducts() {
+  const snap = await db.collection("products").get();
+  let count=0, html='';
+  snap.forEach(d => { const p = d.data(); if(p.sellerId === currentUser.uid){
+    count++;
+    html += `<tr><td><img src="${p.images[0]}" width="50"></td><td>${p.name}</td><td>₹${p.customerPrice}</td><td>${p.category}</td><td>${p.district}</td><td><button class="btn-delete" onclick="deleteProduct('${d.id}')">Delete</button></td></tr>`;
+  }});
+  document.getElementById('totalProducts').innerText=count;
+  document.getElementById('productsList').innerHTML=html || '<tr><td colspan="6">No products yet. Add one!</td></tr>';
+}
+function deleteProduct(id){ if(confirm('Delete?')){ db.collection("products").doc(id).delete().then(loadProducts); }}
 </script>
 </body>
 </html>
