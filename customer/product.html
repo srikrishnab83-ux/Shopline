@@ -1,196 +1,191 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Product Details - Shopline Kerala</title>
-  <link rel="stylesheet" href="../css/style.css">
-  <style>
-    .size-btn.selected, .color-btn.selected{border:2px solid #2874f0 !important; background:#e3f2fd !important}
-    .nav-icons a#cartLink{background:#fb641b; padding:8px 15px; border-radius:4px; color:#fff}
-    .search-wrap{display:flex; gap:5px; flex:1; max-width:400px; margin:0 20px}
-    .search-wrap input{padding:8px; border-radius:4px; border:none; width:100%}
-    .search-wrap button{padding:8px 12px; border:none; border-radius:4px; background:#fff; cursor:pointer}
-    @media(max-width:768px){ .search-wrap{max-width:150px} }
-  </style>
+<meta charset="UTF-8">
+<title>Product Details - Shopline Kerala</title>
+<style>
+body{font-family:Arial; margin:0; background:#f1f3f6}
+header{background:#2874f0; color:#fff; padding:12px 20px; display:flex; justify-content:space-between; align-items:center}
+header a{color:#fff; text-decoration:none; font-weight:bold}
+.container{max-width:1200px; margin:20px auto; padding:0 15px}
+.product-box{display:flex; gap:20px; background:#fff; padding:20px; border-radius:8px; flex-wrap:wrap}
+.left{flex:1; min-width:350px}
+.right{flex:1.5; min-width:350px}
+.product-img{width:100%; height:400px; object-fit:contain; border:1px solid #eee; border-radius:8px}
+.thumbs{display:flex; gap:8px; margin-top:10px}
+.thumbs img{width:70px; height:70px; object-fit:cover; border:2px solid #ddd; border-radius:4px; cursor:pointer}
+.thumbs img.active{border-color:#2874f0}
+.product-title{font-size:24px; font-weight:600; margin-bottom:8px}
+.rating{background:#388e3c; color:#fff; padding:4px 8px; border-radius:4px; font-size:14px; display:inline-block}
+.price-section{margin:15px 0}
+.price{font-size:28px; font-weight:bold; color:#000}
+.old-price{text-decoration:line-through; color:#878787; margin-left:10px}
+.discount{color:#388e3c; font-weight:bold; margin-left:10px}
+.stock{color:#388e3c; font-weight:bold; margin:10px 0}
+.section{margin:15px 0; padding:15px 0; border-bottom:1px solid #f0f0f0}
+.section-title{font-weight:bold; font-size:16px; margin-bottom:8px}
+.chip{display:inline-block; padding:8px 14px; border:1px solid #ddd; border-radius:20px; margin:4px; cursor:pointer}
+.chip.active{border-color:#2874f0; background:#e3f2fd; color:#2874f0}
+.attr-grid{display:grid; grid-template-columns:120px 1fr; gap:8px; font-size:14px}
+.attr-grid b{color:#878787}
+.btn-buy{padding:15px; width:100%; background:#ff9f00; color:#fff; border:none; font-size:18px; font-weight:bold; border-radius:4px; cursor:pointer; margin-top:15px}
+.btn-cart{padding:15px; width:100%; background:#fb641b; color:#fff; border:none; font-size:18px; font-weight:bold; border-radius:4px; cursor:pointer; margin-top:10px}
+.desc-box{background:#fff; padding:20px; border-radius:8px; margin-top:15px}
+</style>
 </head>
 <body>
-  <!-- HEADER -->
-  <div class="top-bar">
-    <p>Delivering across all 14 districts of Kerala | COD Available</p>
-  </div>
-  <header class="navbar">
-    <div class="container" style="display:flex; align-items:center">
-      <div class="logo" onclick="location.href='../index.html'" style="cursor:pointer;">Shopline<span>Kerala</span></div>
-      
-      <!-- ADDED SEARCH BAR -->
-      <div class="search-wrap">
-        <input type="text" id="searchInput" placeholder="Search products..." onkeyup="searchProducts()">
-        <button type="button" onclick="searchProducts()">🔍</button>
-      </div>
 
-      <div class="nav-icons">
-        <a href="auth.html">Login</a>
-        <a href="cart.html" id="cartLink">🛒 Cart(0)</a>
-      </div>
+<header>
+  <div><a href="index.html">Shopline<span style="color:#ffe500">Kerala</span></a></div>
+  <div><a href="cart.html">🛒 Cart</a></div>
+</header>
+
+<div class="container">
+  <div class="product-box">
+
+    <div class="left">
+      <img id="productImage" class="product-img" src="https://via.placeholder.com/400">
+      <div class="thumbs" id="productThumbs"></div>
     </div>
-  </header>
 
-  <!-- PRODUCT DETAILS -->
-  <div class="container" id="productDetails" style="padding:20px; display:flex; gap:30px; flex-wrap:wrap">
-    Loading product...
-  </div>
+    <div class="right">
+      <div class="product-title" id="productName">Loading...</div>
+      <span class="rating">4.2 ★</span>
 
-  <!-- BOTTOM NAV -->
-  <div class="bottom-nav">
-    <a href="../index.html">🏠<br>Home</a>
-    <a href="products.html">🛍️<br>Shop</a>
-    <a href="cart.html">🛒<br>Cart</a>
-    <a href="profile.html">👤<br>Account</a>
-  </div>
+      <div class="price-section">
+        <span class="price" id="productPrice">₹0</span>
+        <span class="old-price" id="productOldPrice"></span>
+        <span class="discount" id="productDiscount"></span>
+      </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+      <div class="stock" id="productStock"></div>
 
-const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+      <div class="section">
+        <div class="section-title">Category</div>
+        <div id="productCategory">N/A</div>
+      </div>
 
-const productId = new URLSearchParams(window.location.search).get('id');
-let selectedSize = ''; 
-let selectedColor = '';
-let currentProduct = {};
+      <div class="section">
+        <div class="section-title">Available Sizes</div>
+        <div id="productSizes">N/A</div>
+      </div>
 
-function updateCartCount(){
-  let cart = JSON.parse(localStorage.getItem('cart')) || [];
-  let totalQty = cart.reduce((sum, item) => sum + item.qty, 0); // count qty not items
-  document.getElementById('cartLink').innerText = `🛒 Cart(${totalQty})`;
-}
+      <div class="section">
+        <div class="section-title">Available Colors</div>
+        <div id="productColors">N/A</div>
+      </div>
 
-async function loadProduct() {
-  const docSnap = await getDoc(doc(db, "products", productId));
-  if(docSnap.exists()) {
-    const p = docSnap.data();
-    currentProduct = p;
-    const images = p.images || [p.image];
-    
-    let thumbHTML = '';
-    images.forEach((img) => {
-      thumbHTML += `<img src="${img}" onclick="changeImage('${img}')" style="width:70px; height:70px; object-fit:cover; border:2px solid #eee; cursor:pointer; border-radius:4px">`;
-    });
-    
-    document.getElementById('productDetails').innerHTML = `
-      <div class="product-gallery" style="display:flex; gap:10px">
-        <div class="thumbnails" style="display:flex; flex-direction:column; gap:5px">${thumbHTML}</div>
-        <div class="main-image">
-          <img id="mainImg" src="${images[0]}" style="width:400px; height:400px; object-fit:cover; border:1px solid #ddd; border-radius:8px">
+      <div class="section">
+        <div class="section-title">Product Details</div>
+        <div class="attr-grid">
+          <b>Fabric:</b> <span id="productFabric">N/A</span>
+          <b>Sleeve:</b> <span id="productSleeve">N/A</span>
+          <b>Fit:</b> <span id="productFit">N/A</span>
+          <b>Pattern:</b> <span id="productPattern">N/A</span>
+          <b>Weight:</b> <span id="productWeight">N/A</span>
+          <b>Brand:</b> <span id="productBrand">N/A</span>
         </div>
       </div>
-      <div style="flex:1; min-width:300px">
-          <h1>${p.name}</h1>
-          <p>⭐ 4.5 | ${p.totalReviews || 0} Reviews</p>
-          <h2>₹${Number(p.price).toLocaleString()} <span style="text-decoration:line-through; color:gray; font-size:16px">₹${Number(p.oldPrice).toLocaleString()}</span></h2>
-          <p style="color:green; font-weight:bold">${p.discount}% off</p>
-          <p><b>Category:</b> ${p.category} > ${p.subcategory}</p>
-          <p><b>Delivery:</b> To ${p.district} in 2-3 Days | COD Available</p>
-          <p><b>Stock:</b> ${p.stock || 10} left</p>
-          
-          ${p.category === 'Fashion'? `
-            ${p.sizes && p.sizes.length > 0? `
-            <div style="margin:15px 0">
-              <p><b>Select Size: *</b></p>
-              <div id="sizeOptions" style="display:flex; gap:8px; flex-wrap:wrap">
-                ${p.sizes.map(size => `<button class="size-btn" onclick="selectSize('${size}', event)" style="padding:8px 15px; border:1px solid #ddd; background:#fff; cursor:pointer; border-radius:4px">${size}</button>`).join('')}
-              </div>
-            </div>
-            ` : ''}
-            ${p.colors && p.colors.length > 0? `
-            <div style="margin:15px 0">
-              <p><b>Select Color:</b></p>
-              <div id="colorOptions" style="display:flex; gap:10px; flex-wrap:wrap">
-                ${p.colors.map(color => `<button class="color-btn" onclick="selectColor('${color}', event)" style="padding:8px 15px; border:1px solid #ddd; background:#fff; cursor:pointer; border-radius:20px">${color}</button>`).join('')}
-              </div>
-            </div>
-            ` : ''}
-          ` : ''}
 
-          <br>
-          <button onclick="addToCart()" style="padding:12px 30px; background:#ff9f00; border:none; font-size:16px; cursor:pointer; margin-right:10px; border-radius:4px">Add to Cart</button>
-          <button onclick="buyNow()" style="padding:12px 30px; background:#2874f0; color:#fff; border:none; font-size:16px; cursor:pointer; border-radius:4px">Buy Now</button>
-      </div>
-    `;
-  } else {
-    document.getElementById('productDetails').innerHTML = "Product not found";
+      <button class="btn-cart" onclick="addToCart()">Add to Cart</button>
+      <button class="btn-buy" onclick="buyNow()">Buy Now</button>
+    </div>
+  </div>
+
+  <div class="desc-box">
+    <h3>Product Description</h3>
+    <p id="productDescription" style="line-height:1.7; color:#333">Loading...</p>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+const urlParams = new URLSearchParams(window.location.search);
+const productId = urlParams.get('id');
+let currentProduct;
+
+if(productId){
+  db.collection("products").doc(productId).get().then(function(doc){
+    if(doc.exists){
+      currentProduct = doc.data();
+      loadProduct(currentProduct);
+    } else {
+      alert("Product not found");
+    }
+  });
+}
+
+function loadProduct(p){
+  // 1. IMAGE
+  document.getElementById('productImage').src = p.images[0];
+  var thumbHtml = '';
+  p.images.forEach(function(img, i){
+    thumbHtml += '<img src="'+img+'" class="'+(i==0?'active':'')+'" onclick="changeImage(this, \''+img+'\')">';
+  });
+  document.getElementById('productThumbs').innerHTML = thumbHtml;
+
+  // 2. PRICE + DISCOUNT FIX
+  var discount = 0;
+  if(p.oldPrice > 0 && p.oldPrice > p.price){
+    discount = Math.round(((p.oldPrice - p.price)/p.oldPrice)*100);
   }
-  updateCartCount();
+  document.getElementById('productName').innerText = p.name;
+  document.getElementById('productPrice').innerText = '₹' + p.customerPrice;
+  document.getElementById('productOldPrice').innerText = p.oldPrice > 0? '₹' + p.oldPrice : '';
+  document.getElementById('productDiscount').innerText = discount > 0? discount + '% off' : '';
+
+  // 3. STOCK FIX
+  document.getElementById('productStock').innerText = p.stockQty > 0? p.stockQty + ' left in stock' : 'Out of Stock';
+
+  // 4. CATEGORY
+  document.getElementById('productCategory').innerText = p.category + ' > ' + p.subcategory;
+
+  // 5. SIZES
+  var sizeHtml = '';
+  if(p.sizes && p.sizes.length > 0){
+    p.sizes.forEach(function(s){ sizeHtml += '<span class="chip">'+s+'</span>'; });
+  } else { sizeHtml = 'Free Size'; }
+  document.getElementById('productSizes').innerHTML = sizeHtml;
+
+  // 6. COLORS
+  var colorHtml = '';
+  if(p.colors && p.colors.length > 0){
+    p.colors.forEach(function(c){ colorHtml += '<span class="chip" style="background:'+c.code+'; color:#fff; border-color:'+c.code+'">'+c.name+'</span>'; });
+  } else { colorHtml = 'N/A'; }
+  document.getElementById('productColors').innerHTML = colorHtml;
+
+  // 7. ATTRIBUTES
+  document.getElementById('productFabric').innerText = p.fabric || 'N/A';
+  document.getElementById('productSleeve').innerText = p.sleeve || 'N/A';
+  document.getElementById('productFit').innerText = p.fit || 'N/A';
+  document.getElementById('productPattern').innerText = p.pattern || 'N/A';
+  document.getElementById('productWeight').innerText = p.weight || 'N/A';
+  document.getElementById('productBrand').innerText = p.brand || 'N/A';
+
+  // 8. DESCRIPTION
+  document.getElementById('productDescription').innerText = p.description || 'No description provided';
 }
 
-window.changeImage = function(src) {
-  document.getElementById('mainImg').src = src;
-}
-window.selectSize = function(size, event) {
-  selectedSize = size;
-  document.querySelectorAll('.size-btn').forEach(btn => btn.classList.remove('selected'));
-  event.target.classList.add('selected');
-}
-window.selectColor = function(color, event) {
-  selectedColor = color;
-  document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('selected'));
-  event.target.classList.add('selected');
+function changeImage(el, src){
+  document.getElementById('productImage').src = src;
+  document.querySelectorAll('.thumbs img').forEach(function(i){ i.classList.remove('active') });
+  el.classList.add('active');
 }
 
-// FIXED: FALLBACK PRICE FOR TV/MOBILE WITH NO SIZE
-window.addToCart = function() {
-  if(currentProduct.category === 'Fashion' && !selectedSize){
-    alert('Please select a size');
-    return;
-  }
-  let cart = JSON.parse(localStorage.getItem('cart')) || [];
-  
-  const priceToUse = Number(currentProduct.price); // Always use base price. No variant price needed
-
-  let existing = cart.find(item => 
-    item.id === productId && 
-    item.size === (selectedSize || 'NA') && 
-    item.color === (selectedColor || 'NA')
-  );
-  
-  if(existing){
-    existing.qty = (existing.qty || 1) + 1;
-  } else {
-    cart.push({
-      id: productId, 
-      name: currentProduct.name,
-      price: priceToUse, // FIXED: This will never be 0 now
-      image: currentProduct.image,
-      size: selectedSize || 'NA', 
-      color: selectedColor || 'NA', 
-      qty: 1
-    });
-  }
-  
-  localStorage.setItem('cart', JSON.stringify(cart));
-  updateCartCount();
-  alert(`${currentProduct.name} added to cart`);
-  window.location.href = 'cart.html'; 
+function addToCart(){
+  alert('Added to cart: ' + currentProduct.name);
+  // Add your cart logic here
 }
-
-window.buyNow = function(){
-  addToCart(); // reuse add to cart then go to checkout
-  window.location.href = 'checkout.html';
+function buyNow(){
+  alert('Buy Now: ' + currentProduct.name);
+  // Add checkout logic here
 }
-
-// ADDED: SEARCH FUNCTION
-function searchProducts(){
-  const query = document.getElementById('searchInput').value.toLowerCase();
-  if(query.length > 2){
-    // Redirect to products page with search query
-    window.location.href = `products.html?search=${encodeURIComponent(query)}`;
-  }
-}
-
-loadProduct();
 </script>
 </body>
 </html>
