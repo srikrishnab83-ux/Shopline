@@ -26,6 +26,8 @@
 .btn-back{background:#555; color:#fff; padding:8px 15px; border:none; border-radius:4px; cursor:pointer; margin-right:8px}
 .btn-delete{background:#d32f2f; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer; margin-right:5px}
 .btn-cancel{background:#ff9800; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer}
+.btn-approve{background:#388e3c; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer; margin-right:5px} /* NEW */
+.btn-reject{background:#d32f2f; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer} /* NEW */
 .btn-add{background:#2874f0; color:#fff; padding:8px 12px; border:none; border-radius:4px; cursor:pointer}
 .btn-upload{padding:10px 20px; background:#2874f0; color:#fff; border:none; border-radius:4px; cursor:pointer; font-weight:bold; width:100%}
 
@@ -95,7 +97,7 @@
     <div id="returns" class="tab-content">
       <h2>Return Orders</h2>
       <table class="orders-table">
-        <thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Amount</th><th>Reason</th></tr></thead>
+        <thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Amount</th><th>Action</th></tr></thead> <!-- CHANGED: Reason -> Action -->
         <tbody id="returnList"></tbody>
       </table>
     </div>
@@ -252,25 +254,9 @@ function renderSizeColor(){
 }
 
 function toggleSize(s){ selectedSizes.includes(s)? selectedSizes=selectedSizes.filter(x=>x!=s) : selectedSizes.push(s); renderSizeColor(); }
-
-function addExtraSize(){ 
-  const val = document.getElementById('extraSize').value.toUpperCase().trim(); 
-  if(!val){ alert("Enter size"); return; } 
-  if(!selectedSizes.includes(val)){ selectedSizes.push(val); document.getElementById('extraSize').value=''; renderSizeColor(); }
-} // FIXED: ADDED MISSING }
-
+function addExtraSize(){ const val = document.getElementById('extraSize').value.toUpperCase().trim(); if(!val){ alert("Enter size"); return; } if(!selectedSizes.includes(val)){ selectedSizes.push(val); document.getElementById('extraSize').value=''; renderSizeColor(); }}
 function removeSize(s){ selectedSizes=selectedSizes.filter(x=>x!=s); renderSizeColor(); }
-
-function addExtraColor(){ 
-  const code = document.getElementById('extraColor').value; 
-  const name = document.getElementById('colorName').value.trim(); 
-  if(!name){ alert("Please enter color name"); return; } 
-  if(selectedColors.find(x=>x.name.toLowerCase()==name.toLowerCase())){ alert("Color already added"); return; } 
-  selectedColors.push({name:name, code:code}); 
-  document.getElementById('colorName').value=''; 
-  renderSizeColor(); 
-}
-
+function addExtraColor(){ const code = document.getElementById('extraColor').value; const name = document.getElementById('colorName').value.trim(); if(!name){ alert("Please enter color name"); return; } if(selectedColors.find(x=>x.name.toLowerCase()==name.toLowerCase())){ alert("Color already added"); return; } selectedColors.push({name:name, code:code}); document.getElementById('colorName').value=''; renderSizeColor(); }
 function removeColor(name){ selectedColors=selectedColors.filter(x=>x.name!=name); renderSizeColor(); }
 
 var cloudName = "omve98do";
@@ -308,24 +294,38 @@ function addProduct(e){
   }).catch(err => alert("Error: " + err.message));
 }
 
+// UPDATED: KEY FIX IS HERE
 async function loadOrders() {
   try{
-    const snap = await db.collection("orders").orderBy("createdAt", "desc").get();
-    let total=0, active=0, cancelled=0, returns=0, revenue=0; 
+    // CHANGED: array-contains to only show orders for this seller
+    const snap = await db.collection("orders").where("sellerIds", "array-contains", currentUser.uid).orderBy("createdAt", "desc").get();
+    let total=0, active=0, cancelled=0, returns=0, revenue=0;
     let html='', cancelledHtml='', returnHtml='';
 
-    snap.forEach(d => { 
-      const o = d.data(); 
+    snap.forEach(d => {
+      const o = d.data();
       total++;
       revenue += o.finalTotal || 0;
+      const canReturn = o.canReturnTill && o.canReturnTill.toDate() > new Date();
 
       if(o.status === 'Cancelled'){
         cancelled++;
         cancelledHtml += `<tr><td>#${d.id.substring(0,6)}</td><td>${o.customer.name}</td><td>${o.items.length} items</td><td>₹${o.finalTotal}</td><td><span class="badge-cancel">${o.cancelReason || 'User Cancelled'}</span></td></tr>`;
       }
-      else if(o.status === 'Returned'){
+      else if(o.returnStatus === 'requested'){ // CHANGED: check returnStatus
         returns++;
-        returnHtml += `<tr><td>#${d.id.substring(0,6)}</td><td>${o.customer.name}</td><td>${o.items.length} items</td><td>₹${o.finalTotal}</td><td><span class="badge-return">${o.returnReason || 'Return Request'}</span></td></tr>`;
+        returnHtml += `<tr>
+          <td>#${d.id.substring(0,6)}</td>
+          <td>${o.customer.name}<br><small>${o.customer.phone}</small></td>
+          <td>${o.items.length} items</td>
+          <td>₹${o.finalTotal}</td>
+          <td>
+            ${canReturn?
+              `<button class="btn-approve" onclick="approveReturn('${d.id}')">Approve</button>
+               <button class="btn-reject" onclick="rejectReturn('${d.id}')">Reject</button>`
+              : '<span class="badge-cancel">Return Window Expired</span>'}
+          </td>
+        </tr>`;
       }
       else{
         active++;
@@ -347,10 +347,10 @@ async function loadOrders() {
     document.getElementById('cancelledCount').innerText=cancelled;
     document.getElementById('returnCount').innerText=returns;
     document.getElementById('totalRevenue').innerText='₹'+revenue.toLocaleString();
-    
+
     document.getElementById('ordersList').innerHTML=html || '<tr><td colspan="5">No active orders</td></tr>';
     document.getElementById('cancelledList').innerHTML=cancelledHtml || '<tr><td colspan="5">No cancelled orders</td></tr>';
-    document.getElementById('returnList').innerHTML=returnHtml || '<tr><td colspan="5">No return orders</td></tr>';
+    document.getElementById('returnList').innerHTML=returnHtml || '<tr><td colspan="5">No return requests</td></tr>';
   }catch(e){ console.log("Orders error:", e) }
 }
 
@@ -390,6 +390,22 @@ function cancelOrder(id){
 function deleteOrder(id){
   if(confirm('Delete this order permanently?')){
     db.collection("orders").doc(id).delete().then(()=>{ alert('Order Deleted'); loadOrders(); }).catch(e=>alert(e.message));
+  }
+}
+
+// NEW FUNCTIONS FOR RETURNS
+function approveReturn(id){
+  if(confirm('Approve return for this order?')){
+    db.collection("orders").doc(id).update({
+      returnStatus: 'approved'
+    }).then(()=>{ alert('Return Approved'); loadOrders(); }).catch(e=>alert(e.message));
+  }
+}
+function rejectReturn(id){
+  if(confirm('Reject return request?')){
+    db.collection("orders").doc(id).update({
+      returnStatus: 'rejected'
+    }).then(()=>{ alert('Return Rejected'); loadOrders(); }).catch(e=>alert(e.message));
   }
 }
 </script>
