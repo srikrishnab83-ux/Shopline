@@ -10,7 +10,7 @@
   .cart-items{flex:2; background:#fff; padding:15px; border-radius:4px}
   .price-box{flex:1; background:#fff; padding:15px; border-radius:4px; height:fit-content; position:sticky; top:20px}
   .cart-item{display:flex; gap:15px; border-bottom:1px solid #eee; padding:15px 0}
-  .cart-item img{width:100px; height:100px; object-fit:cover}
+  .cart-item img{width:100px; height:100px; object-fit:cover; border:1px solid #eee; border-radius:4px}
   .qty-box{display:flex; align-items:center; gap:8px; margin:8px 0}
   .qty-btn{width:30px; height:30px; border:1px solid #ddd; background:#fff; cursor:pointer; font-size:18px}
   .qty-input{width:40px; text-align:center; border:1px solid #ddd; height:28px}
@@ -109,7 +109,7 @@ function loadCart() {
 
   cart.forEach((item, i) => {
     item.qty = item.qty || 1;
-    const itemTotal = Number(item.price) * item.qty; // USE PRICE FROM LOCALSTORAGE
+    const itemTotal = Number(item.price) * item.qty;
     productTotal += itemTotal;
     totalQty += item.qty;
 
@@ -118,7 +118,7 @@ function loadCart() {
         <img src="${item.image}">
         <div style="flex:1">
           <h4>${item.name}</h4>
-          <p>Size: <b>${item.size}</b> | Color: <b>${item.color}</b></p>
+          <p>Size: <b>${item.size || 'N/A'}</b> | Color: <b>${item.color || 'N/A'}</b></p>
           <p><b>₹${Number(item.price).toLocaleString()}</b></p>
           <div class="qty-box">
             <button class="qty-btn" onclick="updateQty(${i}, -1)">-</button>
@@ -179,7 +179,7 @@ window.checkout = async function(){
 
   await addDoc(collection(db, "orders"), {
     customer: {name, phone, street, district, state, pincode, landmark},
-    items: cart, // now cart already has name, price, image
+    items: cart,
     productTotal, shippingCharge, finalTotal: productTotal + shippingCharge,
     status: "New Order", createdAt: serverTimestamp()
   });
