@@ -8,12 +8,19 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3081/3081559.png">
   <style>
-    .add-cart-btn{background:#fb641b; color:#fff; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; width:100%; margin-top:8px; font-weight:bold}
-    .add-cart-btn:hover{background:#e55a0f}
-    .search-wrap{display:flex; gap:5px}
-    .search-wrap input{padding:8px; border-radius:4px; border:none; width:300px}
-    .search-wrap button{padding:8px 12px; border:none; border-radius:4px; background:#fff; cursor:pointer}
-    @media(max-width:768px){ .search-wrap input{width:150px} }
+   .add-cart-btn{background:#fb641b; color:#fff; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; width:100%; margin-top:8px; font-weight:bold}
+   .add-cart-btn:hover{background:#e55a0f}
+   .search-wrap{display:flex; gap:5px}
+   .search-wrap input{padding:8px; border-radius:4px; border:none; width:300px}
+   .search-wrap button{padding:8px 12px; border:none; border-radius:4px; background:#fff; cursor:pointer}
+   .product-grid-4{display:grid; grid-template-columns:repeat(4,1fr); gap:15px}
+   .product-card{background:#fff; padding:10px; border:1px solid #eee; border-radius:8px; text-align:center}
+   .product-card img{width:100%; height:200px; object-fit:cover; border-radius:4px}
+   .product-card h3{font-size:14px; margin:8px 0; height:40px; overflow:hidden}
+   .price{font-weight:bold; color:#388e3c}
+   .oldPrice{text-decoration:line-through; color:#878787; font-size:12px; margin-left:5px}
+   .discount{color:#388e3c; font-size:12px; font-weight:bold}
+    @media(max-width:768px){.search-wrap input{width:150px}.product-grid-4{grid-template-columns:repeat(2,1fr)} }
   </style>
 </head>
 <body>
@@ -74,62 +81,14 @@
   </div>
  </section>
 
-  <!-- ========== 6. FLASH SALE WITH 8 PRODUCTS ========== -->
+  <!-- ========== 6. FLASH SALE - NOW DYNAMIC FROM FIREBASE ========== -->
   <section class="flash-sale">
     <div class="section-header">
-      <h2>⚡ Flash Sale</h2>
-      <p>Ends in: <span id="timer">05:59:12</span></p>
+      <h2>⚡ Latest Products from Kerala Sellers</h2>
       <a href="customer/products.html">View All ></a>
     </div>
-    <div class="product-grid-4">
-      <!-- PRODUCT 1 -->
-      <div class="product-card" data-name="Samsung Galaxy M35">
-        <a href="product.html?id=1"><img src="https://rukminim2.flixcart.com/image/312/312/xif0q/mobile/3/5/l/-original-imaghx9qmgqskxkc.jpeg?q=70"><h3>Samsung Galaxy M35</h3></a>
-        <p class="price">₹15,999 <span class="oldPrice">₹19,999</span></p><p class="discount">20% off</p>
-        <button class="add-cart-btn" onclick="quickAddToCart('1', 'Samsung Galaxy M35', 'https://rukminim2.flixcart.com/image/312/312/xif0q/mobile/3/5/l/-original-imaghx9qmgqskxkc.jpeg?q=70', 15999)">Add to Cart</button>
-      </div>
-      <!-- PRODUCT 2 -->
-      <div class="product-card" data-name="Boat Rockerz 450">
-        <a href="product.html?id=2"><img src="https://rukminim2.flixcart.com/image/612/612/xif0q/headphone/b/h/b/-original-imagphz7qzjbzwcy.jpeg?q=70"><h3>Boat Rockerz 450</h3></a>
-        <p class="price">₹1,299 <span class="oldPrice">₹2,999</span></p><p class="discount">56% off</p>
-        <button class="add-cart-btn" onclick="quickAddToCart('2', 'Boat Rockerz 450', 'https://rukminim2.flixcart.com/image/612/612/xif0q/headphone/b/h/b/-original-imagphz7qzjbzwcy.jpeg?q=70', 1299)">Add to Cart</button>
-      </div>
-      <!-- PRODUCT 3 -->
-      <div class="product-card" data-name="Men's Cotton T-shirt">
-        <a href="product.html?id=3"><img src="https://rukminim2.flixcart.com/image/612/612/l4ln8sw0/t-shirt/p/q/1/s-t0-rt-white-02-tripr-original-imagfc4ywwgpzdk3.jpeg?q=70"><h3>Men's Cotton T-shirt</h3></a>
-        <p class="price">₹299 <span class="oldPrice">₹799</span></p><p class="discount">62% off</p>
-        <button class="add-cart-btn" onclick="quickAddToCart('3', 'Men Cotton Tshirt', 'https://rukminim2.flixcart.com/image/612/612/l4ln8sw0/t-shirt/p/q/1/s-t0-rt-white-02-tripr-original-imagfc4ywwgpzdk3.jpeg?q=70', 299)">Add to Cart</button>
-      </div>
-      <!-- PRODUCT 4 -->
-      <div class="product-card" data-name="Mixer Grinder 500W">
-        <a href="product.html?id=4"><img src="https://rukminim2.flixcart.com/image/612/612/l2hwwi80/mixer-grinder-juicer/2/y/z/500w-mixer-grinder-original-image9z9fz9x3f2f.jpeg?q=70"><h3>Mixer Grinder 500W</h3></a>
-        <p class="price">₹1,899 <span class="oldPrice">₹3,199</span></p><p class="discount">40% off</p>
-        <button class="add-cart-btn" onclick="quickAddToCart('4', 'Mixer Grinder 500W', 'https://rukminim2.flixcart.com/image/612/612/l2hwwi80/mixer-grinder-juicer/2/y/z/500w-mixer-grinder-original-image9z9fz9x3f2f.jpeg?q=70', 1899)">Add to Cart</button>
-      </div>
-      <!-- PRODUCT 5 -->
-      <div class="product-card" data-name="Running Shoes">
-        <a href="product.html?id=5"><img src="https://rukminim2.flixcart.com/image/612/612/xif0q/shoe/1/2/3/sneaker-original-imagzqzqzqzqzqz.jpeg?q=70"><h3>Running Shoes</h3></a>
-        <p class="price">₹899 <span class="oldPrice">₹1,999</span></p><p class="discount">55% off</p>
-        <button class="add-cart-btn" onclick="quickAddToCart('5', 'Running Shoes', 'https://rukminim2.flixcart.com/image/612/612/xif0q/shoe/1/2/3/sneaker-original-imagzqzqzqzqzqz.jpeg?q=70', 899)">Add to Cart</button>
-      </div>
-      <!-- PRODUCT 6 -->
-      <div class="product-card" data-name="College Backpack">
-        <a href="product.html?id=6"><img src="https://rukminim2.flixcart.com/image/612/612/xif0q/backpack/1/2/3/bag-original-imagzqzqzqzqzqz.jpeg?q=70"><h3>College Backpack</h3></a>
-        <p class="price">₹499 <span class="oldPrice">₹1,299</span></p><p class="discount">61% off</p>
-        <button class="add-cart-btn" onclick="quickAddToCart('6', 'College Backpack', 'https://rukminim2.flixcart.com/image/612/612/xif0q/backpack/1/2/3/bag-original-imagzqzqzqzqzqz.jpeg?q=70', 499)">Add to Cart</button>
-      </div>
-      <!-- PRODUCT 7 -->
-      <div class="product-card" data-name="Smart Watch">
-        <a href="product.html?id=7"><img src="https://rukminim2.flixcart.com/image/612/612/xif0q/watch/1/2/3/smartwatch-original-imagzqzqzqzqzqz.jpeg?q=70"><h3>Smart Watch</h3></a>
-        <p class="price">₹1,599 <span class="oldPrice">₹4,999</span></p><p class="discount">68% off</p>
-        <button class="add-cart-btn" onclick="quickAddToCart('7', 'Smart Watch', 'https://rukminim2.flixcart.com/image/612/612/xif0q/watch/1/2/3/smartwatch-original-imagzqzqzqzqzqz.jpeg?q=70', 1599)">Add to Cart</button>
-      </div>
-      <!-- PRODUCT 8 -->
-      <div class="product-card" data-name="Electric Kettle">
-        <a href="product.html?id=8"><img src="https://rukminim2.flixcart.com/image/612/612/xif0q/kettle/1/2/3/electric-original-imagzqzqzqzqzqz.jpeg?q=70"><h3>Electric Kettle</h3></a>
-        <p class="price">₹699 <span class="oldPrice">₹1,499</span></p><p class="discount">53% off</p>
-        <button class="add-cart-btn" onclick="quickAddToCart('8', 'Electric Kettle', 'https://rukminim2.flixcart.com/image/612/612/xif0q/kettle/1/2/3/electric-original-imagzqzqzqzqzqz.jpeg?q=70', 699)">Add to Cart</button>
-      </div>
+    <div class="product-grid-4" id="homeProductGrid">
+      <p style="text-align:center; grid-column:1/-1">Loading products...</p>
     </div>
   </section>
 
@@ -138,15 +97,12 @@
     <img src="https://rukminim2.flixcart.com/fk-p-flap/1600/270/image/onam-special-kerala.jpg?q=20" alt="Onam Special">
   </section>
 
-  <!-- REST OF YOUR SECTIONS... KEEP AS IS -->
-  <!-- I shortened for space. Keep your Trending, Deals, Fashion, Home, Grocery, Brands, Seller, Why-us, Districts, FAQ, Footer sections here -->
-
 <footer>
   <div class="footer-grid">
     <div><h4>ABOUT</h4><a href="#">About Us</a><a href="#">Contact Us</a></div>
     <div><h4>HELP</h4><a href="#">Payments</a><a href="#">Shipping</a></div>
     <div><h4>POLICY</h4><a href="#">Terms Of Use</a><a href="#">Privacy</a></div>
-    <div><h4>SELL ON SHOPlINE</h4><a href="seller/seller-dashboard.html">Become a Seller</a></div>
+    <div><h4>SELL ON SHOPlINE</h4><a href="seller/login.html">Become a Seller</a></div>
   </div>
   <div class="footer-bottom">
     <p>Mail Us: Shopline Internet Pvt Ltd, Calicut, Kerala, 673001</p>
@@ -161,7 +117,39 @@
     <a href="customer/profile.html">👤<br>Account</a>
   </div>
 
+<!-- FIREBASE SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
 <script>
+// FIREBASE CONFIG
+const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// LOAD PRODUCTS FROM FIREBASE + CLOUDINARY
+db.collection("products").orderBy("createdAt","desc").limit(8).get().then(snap => {
+  let html = '';
+  if(snap.empty){ html = '<p style="text-align:center; grid-column:1/-1">No products yet. Be the first seller!</p>'; }
+
+  snap.forEach(doc => {
+    const p = doc.data();
+    const img = p.images && p.images[0]? p.images[0] : 'img/no-image.jpg'; // CLOUDINARY URL
+    const oldPrice = p.oldPrice? `<span class="oldPrice">₹${p.oldPrice}</span>` : '';
+    const discount = p.oldPrice? `<p class="discount">${Math.round((1 - p.customerPrice/p.oldPrice)*100)}% off</p>` : '';
+
+    html += `
+    <div class="product-card" data-name="${p.name}">
+      <a href="product.html?id=${doc.id}"><img src="${img}" alt="${p.name}"><h3>${p.name}</h3></a>
+      <p class="price">₹${p.customerPrice} ${oldPrice}</p>${discount}
+      <p style="font-size:12px; color:#878787">📍 ${p.district || 'Kerala'}</p>
+      <button class="add-cart-btn" onclick="quickAddToCart('${doc.id}', '${p.name}', '${img}', ${p.customerPrice})">Add to Cart</button>
+    </div>
+    `;
+  });
+  document.getElementById('homeProductGrid').innerHTML = html;
+})
+
 // 1. UPDATE CART COUNT
 function updateCartCount(){
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -171,33 +159,24 @@ function updateCartCount(){
 }
 updateCartCount();
 
-// 2. ADD TO CART FROM HOME - FIXES ₹0 PRICE ISSUE
+// 2. ADD TO CART FROM HOME
 function quickAddToCart(id, name, image, price){
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
-  
   const cartItem = { id, name, image, price, qty: 1, variant: 'Default' }
-
   const existing = cart.find(item => item.id === id && item.variant === 'Default');
   if(existing){ existing.qty += 1; } else { cart.push(cartItem); }
-
   localStorage.setItem('cart', JSON.stringify(cart));
   alert(`${name} added to cart`);
   updateCartCount();
-  window.location.href = 'cart.html'; // auto go to cart
 }
 
 // 3. SEARCH FUNCTION
 function searchProducts(){
   const query = document.getElementById('searchInput').value.toLowerCase();
   const products = document.querySelectorAll('.product-card');
-
   products.forEach(card => {
     const name = card.getAttribute('data-name').toLowerCase();
-    if(name.includes(query)){
-      card.style.display = 'block';
-    } else {
-      card.style.display = 'none';
-    }
+    card.style.display = name.includes(query)? 'block' : 'none';
   });
 }
 </script>
