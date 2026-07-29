@@ -2,97 +2,70 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Seller Panel - Shopline Kerala</title>
+<title>Seller Dashboard - Shopline Kerala</title>
 <style>
-*{box-sizing:border-box; margin:0; padding:0; font-family:'Segoe UI', Arial, sans-serif}
-body{background:#f1f3f6}
-.topbar{background:#232f3e; color:#fff; text-align:center; padding:8px; font-size:13px}
-header{background:#2874f0; color:#fff; padding:15px 30px; display:flex; justify-content:space-between; align-items:center}
-.logo{font-size:22px; font-weight:bold}
-.logo span{color:#ffe500}
-.btn-logout{background:#d32f2f; color:#fff; padding:8px 18px; border:none; border-radius:4px; cursor:pointer; font-weight:bold}
-
-.container{max-width:1200px; margin:20px auto; padding:0 15px}
-.tabs{display:flex; gap:0; background:#fff; border-radius:8px; padding:10px; margin-bottom:20px; box-shadow:0 2px 4px rgba(0,0,0,0.1)}
-.tab-btn{padding:12px 25px; border:none; background:none; cursor:pointer; font-size:15px; font-weight:600; display:flex; align-items:center; gap:8px; border-bottom:3px solid transparent}
+.dashboard{max-width:1200px; margin:20px auto; padding:20px}
+.tabs{display:flex; gap:10px; margin-bottom:20px; border-bottom:2px solid #eee}
+.tab-btn{padding:12px 20px; border:none; background:none; cursor:pointer; font-size:16px; font-weight:bold}
 .tab-btn.active{border-bottom:3px solid #2874f0; color:#2874f0}
-.tab-content{display:none; background:#fff; padding:25px; border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.1)}
+.tab-content{display:none}
 .tab-content.active{display:block}
-
-.stats{display:grid; grid-template-columns:repeat(4,1fr); gap:15px; margin-bottom:20px}
-.stat-box{padding:20px; border-radius:8px; color:#fff; text-align:center}
-.stat-box h3{font-size:28px; margin-bottom:5px}
-.stat-box p{font-size:14px; opacity:0.9}
-.stat-blue{background:#2874f0}
-.stat-orange{background:#ff9f00}
-.stat-green{background:#388e3c}
-.stat-purple{background:#8e24aa}
-
-table{width:100%; border-collapse:collapse; margin-top:15px}
-table th{background:#f5f5f5; padding:12px; text-align:left; font-size:14px; border-bottom:2px solid #ddd}
-table td{padding:12px; border-bottom:1px solid #eee; font-size:14px}
-
-.section-title{margin:20px 0 15px; color:#212121; font-weight:bold; font-size:16px; border-bottom:2px solid #2874f0; padding-bottom:8px}
 .form-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px}
 .form-group{display:flex; flex-direction:column}
 .form-group label{font-weight:bold; margin-bottom:5px; font-size:14px}
 .form-group input,.form-group select,.form-group textarea{padding:10px; border:1px solid #ddd; border-radius:4px}
-.btn-save{padding:14px; background:#388e3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:16px; font-weight:bold; width:100%; margin-top:20px}
+.btn-save{padding:12px 30px; background:#388e3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:16px; margin-top:15px}
+.btn-logout{background:#d32f2f; color:#fff; padding:8px 15px; border:none; border-radius:4px; cursor:pointer; float:right}
 .btn-add{background:#ff9f00; color:#fff; padding:8px 12px; border:none; border-radius:4px; cursor:pointer}
 .img-preview{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap}
+.img-box{position:relative}
 .img-box img{width:100px; height:100px; object-fit:cover; border:1px solid #ddd; border-radius:4px}
-.chip{padding:8px 12px; border:2px solid #ddd; border-radius:20px; cursor:pointer; background:#fff; display:inline-block; margin:3px; font-size:13px}
+.chip{padding:8px 12px; border:2px solid #ddd; border-radius:20px; cursor:pointer; background:#fff; display:inline-block; margin:3px}
 .chip.active{border-color:#2874f0; background:#e3f2fd; color:#2874f0}
-.price-box{background:#e8f5e9; padding:15px; border-radius:8px; margin:15px 0}
+.price-box{background:#e8f5e9; padding:15px; border-radius:8px; margin-top:10px}
+.section-title{margin-top:20px; margin-bottom:10px; color:#2874f0; border-bottom:1px solid #ddd; padding-bottom:5px}
+.stats{display:grid; grid-template-columns:repeat(4,1fr); gap:15px}
+.stat-box{padding:20px; border-radius:8px; color:#fff; text-align:center}
 .product-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:15px}
-.product-card{border:1px solid #eee; padding:10px; border-radius:8px; text-align:center}
-.product-card img{width:100%; height:150px; object-fit:cover; border-radius:4px}
-@media(max-width:768px){.form-grid,.stats,.product-grid{grid-template-columns:1fr}}
+.product-card{border:1px solid #eee; padding:10px; border-radius:8px}
 </style>
 </head>
 <body>
-
-<div class="topbar">Seller Panel - Shopline Kerala | Payment: Delivered + 2-3 days + Return period over</div>
-<header>
-  <div class="logo">Shopline<span>Kerala</span> Seller</div>
-  <button class="btn-logout" onclick="logout()">Logout</button>
+<div style="background:#232f3e; color:#fff; padding:8px; text-align:center">Seller Panel - Shopline Kerala | Payment: Delivered + 2-3 days + Return period over</div>
+<header style="background:#2874f0; color:#fff; padding:15px">
+  <div style="max-width:1200px; margin:auto; display:flex; justify-content:space-between">
+    <div>Shopline<span style="color:#ffe500">Kerala</span> Seller</div>
+    <button class="btn-logout" onclick="logout()">Logout</button>
+  </div>
 </header>
 
-<div class="container">
+<div class="dashboard">
   <div class="tabs">
-    <button class="tab-btn active" onclick="openTab('orders', this)">📦 Orders</button>
-    <button class="tab-btn" onclick="openTab('products', this)">🛍️ My Products</button>
-    <button class="tab-btn" onclick="openTab('add', this)">➕ Add Product</button>
+    <button class="tab-btn active" onclick="openTab('orders')">📦 Orders</button>
+    <button class="tab-btn" onclick="openTab('products')">🛍️ My Products</button>
+    <button class="tab-btn" onclick="openTab('add')">➕ Add Product</button>
   </div>
 
-  <!-- TAB 1: ORDERS -->
   <div id="orders" class="tab-content active">
     <h2>Recent Orders</h2>
     <div class="stats">
-      <div class="stat-box stat-blue"><h3 id="totalOrders">0</h3><p>Total Orders</p></div>
-      <div class="stat-box stat-orange"><h3 id="newOrders">0</h3><p>New Orders</p></div>
-      <div class="stat-box stat-green"><h3 id="revenue">₹0</h3><p>Revenue</p></div>
-      <div class="stat-box stat-purple"><h3 id="myProductCount">0</h3><p>My Products</p></div>
+      <div class="stat-box" style="background:#2874f0"><h3 id="totalOrders">0</h3><p>Total Orders</p></div>
+      <div class="stat-box" style="background:#ff9f00"><h3 id="newOrders">0</h3><p>New Orders</p></div>
+      <div class="stat-box" style="background:#388e3c"><h3 id="revenue">₹0</h3><p>Revenue</p></div>
+      <div class="stat-box" style="background:#8e24aa"><h3 id="myProductCount">0</h3><p>My Products</p></div>
     </div>
-    <table>
-      <thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Amount</th><th>Status</th></tr></thead>
-      <tbody id="ordersTable"><tr><td colspan="5">No orders yet</td></tr></tbody>
-    </table>
   </div>
 
-  <!-- TAB 2: MY PRODUCTS -->
   <div id="products" class="tab-content">
     <h2>My Products</h2>
     <div class="product-grid" id="myProductsGrid">Loading...</div>
   </div>
 
-  <!-- TAB 3: ADD PRODUCT -->
   <div id="add" class="tab-content">
     <h2>Add New Product</h2>
     <form id="addProductForm" onsubmit="addProduct(event)">
 
-      <div class="section-title">1. Basic Details</div>
+      <h3 class="section-title">1. Basic Details</h3>
       <div class="form-grid">
         <div class="form-group"><label>Product Name *</label><input id="pName" required></div>
         <div class="form-group"><label>Brand</label><input id="pBrand"></div>
@@ -117,27 +90,24 @@ table td{padding:12px; border-bottom:1px solid #eee; font-size:14px}
         </div>
       </div>
 
-      <div class="section-title">2. Price & Stock</div>
+      <h3 class="section-title">2. Price & Stock</h3>
       <div class="form-grid">
         <div class="form-group"><label>Your Selling Price ₹ *</label><input id="pPrice" type="number" onkeyup="calcPrice()" required></div>
-        <div class="form-group"><label>Old Price ₹ MRP</label><input id="pOldPrice" type="number"></div>
+        <div class="form-group"><label>Old Price ₹</label><input id="pOldPrice" type="number"></div>
         <div class="form-group"><label>Stock Quantity *</label><input id="pStockQty" type="number" value="10" required></div>
       </div>
-      <div class="price-box"><b>Customer Pays: ₹<span id="customerPrice">0</span></b> + Platform Fee ₹20</div>
+      <div class="price-box"><p><b>Customer Pays: ₹<span id="customerPrice">0</span></b></p></div>
 
-      <div class="section-title">3. Variants</div>
+      <h3 class="section-title">3. Variants</h3>
       <div class="form-group"><label>Sizes</label><div id="sizeGrid"></div>
-        <div style="display:flex; gap:5px; margin-top:8px"><input id="extraSize" placeholder="Add size"><button type="button" class="btn-add" onclick="addExtraSize()">+ Add</button></div>
+        <div style="display:flex; gap:5px; margin-top:8px"><input id="extraSize"><button type="button" class="btn-add" onclick="addExtraSize()">+ Add Size</button></div>
       </div>
       <div class="form-group"><label>Colors</label><div id="colorGrid"></div>
-        <div style="display:flex; gap:5px; margin-top:8px"><input type="color" id="extraColor"><input id="colorName" placeholder="Color Name"><button type="button" class="btn-add" onclick="addExtraColor()">+ Add</button></div>
+        <div style="display:flex; gap:5px; margin-top:8px"><input type="color" id="extraColor"><input id="colorName" placeholder="Color Name"><button type="button" class="btn-add" onclick="addExtraColor()">+ Add Color</button></div>
       </div>
 
-      <div class="section-title">4. Images & Description</div>
-      <div class="form-group"><label>Product Images * Upload 1 to 4 - Auto to Cloudinary</label>
-        <input type="file" id="pImages" accept="image/*" multiple onchange="previewImages(event)">
-        <div class="img-preview" id="imgPreview"></div>
-      </div>
+      <h3 class="section-title">4. Images & Description</h3>
+      <div class="form-group"><label>Product Images *</label><input type="file" id="pImages" accept="image/*" multiple onchange="previewImages(event)"><div class="img-preview" id="imgPreview"></div></div>
       <div class="form-group"><label>Description</label><textarea id="pDesc" rows="4"></textarea></div>
 
       <button type="submit" class="btn-save">Save Product</button>
@@ -155,7 +125,6 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// CLOUDINARY
 const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/omve98do/image/upload";
 const CLOUDINARY_UPLOAD_PRESET = "shoplinekerala";
 
@@ -171,31 +140,29 @@ const categories = {
   "Sports": ["Cricket"], "Books": ["Novels"], "Automotive": ["Bike Accessories"], "Jewelry": ["Earrings"]
 };
 
-auth.onAuthStateChanged(user => {
-  if(!user) location.href='login.html';
-  else { currentUser = user; loadDashboard(); renderSizeColor(); }
+auth.onAuthStateChanged(function(user){ 
+  if(!user) location.href='login.html'; 
+  else{ currentUser = user; loadDashboard(); renderSizeColor(); } 
 });
-
-function logout(){ auth.signOut().then(() => location.href='login.html'); }
-
-// FIXED TAB FUNCTION
-function openTab(tab, btn){ 
-  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active')); 
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); 
+function logout(){ auth.signOut().then(function(){ location.href='login.html'; }); }
+function openTab(tab){ 
+  document.querySelectorAll('.tab-content').forEach(function(t){ t.classList.remove('active'); }); 
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); }); 
   document.getElementById(tab).classList.add('active'); 
-  btn.classList.add('active');
+  event.target.classList.add('active');
   if(tab=='products') loadMyProducts();
 }
 
 function updateSubcategory(){
-  let cat = document.getElementById('pCategory').value;
-  let sub = document.getElementById('pSubcategory');
-  sub.innerHTML = '<option>Select Subcategory</option>';
-  if(categories[cat]) categories[cat].forEach(s => sub.innerHTML += `<option>${s}</option>`);
+  var cat = document.getElementById('pCategory').value;
+  var sub = document.getElementById('pSubcategory');
+  sub.innerHTML = '<option value="">Select Subcategory</option>';
+  if(categories[cat]){ categories[cat].forEach(function(s){ sub.innerHTML += '<option value="' + s + '">' + s + '</option>'; }); }
 }
-function calcPrice(){ let price = Number(document.getElementById('pPrice').value)||0; document.getElementById('customerPrice').innerText = price + 20; }
 
-async function previewImages(e){
+function calcPrice(){ var price = Number(document.getElementById('pPrice').value)||0; document.getElementById('customerPrice').innerText = price + 20; }
+
+async function previewImages(e){ 
   let files = Array.from(e.target.files).slice(0,4);
   let box = document.getElementById('imgPreview'); box.innerHTML=''; uploadedImageUrls = [];
   for(let file of files){
@@ -205,31 +172,26 @@ async function previewImages(e){
     let res = await fetch(CLOUDINARY_URL, {method:'POST', body:formData});
     let data = await res.json();
     uploadedImageUrls.push(data.secure_url);
-    box.innerHTML += `<div class="img-box"><img src="${data.secure_url}"></div>`;
+    box.innerHTML += '<div class="img-box"><img src="' + data.secure_url + '"></div>';
   }
 }
 
 function renderSizeColor(){
-  let sizeGrid = document.getElementById('sizeGrid'); sizeGrid.innerHTML='';
-  ['XS','S','M','L','XL','XXL'].forEach(s => {
-    let active = selectedSizes.includes(s)? 'active' : '';
-    sizeGrid.innerHTML += `<span class="chip ${active}" onclick="toggleSize('${s}')">${s}</span>`;
-  });
-  let colorGrid = document.getElementById('colorGrid'); colorGrid.innerHTML='';
-  selectedColors.forEach(c => {
-    colorGrid.innerHTML += `<span class="chip active" style="background:${c.code}; color:#fff">${c.name} <span onclick="removeColor('${c.name}')">X</span></span>`;
-  });
+  var sizeGrid = document.getElementById('sizeGrid'); sizeGrid.innerHTML='';
+  ['XS','S','M','L','XL','XXL'].forEach(function(s){ var active = selectedSizes.includes(s)? 'active' : ''; sizeGrid.innerHTML += '<span class="chip ' + active + '" onclick="toggleSize(\'' + s + '\')">' + s + '</span>'; });
+  var colorGrid = document.getElementById('colorGrid'); colorGrid.innerHTML='';
+  selectedColors.forEach(function(c){ colorGrid.innerHTML += '<span class="chip active" style="background:' + c.code + '; color:#fff">' + c.name + ' <span onclick="removeColor(\'' + c.name + '\')">X</span></span>'; });
 }
-function toggleSize(s){ selectedSizes.includes(s)? selectedSizes=selectedSizes.filter(x=>x!=s) : selectedSizes.push(s); renderSizeColor(); }
-function addExtraSize(){ let val=document.getElementById('extraSize').value.trim().toUpperCase(); if(val &&!selectedSizes.includes(val)){ selectedSizes.push(val); document.getElementById('extraSize').value=''; renderSizeColor(); }
-function addExtraColor(){ let code=document.getElementById('extraColor').value; let name=document.getElementById('colorName').value.trim(); if(!name) return alert("Enter Color Name"); if(!selectedColors.find(x=>x.name==name)){ selectedColors.push({name,code}); document.getElementById('colorName').value=''; renderSizeColor(); }}
-function removeColor(name){ selectedColors=selectedColors.filter(x=>x.name!=name); renderSizeColor(); }
+function toggleSize(s){ selectedSizes.includes(s)? selectedSizes=selectedSizes.filter(function(x){return x!=s}) : selectedSizes.push(s); renderSizeColor(); }
+function addExtraSize(){ var val=document.getElementById('extraSize').value.trim().toUpperCase(); if(val &&!selectedSizes.includes(val)){ selectedSizes.push(val); document.getElementById('extraSize').value=''; renderSizeColor(); } }
+function addExtraColor(){ var code=document.getElementById('extraColor').value; var name=document.getElementById('colorName').value.trim(); if(!name) return alert("Enter Color Name"); if(!selectedColors.find(function(x){return x.name==name})){ selectedColors.push({name:name,code:code}); document.getElementById('colorName').value=''; renderSizeColor(); }
+function removeColor(name){ selectedColors=selectedColors.filter(function(x){return x.name!=name}); renderSizeColor(); }
 
-async function addProduct(e){
+function addProduct(e){
   e.preventDefault();
   if(uploadedImageUrls.length === 0) return alert("Upload at least 1 image");
 
-  let product = {
+  var product = {
     name: document.getElementById('pName').value,
     brand: document.getElementById('pBrand').value,
     images: uploadedImageUrls,
@@ -247,31 +209,28 @@ async function addProduct(e){
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
   };
 
-  await db.collection("products").add(product);
-  alert('✅ Product Added Successfully!');
-  document.getElementById('addProductForm').reset();
-  selectedSizes=[]; selectedColors=[]; uploadedImageUrls=[];
-  document.getElementById('imgPreview').innerHTML='';
-  loadDashboard();
-  openTab('products', document.querySelectorAll('.tab-btn')[1]);
+  db.collection("products").add(product).then(function(){
+    alert('✅ Product Added Successfully!');
+    document.getElementById('addProductForm').reset();
+    selectedSizes=[]; selectedColors=[]; uploadedImageUrls=[];
+    document.getElementById('imgPreview').innerHTML='';
+    loadDashboard();
+  });
 }
 
-async function loadDashboard(){
-  let snap = await db.collection("products").where("sellerId","==",currentUser.uid).get();
-  document.getElementById('myProductCount').innerText = snap.size;
+function loadDashboard(){
+  db.collection("products").where("sellerId","==",currentUser.uid).get().then(function(snap){
+    document.getElementById('myProductCount').innerText = snap.size;
+  });
 }
-async function loadMyProducts(){
-  let snap = await db.collection("products").where("sellerId","==",currentUser.uid).get();
-  let grid = document.getElementById('myProductsGrid'); grid.innerHTML='';
-  if(snap.empty) grid.innerHTML = "No products yet";
-  snap.forEach(doc => {
-    let p = doc.data();
-    grid.innerHTML += `<div class="product-card">
-      <img src="${p.images[0]}">
-      <h4>${p.name}</h4>
-      <p>₹${p.customerPrice}</p>
-      <p>Stock: ${p.stockQty}</p>
-    </div>`;
+function loadMyProducts(){
+  db.collection("products").where("sellerId","==",currentUser.uid).get().then(function(snap){
+    var grid = document.getElementById('myProductsGrid'); grid.innerHTML='';
+    if(snap.empty) grid.innerHTML = "No products yet";
+    snap.forEach(function(doc){
+      var p = doc.data();
+      grid.innerHTML += '<div class="product-card"><img src="'+p.images[0]+'" style="width:100%; height:150px"><h4>'+p.name+'</h4><p>₹'+p.customerPrice+'</p></div>';
+    });
   });
 }
 </script>
