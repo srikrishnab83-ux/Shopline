@@ -26,11 +26,11 @@ header a{color:#fff; text-decoration:none; font-weight:bold; font-size:18px}
 .stock{color:#388e3c; font-weight:bold; margin:10px 0; font-size:14px}
 .section{margin:15px 0; padding:15px 0; border-bottom:1px solid #f0f0f0}
 .section-title{font-weight:bold; font-size:15px; margin-bottom:10px; color:#212121}
+
+/* CHIP STYLE FOR BOTH SIZE AND COLOR */
 .chip{padding:8px 16px; border:2px solid #ddd; border-radius:25px; margin:5px; cursor:pointer; display:inline-block; background:#fff; font-size:14px; transition:0.2s}
 .chip.active{border-color:#2874f0; background:#2874f0; color:#fff}
-.chip-color{width:35px; height:35px; border-radius:50%; border:2px solid #ddd; cursor:pointer; display:inline-block; margin:5px; position:relative}
-.chip-color.active{border:3px solid #2874f0; box-shadow:0 0 0 2px #fff}
-.chip-color span{position:absolute; bottom:-22px; left:50%; transform:translateX(-50%); font-size:11px; white-space:nowrap; color:#333}
+
 .attr-grid{display:grid; grid-template-columns:120px 1fr; gap:10px; font-size:14px}
 .attr-grid b{color:#878787; font-weight:500}
 .btn-buy{padding:15px; width:100%; background:#ff9f00; color:#fff; border:none; font-size:18px; font-weight:bold; border-radius:4px; cursor:pointer; margin-top:15px}
@@ -165,7 +165,7 @@ function loadProduct(p){
   // 4. CATEGORY
   document.getElementById('productCategory').innerText = (p.category || 'N/A') + ' > ' + (p.subcategory || 'N/A');
 
-  // 5. SIZES - CLICKABLE
+  // 5. SIZES - CLICKABLE CHIPS
   var sizeHtml = '';
   if(p.sizes && p.sizes.length > 0){
     p.sizes.forEach(function(s){
@@ -174,11 +174,14 @@ function loadProduct(p){
   } else { sizeHtml = '<span style="color:#878787">No sizes available</span>'; }
   document.getElementById('productSizes').innerHTML = sizeHtml;
 
-  // 6. COLORS - CLICKABLE DOTS
+  // 6. COLORS - CHIP STYLE WITH COLOR DOT INSIDE
   var colorHtml = '';
   if(p.colors && p.colors.length > 0){
     p.colors.forEach(function(c){
-      colorHtml += '<div class="chip-color" style="background:'+c.code+'" onclick="selectColor(this, \''+c.name+'\')" title="'+c.name+'"><span>'+c.name+'</span></div>';
+      colorHtml += '<span class="chip" onclick="selectColor(this, \''+c.name+'\')">'
+                +'<span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:'+c.code+'; border:1px solid #ccc; margin-right:6px; vertical-align:middle"></span>'
+                + c.name
+                +'</span>';
     });
   } else { colorHtml = '<span style="color:#878787">No colors available</span>'; }
   document.getElementById('productColors').innerHTML = colorHtml;
@@ -202,7 +205,7 @@ function selectSize(el, size){
 }
 
 function selectColor(el, name){
-  document.querySelectorAll('#productColors.chip-color').forEach(function(c){ c.classList.remove('active') });
+  document.querySelectorAll('#productColors.chip').forEach(function(c){ c.classList.remove('active') });
   el.classList.add('active');
   selectedColor = name;
 }
@@ -217,13 +220,26 @@ function addToCart(){
   if(currentProduct.stockQty <= 0) return alert("Out of Stock");
   if(currentProduct.sizes && currentProduct.sizes.length > 0 &&!selectedSize) return alert("Please select a size");
   if(currentProduct.colors && currentProduct.colors.length > 0 &&!selectedColor) return alert("Please select a color");
-  alert('✅ Added to cart: ' + currentProduct.name + '\nSize: ' + selectedSize + '\nColor: ' + selectedColor);
+
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  let cartItem = {
+    id: productId,
+    name: currentProduct.name,
+    image: currentProduct.images[0],
+    price: currentProduct.customerPrice,
+    size: selectedSize,
+    color: selectedColor,
+    qty: 1
+  };
+  let existing = cart.find(item => item.id == cartItem.id && item.size == cartItem.size && item.color == cartItem.color);
+  if(existing){ existing.qty += 1; } else { cart.push(cartItem); }
+  localStorage.setItem('cart', JSON.stringify(cart));
+  alert('✅ Added to cart: ' + currentProduct.name);
+  window.location.href = 'cart.html';
 }
+
 function buyNow(){
-  if(currentProduct.stockQty <= 0) return alert("Out of Stock");
-  if(currentProduct.sizes && currentProduct.sizes.length > 0 &&!selectedSize) return alert("Please select a size");
-  if(currentProduct.colors && currentProduct.colors.length > 0 &&!selectedColor) return alert("Please select a color");
-  alert('✅ Buy Now: ' + currentProduct.name + '\nSize: ' + selectedSize + '\nColor: ' + selectedColor);
+  addToCart();
 }
 </script>
 </body>
