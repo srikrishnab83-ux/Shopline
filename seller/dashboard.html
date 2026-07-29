@@ -6,6 +6,7 @@
 <script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>
 <style>
 *{font-family:Roboto,Arial}
+body.cloudinary-widget-open {overflow: auto!important;} /* FIX 1: Prevent scroll lock */
 .dashboard{max-width:1200px; margin:20px auto; padding:20px}
 .tabs{display:flex; gap:10px; margin-bottom:20px; border-bottom:2px solid #eee}
 .tab-btn{padding:12px 20px; border:none; background:none; cursor:pointer; font-size:16px; font-weight:bold}
@@ -17,13 +18,13 @@
 .form-group label{font-weight:bold; margin-bottom:5px; font-size:14px}
 .form-group input,.form-group select,.form-group textarea{padding:10px; border:1px solid #ddd; border-radius:4px}
 .btn-save{padding:12px 30px; background:#388e3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:16px; margin-top:15px}
-.btn-upload{padding:10px 20px; background:#2874f0; color:#fff; border:none; border-radius:4px; cursor:pointer; font-weight:bold}
+.btn-upload{padding:10px 20px; background:#2874f0; color:#fff; border:none; border-radius:4px; cursor:pointer; font-weight:bold; width:100%}
 .btn-logout{background:#d32f2f; color:#fff; padding:8px 15px; border:none; border-radius:4px; cursor:pointer; float:right}
 .btn-add{background:#ff9f00; color:#fff; padding:8px 12px; border:none; border-radius:4px; cursor:pointer}
 .img-preview{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap}
 .img-box{position:relative}
 .img-box img{width:100px; height:100px; object-fit:cover; border:1px solid #ddd; border-radius:4px}
-.img-box span{position:absolute; top:0; right:0; background:red; color:#fff; cursor:pointer; padding:2px 6px; border-radius:50%}
+.img-box span{position:absolute; top:-8px; right:-8px; background:red; color:#fff; cursor:pointer; padding:2px 6px; border-radius:50%; font-size:12px}
 .chip{padding:8px 12px; border:2px solid #ddd; border-radius:20px; cursor:pointer; background:#fff; display:inline-block; margin:3px}
 .chip.active{border-color:#2874f0; background:#e3f2fd; color:#2874f0}
 .price-box{background:#e8f5e9; padding:15px; border-radius:8px; margin-top:10px}
@@ -120,12 +121,15 @@ function addExtraSize(){ var val=document.getElementById('extraSize').value.trim
 function addExtraColor(){ var code=document.getElementById('extraColor').value; var name=document.getElementById('colorName').value.trim(); if(name){ selectedColors.push({name:name,code:code}); document.getElementById('colorName').value=''; renderSizeColor(); } }
 function removeColor(name){ selectedColors=selectedColors.filter(function(x){return x.name!=name}); renderSizeColor(); }
 
-// CLOUDINARY UPLOAD
+// CLOUDINARY UPLOAD - FIX 2: Force scroll unlock
 var cloudName = "omve98do";
 var uploadPreset = "shopline_unsigned";
 
 function openUpload(){
   if(uploadedUrls.length >= 4) return alert("Max 4 images allowed");
+
+  document.body.style.overflow = 'auto'; // Unlock before open
+
   cloudinary.openUploadWidget({
     cloudName: cloudName,
     uploadPreset: uploadPreset,
@@ -135,13 +139,20 @@ function openUpload(){
     maxImageFileSize: 5000000
   },
   function(error, result) {
+    document.body.style.overflow = 'auto'; // Unlock after every event
+
     if(!error && result.event === "success"){
       uploadedUrls.push(result.info.secure_url);
       document.getElementById('cloudinaryUrls').value = uploadedUrls.join(",");
       document.getElementById('imgPreview').innerHTML += `<div class="img-box"><img src="${result.info.secure_url}"><span onclick="removeImg('${result.info.secure_url}')">X</span></div>`;
     }
+
+    if(result.event === "close"){
+      document.body.style.overflow = 'auto'; // Main fix when user closes
+    }
   });
 }
+
 function removeImg(url){
   uploadedUrls = uploadedUrls.filter(u => u!= url);
   document.getElementById('cloudinaryUrls').value = uploadedUrls.join(",");
@@ -175,6 +186,7 @@ function addProduct(e){
     document.getElementById('imgPreview').innerHTML='';
     document.getElementById('cloudinaryUrls').value='';
     renderSizeColor();
+    document.body.style.overflow = 'auto'; // reset scroll
   }).catch(function(error){ alert("❌ Save Error: " + error.message); });
 }
 </script>
