@@ -6,20 +6,16 @@
 <script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>
 <style>
 *{font-family:Roboto,Arial}
-body.cloudinary-widget-open {overflow: auto!important;} /* FIX 1: Prevent scroll lock */
+body.cloudinary-widget-open {overflow: auto!important;}
 .dashboard{max-width:1200px; margin:20px auto; padding:20px}
-.tabs{display:flex; gap:10px; margin-bottom:20px; border-bottom:2px solid #eee}
-.tab-btn{padding:12px 20px; border:none; background:none; cursor:pointer; font-size:16px; font-weight:bold}
-.tab-btn.active{border-bottom:3px solid #2874f0; color:#2874f0}
-.tab-content{display:none}
-.tab-content.active{display:block}
 .form-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px}
 .form-group{display:flex; flex-direction:column}
 .form-group label{font-weight:bold; margin-bottom:5px; font-size:14px}
 .form-group input,.form-group select,.form-group textarea{padding:10px; border:1px solid #ddd; border-radius:4px}
 .btn-save{padding:12px 30px; background:#388e3c; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:16px; margin-top:15px}
 .btn-upload{padding:10px 20px; background:#2874f0; color:#fff; border:none; border-radius:4px; cursor:pointer; font-weight:bold; width:100%}
-.btn-logout{background:#d32f2f; color:#fff; padding:8px 15px; border:none; border-radius:4px; cursor:pointer; float:right}
+.btn-back{background:#555; color:#fff; padding:8px 15px; border:none; border-radius:4px; cursor:pointer; margin-right:8px}
+.btn-logout{background:#d32f2f; color:#fff; padding:8px 15px; border:none; border-radius:4px; cursor:pointer;}
 .btn-add{background:#ff9f00; color:#fff; padding:8px 12px; border:none; border-radius:4px; cursor:pointer}
 .img-preview{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap}
 .img-box{position:relative}
@@ -34,9 +30,12 @@ body.cloudinary-widget-open {overflow: auto!important;} /* FIX 1: Prevent scroll
 <body>
 <div style="background:#232f3e; color:#fff; padding:8px; text-align:center">Seller Panel - Shopline Kerala</div>
 <header style="background:#2874f0; color:#fff; padding:15px">
-  <div style="max-width:1200px; margin:auto; display:flex; justify-content:space-between">
+  <div style="max-width:1200px; margin:auto; display:flex; justify-content:space-between; align-items:center">
     <div>Shopline<span style="color:#ffe500">Kerala</span> Seller</div>
-    <button class="btn-logout" onclick="logout()">Logout</button>
+    <div>
+      <button class="btn-back" onclick="goBack()">⬅ Back to Seller Panel</button>
+      <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
   </div>
 </header>
 
@@ -50,7 +49,27 @@ body.cloudinary-widget-open {overflow: auto!important;} /* FIX 1: Prevent scroll
         <div class="form-group"><label>Brand</label><input id="pBrand"></div>
         <div class="form-group"><label>Category *</label><select id="pCategory" onchange="updateSubcategory()" required><option value="">Select</option><option value="Men">Men</option><option value="Women">Women</option><option value="Kids">Kids</option></select></div>
         <div class="form-group"><label>Sub Category *</label><select id="pSubcategory" required></select></div>
-        <div class="form-group"><label>District *</label><select id="pDistrict" required><option value="">Select</option><option>Ernakulam</option><option>Thrissur</option><option>Palakkad</option><option>Malappuram</option><option>Kozhikode</option></select></div>
+
+        <!-- ALL 14 KERALA DISTRICTS ADDED -->
+        <div class="form-group"><label>District *</label>
+          <select id="pDistrict" required>
+            <option value="">Select District</option>
+            <option>Thiruvananthapuram</option>
+            <option>Kollam</option>
+            <option>Pathanamthitta</option>
+            <option>Alappuzha</option>
+            <option>Kottayam</option>
+            <option>Idukki</option>
+            <option>Ernakulam</option>
+            <option>Thrissur</option>
+            <option>Palakkad</option>
+            <option>Malappuram</option>
+            <option>Kozhikode</option>
+            <option>Wayanad</option>
+            <option>Kannur</option>
+            <option>Kasaragod</option>
+          </select>
+        </div>
       </div>
 
       <h3 class="section-title">2. Price & Stock</h3>
@@ -107,6 +126,10 @@ const categories = {"Men": ["Shirts", "T-Shirts"], "Women": ["Saree", "Kurtis"],
 
 auth.onAuthStateChanged(function(user){ if(!user) location.href='login.html'; else{ renderSizeColor(); } });
 function logout(){ auth.signOut().then(function(){ location.href='login.html'; }); }
+
+// NEW BACK BUTTON FUNCTION
+function goBack(){ location.href='seller-panel.html'; } // change this to your seller panel page name
+
 function updateSubcategory(){ var cat = document.getElementById('pCategory').value; var sub = document.getElementById('pSubcategory'); sub.innerHTML = '<option value="">Select</option>'; if(categories[cat]){ categories[cat].forEach(function(s){ sub.innerHTML += '<option value="' + s + '">' + s + '</option>'; }); } }
 function calcPrice(){ var price = Number(document.getElementById('pPrice').value)||0; document.getElementById('customerPrice').innerText = price + 20; }
 
@@ -118,17 +141,16 @@ function renderSizeColor(){
 }
 function toggleSize(s){ selectedSizes.includes(s)? selectedSizes=selectedSizes.filter(function(x){return x!=s}) : selectedSizes.push(s); renderSizeColor(); }
 function addExtraSize(){ var val=document.getElementById('extraSize').value.trim().toUpperCase(); if(val &&!selectedSizes.includes(val)){ selectedSizes.push(val); document.getElementById('extraSize').value=''; renderSizeColor(); } }
-function addExtraColor(){ var code=document.getElementById('extraColor').value; var name=document.getElementById('colorName').value.trim(); if(name){ selectedColors.push({name:name,code:code}); document.getElementById('colorName').value=''; renderSizeColor(); } }
+function addExtraColor(){ var code=document.getElementById('extraColor').value; var name=document.getElementById('colorName')..value.trim(); if(name){ selectedColors.push({name:name,code:code}); document.getElementById('colorName').value=''; renderSizeColor(); } }
 function removeColor(name){ selectedColors=selectedColors.filter(function(x){return x.name!=name}); renderSizeColor(); }
 
-// CLOUDINARY UPLOAD - FIX 2: Force scroll unlock
+// CLOUDINARY UPLOAD
 var cloudName = "omve98do";
 var uploadPreset = "shopline_unsigned";
 
 function openUpload(){
   if(uploadedUrls.length >= 4) return alert("Max 4 images allowed");
-
-  document.body.style.overflow = 'auto'; // Unlock before open
+  document.body.style.overflow = 'auto';
 
   cloudinary.openUploadWidget({
     cloudName: cloudName,
@@ -139,17 +161,13 @@ function openUpload(){
     maxImageFileSize: 5000000
   },
   function(error, result) {
-    document.body.style.overflow = 'auto'; // Unlock after every event
-
+    document.body.style.overflow = 'auto';
     if(!error && result.event === "success"){
       uploadedUrls.push(result.info.secure_url);
       document.getElementById('cloudinaryUrls').value = uploadedUrls.join(",");
       document.getElementById('imgPreview').innerHTML += `<div class="img-box"><img src="${result.info.secure_url}"><span onclick="removeImg('${result.info.secure_url}')">X</span></div>`;
     }
-
-    if(result.event === "close"){
-      document.body.style.overflow = 'auto'; // Main fix when user closes
-    }
+    if(result.event === "close"){ document.body.style.overflow = 'auto'; }
   });
 }
 
@@ -186,7 +204,6 @@ function addProduct(e){
     document.getElementById('imgPreview').innerHTML='';
     document.getElementById('cloudinaryUrls').value='';
     renderSizeColor();
-    document.body.style.overflow = 'auto'; // reset scroll
   }).catch(function(error){ alert("❌ Save Error: " + error.message); });
 }
 </script>
