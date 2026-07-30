@@ -8,19 +8,25 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3081/3081559.png">
   <style>
-  .add-cart-btn{background:#fb641b; color:#fff; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; width:100%; margin-top:8px; font-weight:bold}
-  .add-cart-btn:hover{background:#e55a0f}
-  .search-wrap{display:flex; gap:5px}
-  .search-wrap input{padding:8px; border-radius:4px; border:none; width:300px}
-  .search-wrap button{padding:8px 12px; border:none; border-radius:4px; background:#fff; cursor:pointer}
-  .product-grid-4{display:grid; grid-template-columns:repeat(4,1fr); gap:15px}
-  .product-card{background:#fff; padding:10px; border:1px solid #eee; border-radius:8px; text-align:center}
-  .product-card img{width:100%; height:200px; object-fit:cover; border-radius:4px; background:#f5f5f5}
-  .product-card h3{font-size:14px; margin:8px 0; height:40px; overflow:hidden}
-  .price{font-weight:bold; color:#388e3c}
-  .oldPrice{text-decoration:line-through; color:#878787; font-size:12px; margin-left:5px}
-  .discount{color:#388e3c; font-size:12px; font-weight:bold}
-    @media(max-width:768px){.search-wrap input{width:150px}.product-grid-4{grid-template-columns:repeat(2,1fr)} }
+ .add-cart-btn{background:#fb641b; color:#fff; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; width:100%; margin-top:8px; font-weight:bold}
+ .add-cart-btn:hover{background:#e55a0f}
+ .add-cart-btn:disabled{background:#ccc; cursor:not-allowed}
+ .search-wrap{display:flex; gap:5px}
+ .search-wrap input{padding:8px; border-radius:4px; border:none; width:300px}
+ .search-wrap button{padding:8px 12px; border:none; border-radius:4px; background:#fff; cursor:pointer}
+ .product-grid-4{display:grid; grid-template-columns:repeat(4,1fr); gap:15px}
+ .product-card{background:#fff; padding:10px; border:1px solid #eee; border-radius:8px; text-align:center; position:relative}
+ .product-card img{width:100%; height:200px; object-fit:cover; border-radius:4px; background:#f5f5f5}
+ .product-card h3{font-size:14px; margin:8px 0; height:40px; overflow:hidden}
+ .price{font-weight:bold; color:#388e3c}
+ .oldPrice{text-decoration:line-through; color:#878787; font-size:12px; margin-left:5px}
+ .discount{color:#388e3c; font-size:12px; font-weight:bold}
+ .out-stock{position:absolute; top:10px; right:10px; background:red; color:#fff; padding:3px 6px; font-size:10px; border-radius:3px}
+ .stars{color:#ffa500; font-size:12px; margin:4px 0}
+ .gst-tag{font-size:10px; color:#666}
+ .filter-bar{display:flex; gap:10px; margin:15px 0; flex-wrap:wrap}
+ .filter-bar select{padding:6px; border-radius:4px; border:1px solid #ddd}
+  @media(max-width:768px){.search-wrap input{width:150px}.product-grid-4{grid-template-columns:repeat(2,1fr)} }
   </style>
 </head>
 <body>
@@ -44,18 +50,19 @@
     </div>
   </header>
 
-  <!-- ========== 3. CATEGORY NAVBAR ========== -->
+  <!-- ========== 3. CATEGORY NAVBAR - FIXED 404 ========== -->
 <nav class="category-nav">
-  <a href="customer/products.html?category=Mobiles">Mobiles</a>
-  <a href="customer/products.html?category=Fashion">Fashion</a>
-  <a href="customer/products.html?category=Electronics">Electronics</a>
-  <a href="customer/products.html?category=Home">Home</a>
-  <a href="customer/products.html?category=Grocery">Grocery</a>
-  <a href="customer/products.html?category=Beauty">Beauty</a>
-  <a href="customer/products.html?category=Furniture">Furniture</a>
-  <a href="customer/products.html?category=Toys">Toys</a>
-  <a href="customer/products.html?category=Sports">Sports</a>
-  <a href="customer/products.html?category=Books">Books</a>
+  <a href="#" onclick="loadCategory('Mobiles')">Mobiles</a>
+  <a href="#" onclick="loadCategory('Fashion')">Fashion</a>
+  <a href="#" onclick="loadCategory('Electronics')">Electronics</a>
+  <a href="#" onclick="loadCategory('Home')">Home</a>
+  <a href="#" onclick="loadCategory('Grocery')">Grocery</a>
+  <a href="#" onclick="loadCategory('Beauty')">Beauty</a>
+  <a href="#" onclick="loadCategory('Furniture')">Furniture</a>
+  <a href="#" onclick="loadCategory('Toys')">Toys</a>
+  <a href="#" onclick="loadCategory('Sports')">Sports</a>
+  <a href="#" onclick="loadCategory('Books')">Books</a>
+  <a href="#" onclick="loadAll()">All</a>
 </nav>
 
   <!-- ========== 4. MAIN BANNER SLIDER ========== -->
@@ -64,29 +71,40 @@
     <img src="images/onam-special.png" alt="Onam Special">
   </section>
 
-  <!-- ========== 5. 10 CATEGORY GRID ========== -->
+  <!-- ========== 5. 10 CATEGORY GRID - FIXED 404 ========== -->
  <section class="categories">
   <h2>Shop by Category</h2>
   <div class="cat-grid">
-    <a href="customer/products.html?category=Mobiles"><img src="images/mobiles.png" alt="Mobiles"><p>Mobiles</p></a>
-    <a href="customer/products.html?category=Fashion"><img src="images/fashion.png" alt="Fashion"><p>Fashion</p></a>
-    <a href="customer/products.html?category=Electronics"><img src="images/electronics.png" alt="Electronics"><p>Electronics</p></a>
-    <a href="customer/products.html?category=Home"><img src="images/home.png" alt="Home"><p>Home</p></a>
-    <a href="customer/products.html?category=Grocery"><img src="images/grocery.png" alt="Grocery"><p>Grocery</p></a>
-    <a href="customer/products.html?category=Beauty"><img src="images/beauty.png" alt="Beauty"><p>Beauty</p></a>
-    <a href="customer/products.html?category=Furniture"><img src="images/furniture.png" alt="Furniture"><p>Furniture</p></a>
-    <a href="customer/products.html?category=Toys"><img src="images/toys.png" alt="Toys"><p>Toys</p></a>
-    <a href="customer/products.html?category=Sports"><img src="images/sports.png" alt="Sports"><p>Sports</p></a>
-    <a href="customer/products.html?category=Books"><img src="images/books.png" alt="Books"><p>Books</p></a>
+    <a href="#" onclick="loadCategory('Mobiles')"><img src="images/mobiles.png" alt="Mobiles"><p>Mobiles</p></a>
+    <a href="#" onclick="loadCategory('Fashion')"><img src="images/fashion.png" alt="Fashion"><p>Fashion</p></a>
+    <a href="#" onclick="loadCategory('Electronics')"><img src="images/electronics.png" alt="Electronics"><p>Electronics</p></a>
+    <a href="#" onclick="loadCategory('Home')"><img src="images/home.png" alt="Home"><p>Home</p></a>
+    <a href="#" onclick="loadCategory('Grocery')"><img src="images/grocery.png" alt="Grocery"><p>Grocery</p></a>
+    <a href="#" onclick="loadCategory('Beauty')"><img src="images/beauty.png" alt="Beauty"><p>Beauty</p></a>
+    <a href="#" onclick="loadCategory('Furniture')"><img src="images/furniture.png" alt="Furniture"><p>Furniture</p></a>
+    <a href="#" onclick="loadCategory('Toys')"><img src="images/toys.png" alt="Toys"><p>Toys</p></a>
+    <a href="#" onclick="loadCategory('Sports')"><img src="images/sports.png" alt="Sports"><p>Sports</p></a>
+    <a href="#" onclick="loadCategory('Books')"><img src="images/books.png" alt="Books"><p>Books</p></a>
   </div>
  </section>
 
-  <!-- ========== 6. FLASH SALE - NOW DYNAMIC FROM FIREBASE ========== -->
+  <!-- ========== 6. PRODUCTS SECTION WITH FILTERS ========== -->
   <section class="flash-sale">
     <div class="section-header">
-      <h2>⚡ Latest Products from Kerala Sellers</h2>
-      <a href="customer/products.html">View All ></a>
+      <h2 id="sectionTitle">⚡ Latest Products from Kerala Sellers</h2>
+      <a href="#" onclick="loadAll()">View All ></a>
     </div>
+
+    <!-- NEW: Sub-Subcategory Filter -->
+    <div class="filter-bar" id="filterBar" style="display:none">
+      <select id="subCategoryFilter" onchange="applyFilters()">
+        <option value="">All Subcategory</option>
+      </select>
+      <select id="subSubCategoryFilter" onchange="applyFilters()">
+        <option value="">All Type</option>
+      </select>
+    </div>
+
     <div class="product-grid-4" id="homeProductGrid">
       <p style="text-align:center; grid-column:1/-1">Loading products...</p>
     </div>
@@ -112,7 +130,7 @@
 
   <div class="bottom-nav">
     <a href="index.html">🏠<br>Home</a>
-    <a href="customer/products.html">🛍️<br>Shop</a>
+    <a href="#" onclick="loadAll()">🛍️<br>Shop</a>
     <a href="customer/cart.html">🛒<br>Cart</a>
     <a href="customer/profile.html">👤<br>Account</a>
   </div>
@@ -127,29 +145,52 @@ const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authD
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// LOAD PRODUCTS FROM FIREBASE + CLOUDINARY
-db.collection("products").orderBy("createdAt","desc").limit(8).get().then(snap => {
-  let html = '';
-  if(snap.empty){ html = '<p style="text-align:center; grid-column:1/-1">No products yet. Be the first seller!</p>'; }
+let ALL_PRODUCTS = []; // Store all products for search and filter
+let CURRENT_CATEGORY = '';
 
-  snap.forEach(doc => {
-    const p = doc.data();
-    // FIX: Check new images array, then old image field, then fallback
+// LOAD PRODUCTS FROM FIREBASE + CLOUDINARY
+function loadProducts(query = null){
+  let q = db.collection("products").orderBy("createdAt","desc");
+  if(query) q = q.limit(20); else q = q.limit(8);
+
+  q.get().then(snap => {
+    ALL_PRODUCTS = [];
+    snap.forEach(doc => ALL_PRODUCTS.push({id: doc.id,...doc.data()}));
+    renderProducts(ALL_PRODUCTS);
+  })
+}
+
+function renderProducts(products){
+  let html = '';
+  if(products.length === 0){ html = '<p style="text-align:center; grid-column:1/-1">No products found</p>'; }
+
+  products.forEach(p => {
     const img = p.images && p.images[0]? p.images[0] : p.image? p.image : 'img/no-image.jpg';
     const oldPrice = p.oldPrice? `<span class="oldPrice">₹${p.oldPrice}</span>` : '';
     const discount = p.oldPrice? `<p class="discount">${Math.round((1 - p.customerPrice/p.oldPrice)*100)}% off</p>` : '';
+    const stock = p.stock!== undefined? p.stock : 999;
+    const outBadge = stock <= 0? `<span class="out-stock">OUT OF STOCK</span>` : '';
+    const btnDisabled = stock <= 0? 'disabled' : '';
+    const btnText = stock <= 0? 'Out of Stock' : 'Add to Cart';
+    const rating = p.rating || 0;
+    const stars = '★'.repeat(Math.round(rating)) + '☆'.repeat(5-Math.round(rating));
+    const gst = p.gstPercent? `<p class="gst-tag">GST: ${p.gstPercent}%</p>` : '';
 
     html += `
-    <div class="product-card" data-name="${p.name}">
-      <a href="customer/product.html?id=${doc.id}"><img src="${img}" alt="${p.name}" onerror="this.src='img/no-image.jpg'"><h3>${p.name}</h3></a>
-      <p class="price">₹${p.customerPrice} ${oldPrice}</p>${discount}
-      <p style="font-size:12px; color:#878787">📍 ${p.district || 'Kerala'}</p>
-      <button class="add-cart-btn" onclick="quickAddToCart('${doc.id}', '${p.name}', '${img}', ${p.customerPrice}, '${p.sellerId || ''}')">Add to Cart</button>
+    <div class="product-card" data-name="${p.name}" data-category="${p.category}" data-sub="${p.subcategory}" data-subsub="${p.sub_subcategory}">
+      ${outBadge}
+      <a href="customer/product.html?id=${p.id}"><img src="${img}" alt="${p.name}" onerror="this.src='img/no-image.jpg'"><h3>${p.name}</h3></a>
+      <div class="stars">${stars} (${rating})</div>
+      <p class="price">₹${p.customerPrice} ${oldPrice}</p>${discount}${gst}
+      <p style="font-size:12px; color:#878787">📍 ${p.district || 'Kerala'} | Stock: ${stock}</p>
+      <button class="add-cart-btn" ${btnDisabled} onclick="quickAddToCart('${p.id}', '${p.name}', '${img}', ${p.customerPrice}, '${p.sellerId || ''}', ${stock})">${btnText}</button>
     </div>
     `;
   });
   document.getElementById('homeProductGrid').innerHTML = html;
-})
+}
+
+loadProducts(); // Initial load
 
 // 1. UPDATE CART COUNT
 function updateCartCount(){
@@ -160,8 +201,9 @@ function updateCartCount(){
 }
 updateCartCount();
 
-// 2. ADD TO CART FROM HOME - NOW WITH sellerId
-function quickAddToCart(id, name, image, price, sellerId){
+// 2. ADD TO CART FROM HOME - NOW WITH STOCK CHECK
+function quickAddToCart(id, name, image, price, sellerId, stock){
+  if(stock <= 0) return alert('Out of Stock');
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
   const cartItem = { id, name, image, price, sellerId, qty: 1, variant: 'Default' }
   const existing = cart.find(item => item.id === id && item.variant === 'Default');
@@ -171,14 +213,58 @@ function quickAddToCart(id, name, image, price, sellerId){
   updateCartCount();
 }
 
-// 3. SEARCH FUNCTION
+// 3. SEARCH FUNCTION - FIXED: SEARCHES ALL FIREBASE PRODUCTS
 function searchProducts(){
   const query = document.getElementById('searchInput').value.toLowerCase();
-  const products = document.querySelectorAll('.product-card');
-  products.forEach(card => {
-    const name = card.getAttribute('data-name').toLowerCase();
-    card.style.display = name.includes(query)? 'block' : 'none';
-  });
+  if(query.length < 2) { renderProducts(ALL_PRODUCTS); return; }
+
+  db.collection("products").get().then(snap => {
+    let results = [];
+    snap.forEach(doc => {
+      const p = doc.data();
+      if(p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query)){
+        results.push({id: doc.id,...p});
+      }
+    });
+    document.getElementById('sectionTitle').innerText = `🔍 Search Results for "${query}"`;
+    renderProducts(results);
+  })
+}
+
+// 4. CATEGORY LOAD - FIXES 404
+function loadCategory(cat){
+  CURRENT_CATEGORY = cat;
+  document.getElementById('sectionTitle').innerText = `📦 ${cat}`;
+  document.getElementById('filterBar').style.display = 'flex';
+  loadSubCategories(cat);
+
+  const filtered = ALL_PRODUCTS.filter(p => p.category === cat);
+  renderProducts(filtered);
+}
+
+function loadAll(){
+  CURRENT_CATEGORY = '';
+  document.getElementById('sectionTitle').innerText = `⚡ Latest Products from Kerala Sellers`;
+  document.getElementById('filterBar').style.display = 'none';
+  renderProducts(ALL_PRODUCTS);
+}
+
+// 5. SUB-SUBCATEGORY FILTER
+function loadSubCategories(cat){
+  const subs = [...new Set(ALL_PRODUCTS.filter(p=>p.category===cat).map(p=>p.subcategory))];
+  const subsub = [...new Set(ALL_PRODUCTS.filter(p=>p.category===cat).map(p=>p.sub_subcategory))];
+
+  document.getElementById('subCategoryFilter').innerHTML = '<option value="">All Subcategory</option>' + subs.map(s=>`<option>${s}</option>`).join('');
+  document.getElementById('subSubCategoryFilter').innerHTML = '<option value="">All Type</option>' + subsub.map(s=>`<option>${s}</option>`).join('');
+}
+
+function applyFilters(){
+  const sub = document.getElementById('subCategoryFilter').value;
+  const subsub = document.getElementById('subSubCategoryFilter').value;
+  let filtered = ALL_PRODUCTS.filter(p => p.category === CURRENT_CATEGORY);
+  if(sub) filtered = filtered.filter(p => p.subcategory === sub);
+  if(subsub) filtered = filtered.filter(p => p.sub_subcategory === subsub);
+  renderProducts(filtered);
 }
 </script>
   <script type="module" src="js/app.js"></script>
