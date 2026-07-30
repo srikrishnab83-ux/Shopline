@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products - Shopline Kerala</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+   .search-wrap{display:flex; gap:5px; flex:1; max-width:400px; margin:0 20px}
+   .search-wrap input{padding:8px; border-radius:4px; border:none; width:100%}
+   .search-wrap button{padding:8px 12px; border:none; border-radius:4px; background:#fff; cursor:pointer}
+   .add-cart-btn{background:#fb641b; color:#fff; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; width:100%; margin-top:8px; font-weight:bold}
+   .product-card{padding:10px; border:1px solid #eee; border-radius:8px; background:#fff}
+   .product-card:hover{box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+   .oldPrice{text-decoration:line-through; color:#878787; font-size:12px; margin-left:5px}
+   .discount{color:#388e3c; font-size:12px; font-weight:bold}
+  </style>
+</head>
+<body>
+  <!-- SAME HEADER AS HOMEPAGE -->
+  <div class="top-bar">
+    <p>Delivering across all 14 districts of Kerala | COD Available</p>
+  </div>
+  <header class="navbar">
+    <div class="container" style="display:flex; align-items:center">
+      <div class="logo" onclick="location.href='../index.html'" style="cursor:pointer;">Shopline<span>Kerala</span></div>
+      <div class="search-wrap">
+        <input type="text" placeholder="Search for products..." id="searchInput" onkeyup="searchProducts()">
+        <button id="searchBtn" onclick="searchProducts()">🔍</button>
+      </div>
+      <div class="nav-icons">
+        <a href="auth.html" id="authLink">Login</a>
+        <a href="cart.html" id="cartLink" style="background:#fb641b; padding:8px 15px; border-radius:4px; color:#fff">🛒 Cart(0)</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- FILTERS - 12 CATEGORIES HARDCODED -->
+  <section class="filters">
+    <div class="container" style="display:flex; gap:10px; flex-wrap:wrap; padding:15px">
+      <h3>Filters</h3>
+      <select id="districtFilter"><option value="all">All Districts</option></select>
+
+      <select id="categoryFilter">
+        <option value="all">All Categories</option>
+        <option value="Mobiles">Mobiles</option>
+        <option value="Fashion">Fashion</option>
+        <option value="Electronics">Electronics</option>
+        <option value="Home">Home & Kitchen</option>
+        <option value="Grocery">Grocery</option>
+        <option value="Beauty">Beauty & Personal Care</option>
+        <option value="Furniture">Furniture</option>
+        <option value="Toys">Toys & Baby</option>
+        <option value="Sports">Sports & Fitness</option>
+        <option value="Books">Books & Stationery</option>
+        <option value="Automotive">Automotive</option>
+        <option value="Jewelry">Jewelry</option>
+      </select>
+
+      <select id="subcategoryFilter"><option value="all">All Subcategories</option></select>
+      <select id="priceFilter">
+        <option value="all">All Prices</option>
+        <option value="0-1000">Under ₹1000</option>
+        <option value="1000-5000">₹1000 - ₹5000</option>
+        <option value="5000+">Above ₹5000</option>
+      </select>
+    </div>
+  </section>
+
+  <!-- PRODUCT RESULTS -->
+  <section class="products-page">
+    <div class="container">
+      <h2 id="resultTitle">All Products</h2>
+      <p id="resultCount">Loading...</p>
+      <div class="product-grid-4" id="productGrid">
+        <!-- Products will load here from Firebase -->
+      </div>
+    </div>
+  </section>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <a href="../index.html">🏠<br>Home</a>
+    <a href="products.html" class="active">🛍️<br>Shop</a>
+    <a href="cart.html">🛒<br>Cart</a>
+    <a href="profile.html">👤<br>Account</a>
+  </div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo",
+  authDomain: "willwin-cart.firebaseapp.com",
+  projectId: "willwin-cart"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+let allProducts = [];
+
+// 12 CATEGORIES + SUBCATEGORIES MAP
+const allSubcategories = {
+  "Mobiles": ["Smartphones", "Feature Phones", "Mobile Accessories", "Tablets", "Power Banks"],
+  "Fashion": ["Men's Wear", "Women's Wear", "Kids Wear", "T-Shirts", "Shirts", "Jeans", "Kurtis", "Sarees", "Dresses", "Footwear", "Bags"],
+  "Electronics": ["TV", "Smart TV", "Laptops", "Headphones", "Speakers", "Camera", "Smart Watch"],
+  "Home": ["Kitchen", "Furniture", "Tables", "Chairs", "Bedding", "Decor", "Mixer Grinder"],
+  "Grocery": ["Rice", "Oil", "Spices", "Snacks", "Beverages", "Fruits & Vegetables", "Dairy"],
+  "Beauty": ["Makeup", "Skincare", "Haircare", "Perfumes", "Men's Grooming"],
+  "Furniture": ["Sofa", "Bed", "Wardrobe", "Dining Table", "Study Table"],
+  "Toys": ["Baby Toys", "Educational Toys", "Dolls", "Action Figures"],
+  "Sports": ["Cricket", "Football", "Gym Equipment", "Yoga", "Cycles"],
+  "Books": ["School Books", "Novels", "Stationery", "Art Supplies"],
+  "Automotive": ["Bike Accessories", "Car Accessories", "Helmets"],
+  "Jewelry": ["Gold Jewelry", "Silver Jewelry", "Bangles", "Earrings"]
+};
+
+// 1. DEFINE ALL FILTERS
+const districtFilter = document.getElementById('districtFilter');
+const categoryFilter = document.getElementById('categoryFilter');
+const subcategoryFilter = document.getElementById('subcategoryFilter');
+const priceFilter = document.getElementById('priceFilter');
+const searchInput = document.getElementById('searchInput');
+
+const params = new URLSearchParams(window.location.search);
+const categoryFromURL = params.get('category');
+const subcategoryFromURL = params.get('subcategory');
+const searchFromURL = params.get('search');
+
+function updateCartCount(){
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  let totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+  document.getElementById('cartLink').innerText = `🛒 Cart(${totalQty})`;
+}
+
+async function loadProducts() {
+  try {
+    const snap = await getDocs(collection(db, "products"));
+    allProducts = [];
+    const districts = new Set();
+
+    snap.forEach(doc => {
+      const p = doc.data();
+      p.id = doc.id;
+      allProducts.push(p);
+      districts.add(p.district);
+    });
+
+    fillDropdown(districtFilter, districts);
+
+    if(categoryFromURL) {
+      categoryFilter.value = categoryFromURL;
+      updateSubcategoryDropdown();
+    }
+    if(subcategoryFromURL) subcategoryFilter.value = subcategoryFromURL;
+    if(searchFromURL) searchInput.value = searchFromURL;
+
+    applyFilters();
+    updateCartCount();
+  } catch(e) {
+    console.error("Error:", e);
+    document.getElementById('productGrid').innerHTML = "Error loading products";
+  }
+}
+
+function fillDropdown(select, items) {
+  select.innerHTML = '<option value="all">All</option>';
+  items.forEach(item => {
+    if(item){
+      const opt = document.createElement('option');
+      opt.value = item;
+      opt.innerText = item;
+      select.appendChild(opt);
+    }
+  });
+}
+
+// 2. Update subcategory based on selected category - NOW USES HARDCODED LIST
+function updateSubcategoryDropdown() {
+  const selectedCategory = categoryFilter.value;
+  subcategoryFilter.innerHTML = '<option value="all">All Subcategories</option>';
+
+  if(selectedCategory!= 'all' && allSubcategories[selectedCategory]) {
+    allSubcategories[selectedCategory].forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s;
+      opt.innerText = s;
+      subcategoryFilter.appendChild(opt);
+    });
+  }
+}
+
+function displayProducts(products) {
+  const container = document.getElementById('productGrid');
+  document.getElementById('resultCount').innerText = `${products.length} Products Found`;
+  container.innerHTML = '';
+  if(products.length == 0){
+    container.innerHTML = "<p>No products found</p>";
+    return;
+  }
+  products.forEach(p => {
+    const img = p.images && p.images[0]? p.images[0] : 'img/no-image.jpg';
+    const price = p.customerPrice || p.price || 0;
+    const oldPrice = p.oldPrice || price;
+    const discount = oldPrice > price? Math.round((1 - price/oldPrice)*100) : 0;
+
+    container.innerHTML += `
+      <div class="product-card" data-name="${p.name}">
+        <div onclick="location.href='../product.html?id=${p.id}'" style="cursor:pointer">
+          <img src="${img}" style="width:100%; height:200px; object-fit:cover">
+          <h3>${p.name}</h3>
+          <p class="price">₹${Number(price).toLocaleString()} <span class="oldPrice">${oldPrice > price? '₹'+Number(oldPrice).toLocaleString() : ''}</span></p>
+          <p class="discount">${discount > 0? discount+'% off' : ''}</p>
+          <p><small>📍 ${p.district} | ${p.category} > ${p.subcategory}</small></p>
+        </div>
+        <button class="add-cart-btn" onclick="quickAddToCart('${p.id}', '${p.name}', '${img}', ${price})">Add to Cart</button>
+      </div>
+    `;
+  });
+}
+
+// 3. FIXED ADD TO CART
+window.quickAddToCart = function(id, name, image, price) {
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+  const cartItem = {
+    id, name, image, price: Number(price), qty: 1,
+    size: 'NA', color: 'NA', variant: 'Default'
+  }
+
+  const existing = cart.find(item => item.id === id && item.variant === 'Default');
+  if(existing){
+    existing.qty += 1;
+  } else {
+    cart.push(cartItem);
+  }
+
+  localStorage.setItem('cart', JSON.stringify(cart));
+  alert(`${name} added to cart`);
+  updateCartCount();
+  window.location.href = 'cart.html';
+}
+
+// 4. SEARCH FUNCTION
+window.searchProducts = function(){
+  applyFilters();
+}
+
+// 3. EVENT LISTENERS
+categoryFilter.addEventListener('change', () => {
+  updateSubcategoryDropdown();
+  applyFilters();
+});
+subcategoryFilter.addEventListener('change', applyFilters);
+districtFilter.addEventListener('change', applyFilters);
+priceFilter.addEventListener('change', applyFilters);
+searchInput.addEventListener('keyup', applyFilters);
+
+function applyFilters() {
+  let filtered = allProducts;
+  const searchQuery = searchInput.value.toLowerCase();
+
+  if(searchQuery) {
+    filtered = filtered.filter(p =>
+      p.name.toLowerCase().includes(searchQuery) ||
+      p.category.toLowerCase().includes(searchQuery) ||
+      p.subcategory.toLowerCase().includes(searchQuery)
+    );
+  }
+  if(districtFilter.value!= 'all') filtered = filtered.filter(p => p.district == districtFilter.value);
+  if(categoryFilter.value!= 'all') filtered = filtered.filter(p => p.category == categoryFilter.value);
+  if(subcategoryFilter.value!= 'all') filtered = filtered.filter(p => p.subcategory == subcategoryFilter.value);
+
+  if(priceFilter.value == '0-1000') filtered = filtered.filter(p => (p.customerPrice || p.price) <= 1000);
+  if(priceFilter.value == '1000-5000') filtered = filtered.filter(p => (p.customerPrice || p.price) > 1000 && (p.customerPrice || p.price) <= 5000);
+  if(priceFilter.value == '5000+') filtered = filtered.filter(p => (p.customerPrice || p.price) > 5000);
+
+  displayProducts(filtered);
+}
+
+loadProducts();
+</script>
+</body>
+</html>
