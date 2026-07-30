@@ -52,6 +52,7 @@
 .btn-upload{padding:10px 20px; background:#2874f0; color:#fff; border:none; border-radius:4px; cursor:pointer; font-weight:bold; width:100%}
 .btn-invoice{background:#9c27b0; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer; margin-right:5px}
 .btn-edit{background:#2874f0; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer; margin-right:5px}
+.btn-courier{background:#ff6f00; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer; margin-right:5px}
 .img-preview{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap}
 .img-box{position:relative}
 .img-box img{width:100px; height:100px; object-fit:cover; border:1px solid #ddd; border-radius:4px}
@@ -65,12 +66,13 @@
 .badge-cancel{background:#ffebee; color:#d32f2f; padding:4px 8px; border-radius:4px; font-size:12px}
 .badge-return{background:#e3f2fd; color:#1976d2; padding:4px 8px; border-radius:4px; font-size:12px}
 .gst-breakup{background:#fff; padding:12px; border-radius:6px; margin-top:10px; font-size:14px; border:1px dashed #388e3c; line-height:1.8}
-/* EDIT POPUP STYLES */
 .edit-modal{position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; display:none; justify-content:center; align-items:flex-start; overflow-y:auto; padding:20px}
 .edit-modal-content{background:#fff; width:95%; max-width:900px; margin:20px auto; border-radius:12px; padding:20px; max-height:95vh; overflow-y:auto}
 .edit-header{display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #eee; padding-bottom:10px; margin-bottom:15px}
 .edit-header h2{color:#2874f0; margin:0}
 .close-edit{font-size:28px; cursor:pointer; background:none; border:none}
+.courier-modal{position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:10000; display:none; justify-content:center; align-items:center; padding:15px}
+.courier-box{background:#fff; width:100%; max-width:450px; border-radius:12px; padding:20px}
  @media(max-width:768px){.form-grid,.stats{grid-template-columns:1fr 1fr}}
   </style>
 </head>
@@ -106,7 +108,7 @@
         <div class="stat-card" style="background:#9c27b0"><h3 id="totalProducts">0</h3><p>My Products</p></div>
       </div>
       <table class="orders-table">
-        <thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Amount</th><th>Status / Tracking</th><th>Action</th></tr></thead>
+        <thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Amount</th><th>Status / Tracking</th><th>Courier Details</th><th>Action</th></tr></thead>
         <tbody id="ordersList"></tbody>
       </table>
     </div>
@@ -222,7 +224,27 @@
     </div>
   </div>
 
-  <!-- EDIT PRODUCT MODAL -->
+  <!-- COURIER MODAL - NEW ADDED WITHOUT CUTTING OLD CODE -->
+  <div id="courierModal" class="courier-modal">
+    <div class="courier-box">
+      <h3>📦 Enter Courier Details</h3>
+      <p style="font-size:13px;color:#666;margin:8px 0">This will be shown to customer in Track Order page</p>
+      <input type="hidden" id="courierOrderId">
+      <div class="form-group"><label>Courier Partner *</label>
+        <select id="courierName" style="padding:10px;border:1px solid #ddd;border-radius:4px">
+          <option value="Delhivery">Delhivery</option><option value="DTDC">DTDC</option><option value="India Post">India Post</option><option value="Ecom Express">Ecom Express</option><option value="BlueDart">BlueDart</option><option value="Shopline Logistics">Shopline Logistics</option><option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-top:10px"><label>AWB / Tracking Number *</label><input id="awbNumber" placeholder="Ex: 1234567890"></div>
+      <div class="form-group" style="margin-top:10px"><label>Current Location (Optional)</label><input id="courierLocation" placeholder="Ex: Kochi Hub, Out for delivery"></div>
+      <div style="display:flex;gap:10px;margin-top:15px">
+        <button class="btn-save" style="flex:1" onclick="saveCourier()">Save & Ship</button>
+        <button class="btn-delete" style="flex:1;padding:12px" onclick="closeCourierModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT PRODUCT MODAL - KEPT SAME AS YOUR FILE -->
   <div id="editModal" class="edit-modal">
     <div class="edit-modal-content">
       <div class="edit-header">
@@ -244,24 +266,10 @@
           <div class="form-group"><label>HSN Code</label><input id="editHsn"></div>
           <div class="form-group"><label>District *</label>
             <select id="editDistrict" required>
-              <option value="Kasaragod">Kasaragod</option>
-              <option value="Kannur">Kannur</option>
-              <option value="Wayanad">Wayanad</option>
-              <option value="Kozhikode">Kozhikode</option>
-              <option value="Malappuram">Malappuram</option>
-              <option value="Palakkad">Palakkad</option>
-              <option value="Thrissur">Thrissur</option>
-              <option value="Ernakulam">Ernakulam</option>
-              <option value="Idukki">Idukki</option>
-              <option value="Kottayam">Kottayam</option>
-              <option value="Alappuzha">Alappuzha</option>
-              <option value="Pathanamthitta">Pathanamthitta</option>
-              <option value="Kollam">Kollam</option>
-              <option value="Thiruvananthapuram">Thiruvananthapuram</option>
+              <option value="Kasaragod">Kasaragod</option><option value="Kannur">Kannur</option><option value="Wayanad">Wayanad</option><option value="Kozhikode">Kozhikode</option><option value="Malappuram">Malappuram</option><option value="Palakkad">Palakkad</option><option value="Thrissur">Thrissur</option><option value="Ernakulam">Ernakulam</option><option value="Idukki">Idukki</option><option value="Kottayam">Kottayam</option><option value="Alappuzha">Alappuzha</option><option value="Pathanamthitta">Pathanamthitta</option><option value="Kollam">Kollam</option><option value="Thiruvananthapuram">Thiruvananthapuram</option>
             </select>
           </div>
         </div>
-
         <h3 class="section-title">2. Price, Stock & GST</h3>
         <div class="price-box">
           <div class="form-grid">
@@ -276,7 +284,6 @@
           </div>
           <div class="gst-breakup" id="editGstBreakup"></div>
         </div>
-
         <h3 class="section-title">3. Variants</h3>
         <div class="form-group">
           <label>Sizes</label>
@@ -295,7 +302,6 @@
             <button type="button" class="btn-add" onclick="addEditExtraColor()">+ Add Color</button>
           </div>
         </div>
-
         <h3 class="section-title">4. Images</h3>
         <div class="form-group">
           <button type="button" class="btn-upload" onclick="editOpenUpload()">📷 Add More Images (Max 4)</button>
@@ -325,8 +331,6 @@ let selectedSizes = [];
 let selectedColors = [];
 let uploadedUrls = [];
 let lastCalc = { base:0, gstPercent:18, customerTotal:0 };
-
-// EDIT VARIABLES
 let editUploadedUrls = [];
 let editSelectedSizes = [];
 let editSelectedColors = [];
@@ -421,8 +425,6 @@ function addExtraSize(){ const val = document.getElementById('extraSize').value.
 function removeSize(s){ selectedSizes=selectedSizes.filter(x=>x!=s); renderSizeColor(); }
 function addExtraColor(){ const code = document.getElementById('extraColor').value; const name = document.getElementById('colorName').value.trim(); if(!name){ alert("Please enter color name"); return; } if(selectedColors.find(x=>x.name.toLowerCase()==name.toLowerCase())){ alert("Color already added"); return; } selectedColors.push({name:name, code:code}); document.getElementById('colorName').value=''; renderSizeColor(); }
 function removeColor(name){ selectedColors=selectedColors.filter(x=>x.name!=name); renderSizeColor(); }
-
-// EDIT SIZE COLOR
 function renderEditSizeColor(){
   const sizeGrid = document.getElementById('editSizeGrid');
   sizeGrid.innerHTML='';
@@ -514,19 +516,22 @@ async function loadOrders() {
       const canReturn = o.canReturnTill && o.canReturnTill.toDate() > new Date();
       const tracking = o.trackingStatus || 'Order Received';
       const orderStatus = o.orderStatus || 'new';
+      const courierInfo = o.courierName ? `<small style="color:#ff6f00"><b>${o.courierName}</b><br>${o.awb||''}<br>${o.courierLocation||''}</small>` : '<small style="color:#999">No courier yet</small>';
       if(o.status === 'Cancelled'){
         cancelled++;
         cancelledHtml += `<tr><td>#${d.id.substring(0,6)}</td><td>${o.customer.name}</td><td>${o.items.length} items</td><td>₹${o.finalTotal}</td><td><span class="badge-cancel">${o.cancelReason || 'User Cancelled'}</span></td></tr>`;
       } else if(o.returnStatus === 'requested'){
         returns++;
-        returnHtml += `<tr><td>#${d.id.substring(0,6)}</td><td>${o.customer.name}<br><small>${o.customer.phone}</small></td><td>${o.items.length} items</td><td>₹${o.finalTotal}</td><td>${canReturn?`<button class="btn-approve" onclick="approveReturn('${d.id}')">Approve</button><button class="btn-reject" onclick="rejectReturn('${d.id}')">Reject</button>`:'<span class="badge-cancel">Expired</span>'}</td></tr>`;
+        returnHtml += `<tr><td>#${d.id.substring(0,6)}</td><td>${o.customer.name}<br><small>${o.customer.phone}</small></td><td>${o.items.length} items</td><td>₹${o.finalTotal}</td><td>${canReturn?`<button class="btn-approve" onclick="approveReturn('${d.id}')">Approve</button><button class="btn-reject" onclick="rejectReturn('${d.id}')">Reject</button>`:'<span class="badge-cancel">Expired</span>'}<br><small>${o.returnReason||''}</small></td></tr>`;
       } else{
         active++;
-        let trackingSelect = `<select onchange="updateTracking('${d.id}', this.value)" style="padding:4px"><option ${tracking==='Order Received'?'selected':''}>Order Received</option><option ${tracking==='Approved'?'selected':''}>Approved</option><option ${tracking==='Packed'?'selected':''}>Packed</option><option ${tracking==='Shipped'?'selected':''}>Shipped</option><option ${tracking==='Delivered'?'selected':''}>Delivered</option></select>`;
+        let trackingSelect = `<select onchange="handleTracking('${d.id}', this.value)" style="padding:4px"><option ${tracking==='Order Received'?'selected':''}>Order Received</option><option ${tracking==='Approved'?'selected':''}>Approved</option><option ${tracking==='Packed'?'selected':''}>Packed</option><option ${tracking==='Shipped'?'selected':''}>Shipped</option><option ${tracking==='Delivered'?'selected':''}>Delivered</option></select>`;
         let actionBtn = '';
         if(orderStatus === 'new'){ actionBtn += `<button class="btn-approve" onclick="approveOrder('${d.id}')">Approve</button>`; }
-        actionBtn += `<button class="btn-invoice" onclick="downloadInvoice('${d.id}')">Invoice</button><button class="btn-cancel" onclick="cancelOrder('${d.id}')">Cancel</button>`;
-        html += `<tr><td>#${d.id.substring(0,6)}</td><td>${o.customer.name}<br><small>${o.customer.phone}</small></td><td>${o.items.length} items</td><td>₹${o.finalTotal}</td><td>${trackingSelect}</td><td>${actionBtn}</td></tr>`;
+        actionBtn += `<button class="btn-invoice" onclick="downloadInvoice('${d.id}')">Invoice</button>`;
+        if(tracking==='Shipped' || o.courierName) actionBtn += `<button class="btn-courier" onclick="openCourierModal('${d.id}')">✏️ Courier</button>`;
+        actionBtn += `<button class="btn-cancel" onclick="cancelOrder('${d.id}')">Cancel</button>`;
+        html += `<tr><td>#${d.id.substring(0,6)}</td><td>${o.customer.name}<br><small>${o.customer.phone}</small></td><td>${o.items.length} items</td><td>₹${o.finalTotal}</td><td>${trackingSelect}</td><td>${courierInfo}</td><td>${actionBtn}</td></tr>`;
       }
     });
     document.getElementById('totalOrders').innerText=total;
@@ -534,7 +539,7 @@ async function loadOrders() {
     document.getElementById('cancelledCount').innerText=cancelled;
     document.getElementById('returnCount').innerText=returns;
     document.getElementById('totalRevenue').innerText='₹'+revenue.toLocaleString();
-    document.getElementById('ordersList').innerHTML=html || '<tr><td colspan="6">No active orders</td></tr>';
+    document.getElementById('ordersList').innerHTML=html || '<tr><td colspan="7">No active orders</td></tr>';
     document.getElementById('cancelledList').innerHTML=cancelledHtml || '<tr><td colspan="5">No cancelled orders</td></tr>';
     document.getElementById('returnList').innerHTML=returnHtml || '<tr><td colspan="5">No return requests</td></tr>';
   }catch(e){ console.log("Orders error:", e) }
@@ -555,13 +560,11 @@ async function loadProducts() {
 
 function deleteProduct(id){ if(confirm('Delete this product?')){ db.collection("products").doc(id).delete().then(loadProducts); }}
 
-// FULL EDIT PRODUCT FUNCTION
 async function editProduct(id){
   currentEditId = id;
   const doc = await db.collection("products").doc(id).get();
   if(!doc.exists){ alert("Product not found"); return; }
   const p = doc.data();
-  
   document.getElementById('editId').value = id;
   document.getElementById('editName').value = p.name || '';
   document.getElementById('editBrand').value = p.brand || '';
@@ -575,19 +578,15 @@ async function editProduct(id){
   document.getElementById('editStock').value = p.stockQty || 0;
   document.getElementById('editGst').value = p.gstPercent || 18;
   document.getElementById('editDesc').value = p.description || '';
-
   editUploadedUrls = p.images || [];
   editSelectedSizes = p.sizes || [];
   editSelectedColors = p.colors || [];
-
   renderEditImages();
   renderEditSizeColor();
   calcEditPrice();
-
   document.getElementById('editModal').style.display='flex';
 }
 function closeEditPopup(){ document.getElementById('editModal').style.display='none'; currentEditId=null; }
-
 async function updateProduct(e){
   e.preventDefault();
   if(editUploadedUrls.length==0) return alert("Need at least 1 image");
@@ -623,7 +622,45 @@ function cancelOrder(id){
   if(reason){ db.collection("orders").doc(id).update({ status: 'Cancelled', cancelReason: reason }).then(()=>{ alert('Order Cancelled'); loadOrders(); }).catch(e=>alert(e.message)); }
 }
 function approveOrder(id){ db.collection("orders").doc(id).update({ orderStatus: 'approved', trackingStatus: 'Approved' }).then(()=>{ alert('Order Approved'); loadOrders(); }); }
-function updateTracking(id, status){ db.collection("orders").doc(id).update({ trackingStatus: status, orderStatus: status==='Delivered'?'delivered': status==='Shipped'?'shipped':'approved' }).then(()=>{ alert('Status Updated: ' + status); }); }
+
+function handleTracking(orderId, status){
+  if(status==='Shipped'){
+    openCourierModal(orderId, true);
+  }else{
+    db.collection("orders").doc(orderId).update({ trackingStatus: status, orderStatus: status==='Delivered'?'delivered': status==='Shipped'?'shipped': status==='Approved'?'approved':'packed' }).then(()=>{ alert('Status Updated: ' + status); loadOrders(); });
+  }
+}
+function openCourierModal(orderId, isNewShipment=false){
+  document.getElementById('courierOrderId').value=orderId;
+  document.getElementById('courierModal').dataset.isNewShipment = isNewShipment ? '1' : '0';
+  db.collection("orders").doc(orderId).get().then(doc=>{
+    const o=doc.data();
+    if(o.courierName) document.getElementById('courierName').value=o.courierName;
+    if(o.awb) document.getElementById('awbNumber').value=o.awb;
+    if(o.courierLocation) document.getElementById('courierLocation').value=o.courierLocation;
+    document.getElementById('courierModal').style.display='flex';
+  });
+}
+function closeCourierModal(){ document.getElementById('courierModal').style.display='none'; document.getElementById('awbNumber').value=''; document.getElementById('courierLocation').value=''; }
+function saveCourier(){
+  const orderId=document.getElementById('courierOrderId').value;
+  const courierName=document.getElementById('courierName').value;
+  const awb=document.getElementById('awbNumber').value.trim();
+  const location=document.getElementById('courierLocation').value.trim();
+  if(!awb) return alert("Enter AWB number");
+  const isNew = document.getElementById('courierModal').dataset.isNewShipment==='1';
+  let updateData = { courierName, awb, courierLocation: location, courierUpdatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+  if(isNew){
+    updateData.trackingStatus='Shipped';
+    updateData.orderStatus='shipped';
+    updateData.shippedAt= firebase.firestore.FieldValue.serverTimestamp();
+  }
+  db.collection("orders").doc(orderId).update(updateData).then(()=>{
+    alert(`${isNew?'Order Shipped!':''} Courier: ${courierName} AWB: ${awb} - Customer can now track.`);
+    closeCourierModal();
+    loadOrders();
+  });
+}
 
 function downloadInvoice(orderId){
   db.collection("orders").doc(orderId).get().then(doc=>{
@@ -642,7 +679,7 @@ function downloadInvoice(orderId){
     pdf.text("Shopline Kerala Pvt Ltd", 14, y); pdf.text(o.customer.name || 'Customer', 110, y); y+=4;
     pdf.text("KINFRA Park, Calicut, Kerala - 673001", 14, y); pdf.text((o.customer.street || '') + ', ' + (o.customer.district || ''), 110, y, {maxWidth:85}); y+=4;
     pdf.text("GSTIN: 32ABCDE1234F1Z5", 14, y); pdf.text("Phone: " + (o.customer.phone || ''), 110, y); y+=4;
-    pdf.text("Email: support@shoplinekerala.com", 14, y); y+=6;
+    pdf.text(`Courier: ${o.courierName||''} AWB: ${o.awb||''}`, 14, y); pdf.text("Email: support@shoplinekerala.com", 110, y); y+=6;
     pdf.setFont("helvetica","bold"); pdf.setFontSize(9);
     pdf.text(`Order ID: #${orderId.substring(0,12).toUpperCase()}`, 14, y);
     pdf.text(`Invoice No: INV-${orderId.substring(0,8).toUpperCase()}`, 110, y); y+=5;
