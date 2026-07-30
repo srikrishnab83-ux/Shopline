@@ -31,12 +31,10 @@
 </head>
 <body>
 
-  <!-- ========== 1. TOP INFO BAR ========== -->
   <div class="top-bar">
     <p>Delivering across all 14 districts of Kerala | COD Available | Malayalam Support</p>
   </div>
 
-  <!-- ========== 2. MAIN HEADER ========== -->
   <header class="navbar">
     <div class="logo" onclick="location.href='index.html'" style="cursor:pointer;">Shopline<span>Kerala</span></div>
    <div class="search-wrap">
@@ -46,57 +44,54 @@
     <div class="nav-icons">
       <a href="seller/login.html" id="authLink">Login / Sell</a>
       <a href="customer/wishlist.html">♡ Wishlist</a>
-      <a href="customer/order.html">📦 Orders</a> <!-- NEW: Orders Link -->
+      <a href="customer/order.html">📦 Orders</a>
       <a href="customer/cart.html" id="cartLink" style="color:#fff; text-decoration:none; font-weight:bold; background:#fb641b; padding:8px 15px; border-radius:4px">🛒 Cart(0)</a>
     </div>
   </header>
 
-  <!-- ========== 3. CATEGORY NAVBAR - FIXED 404 ========== -->
-<nav class="category-nav">
-  <a href="#" onclick="loadCategory('Mobiles')">Mobiles</a>
-  <a href="#" onclick="loadCategory('Fashion')">Fashion</a>
-  <a href="#" onclick="loadCategory('Electronics')">Electronics</a>
-  <a href="#" onclick="loadCategory('Home')">Home</a>
-  <a href="#" onclick="loadCategory('Grocery')">Grocery</a>
-  <a href="#" onclick="loadCategory('Beauty')">Beauty</a>
-  <a href="#" onclick="loadCategory('Furniture')">Furniture</a>
-  <a href="#" onclick="loadCategory('Toys')">Toys</a>
-  <a href="#" onclick="loadCategory('Sports')">Sports</a>
-  <a href="#" onclick="loadCategory('Books')">Books</a>
-  <a href="#" onclick="loadAll()">All</a>
-</nav>
+  <!-- FIXED: href="#" to javascript:void(0) -->
+  <nav class="category-nav">
+    <a href="javascript:void(0)" onclick="loadCategory('Mobiles')">Mobiles</a>
+    <a href="javascript:void(0)" onclick="loadCategory('Fashion')">Fashion</a>
+    <a href="javascript:void(0)" onclick="loadCategory('Electronics')">Electronics</a>
+    <a href="javascript:void(0)" onclick="loadCategory('Home')">Home</a>
+    <a href="javascript:void(0)" onclick="loadCategory('Grocery')">Grocery</a>
+    <a href="javascript:void(0)" onclick="loadCategory('Beauty')">Beauty</a>
+    <a href="javascript:void(0)" onclick="loadCategory('Furniture')">Furniture</a>
+    <a href="javascript:void(0)" onclick="loadCategory('Toys')">Toys</a>
+    <a href="javascript:void(0)" onclick="loadCategory('Sports')">Sports</a>
+    <a href="javascript:void(0)" onclick="loadCategory('Books')">Books</a>
+    <a href="javascript:void(0)" onclick="loadAll()">All</a>
+  </nav>
 
-  <!-- ========== 4. MAIN BANNER SLIDER ========== -->
   <section class="main-banner">
     <img src="images/banner.png" alt="Onam Mahasale">
     <img src="images/onam-special.png" alt="Onam Special">
   </section>
 
-  <!-- ========== 5. 10 CATEGORY GRID - FIXED 404 ========== -->
- <section class="categories">
-  <h2>Shop by Category</h2>
-  <div class="cat-grid">
-    <a href="#" onclick="loadCategory('Mobiles')"><img src="images/mobiles.png" alt="Mobiles"><p>Mobiles</p></a>
-    <a href="#" onclick="loadCategory('Fashion')"><img src="images/fashion.png" alt="Fashion"><p>Fashion</p></a>
-    <a href="#" onclick="loadCategory('Electronics')"><img src="images/electronics.png" alt="Electronics"><p>Electronics</p></a>
-    <a href="#" onclick="loadCategory('Home')"><img src="images/home.png" alt="Home"><p>Home</p></a>
-    <a href="#" onclick="loadCategory('Grocery')"><img src="images/grocery.png" alt="Grocery"><p>Grocery</p></a>
-    <a href="#" onclick="loadCategory('Beauty')"><img src="images/beauty.png" alt="Beauty"><p>Beauty</p></a>
-    <a href="#" onclick="loadCategory('Furniture')"><img src="images/furniture.png" alt="Furniture"><p>Furniture</p></a>
-    <a href="#" onclick="loadCategory('Toys')"><img src="images/toys.png" alt="Toys"><p>Toys</p></a>
-    <a href="#" onclick="loadCategory('Sports')"><img src="images/sports.png" alt="Sports"><p>Sports</p></a>
-    <a href="#" onclick="loadCategory('Books')"><img src="images/books.png" alt="Books"><p>Books</p></a>
-  </div>
- </section>
+  <!-- FIXED: href="#" to javascript:void(0) -->
+  <section class="categories">
+    <h2>Shop by Category</h2>
+    <div class="cat-grid">
+      <a href="javascript:void(0)" onclick="loadCategory('Mobiles')"><img src="images/mobiles.png" alt="Mobiles"><p>Mobiles</p></a>
+      <a href="javascript:void(0)" onclick="loadCategory('Fashion')"><img src="images/fashion.png" alt="Fashion"><p>Fashion</p></a>
+      <a href="javascript:void(0)" onclick="loadCategory('Electronics')"><img src="images/electronics.png" alt="Electronics"><p>Electronics</p></a>
+      <a href="javascript:void(0)" onclick="loadCategory('Home')"><img src="images/home.png" alt="Home"><p>Home</p></a>
+      <a href="javascript:void(0)" onclick="loadCategory('Grocery')"><img src="images/grocery.png" alt="Grocery"><p>Grocery</p></a>
+      <a href="javascript:void(0)" onclick="loadCategory('Beauty')"><img src="images/beauty.png" alt="Beauty"><p>Beauty</p></a>
+      <a href="javascript:void(0)" onclick="loadCategory('Furniture')"><img src="images/furniture.png" alt="Furniture"><p>Furniture</p></a>
+      <a href="javascript:void(0)" onclick="loadCategory('Toys')"><img src="images/toys.png" alt="Toys"><p>Toys</p></a>
+      <a href="javascript:void(0)" onclick="loadCategory('Sports')"><img src="images/sports.png" alt="Sports"><p>Sports</p></a>
+      <a href="javascript:void(0)" onclick="loadCategory('Books')"><img src="images/books.png" alt="Books"><p>Books</p></a>
+    </div>
+  </section>
 
-  <!-- ========== 6. PRODUCTS SECTION WITH FILTERS ========== -->
   <section class="flash-sale">
     <div class="section-header">
       <h2 id="sectionTitle">⚡ Latest Products from Kerala Sellers</h2>
-      <a href="#" onclick="loadAll()">View All ></a>
+      <a href="javascript:void(0)" onclick="loadAll()">View All ></a> <!-- FIXED -->
     </div>
 
-    <!-- NEW: Sub-Subcategory Filter -->
     <div class="filter-bar" id="filterBar" style="display:none">
       <select id="subCategoryFilter" onchange="applyFilters()">
         <option value="">All Subcategory</option>
@@ -111,7 +106,6 @@
     </div>
   </section>
 
-  <!-- ========== 7. ONAM SPECIAL BANNER ========== -->
   <section class="festive-banner">
     <img src="https://rukminim2.flixcart.com/fk-p-flap/1600/270/image/onam-special-kerala.jpg?q=20" alt="Onam Special">
   </section>
@@ -129,28 +123,26 @@
   </div>
 </footer>
 
+  <!-- FIXED: href="#" to javascript:void(0) -->
   <div class="bottom-nav">
     <a href="index.html">🏠<br>Home</a>
-    <a href="#" onclick="loadAll()">🛍️<br>Shop</a>
-    <a href="customer/order.html">📦<br>Orders</a> <!-- NEW: Orders Link -->
+    <a href="javascript:void(0)" onclick="loadAll()">🛍️<br>Shop</a>
+    <a href="customer/order.html">📦<br>Orders</a>
     <a href="customer/cart.html">🛒<br>Cart</a>
     <a href="customer/profile.html">👤<br>Account</a>
   </div>
 
-<!-- FIREBASE SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <script>
-// FIREBASE CONFIG
 const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-let ALL_PRODUCTS = []; // Store all products for search and filter
+let ALL_PRODUCTS = [];
 let CURRENT_CATEGORY = '';
 
-// LOAD PRODUCTS FROM FIREBASE + CLOUDINARY
 function loadProducts(query = null){
   let q = db.collection("products").orderBy("createdAt","desc");
   if(query) q = q.limit(20); else q = q.limit(8);
@@ -192,9 +184,8 @@ function renderProducts(products){
   document.getElementById('homeProductGrid').innerHTML = html;
 }
 
-loadProducts(); // Initial load
+loadProducts();
 
-// 1. UPDATE CART COUNT
 function updateCartCount(){
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
   let totalQty = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
@@ -203,7 +194,6 @@ function updateCartCount(){
 }
 updateCartCount();
 
-// 2. ADD TO CART FROM HOME - NOW WITH STOCK CHECK
 function quickAddToCart(id, name, image, price, sellerId, stock){
   if(stock <= 0) return alert('Out of Stock');
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -215,7 +205,6 @@ function quickAddToCart(id, name, image, price, sellerId, stock){
   updateCartCount();
 }
 
-// 3. SEARCH FUNCTION - FIXED: SEARCHES ALL FIREBASE PRODUCTS
 function searchProducts(){
   const query = document.getElementById('searchInput').value.toLowerCase();
   if(query.length < 2) { renderProducts(ALL_PRODUCTS); return; }
@@ -233,7 +222,6 @@ function searchProducts(){
   })
 }
 
-// 4. CATEGORY LOAD - FIXES 404
 function loadCategory(cat){
   CURRENT_CATEGORY = cat;
   document.getElementById('sectionTitle').innerText = `📦 ${cat}`;
@@ -251,7 +239,6 @@ function loadAll(){
   renderProducts(ALL_PRODUCTS);
 }
 
-// 5. SUB-SUBCATEGORY FILTER
 function loadSubCategories(cat){
   const subs = [...new Set(ALL_PRODUCTS.filter(p=>p.category===cat).map(p=>p.subcategory))];
   const subsub = [...new Set(ALL_PRODUCTS.filter(p=>p.category===cat).map(p=>p.sub_subcategory))];
