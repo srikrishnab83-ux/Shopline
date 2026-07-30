@@ -8,24 +8,24 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3081/3081559.png">
   <style>
- .add-cart-btn{background:#fb641b; color:#fff; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; width:100%; margin-top:8px; font-weight:bold}
- .add-cart-btn:hover{background:#e55a0f}
- .add-cart-btn:disabled{background:#ccc; cursor:not-allowed}
- .search-wrap{display:flex; gap:5px}
- .search-wrap input{padding:8px; border-radius:4px; border:none; width:300px}
- .search-wrap button{padding:8px 12px; border:none; border-radius:4px; background:#fff; cursor:pointer}
- .product-grid-4{display:grid; grid-template-columns:repeat(4,1fr); gap:15px}
- .product-card{background:#fff; padding:10px; border:1px solid #eee; border-radius:8px; text-align:center; position:relative}
- .product-card img{width:100%; height:200px; object-fit:cover; border-radius:4px; background:#f5f5f5}
- .product-card h3{font-size:14px; margin:8px 0; height:40px; overflow:hidden}
- .price{font-weight:bold; color:#388e3c}
- .oldPrice{text-decoration:line-through; color:#878787; font-size:12px; margin-left:5px}
- .discount{color:#388e3c; font-size:12px; font-weight:bold}
- .out-stock{position:absolute; top:10px; right:10px; background:red; color:#fff; padding:3px 6px; font-size:10px; border-radius:3px}
- .stars{color:#ffa500; font-size:12px; margin:4px 0}
- .gst-tag{font-size:10px; color:#666}
- .filter-bar{display:flex; gap:10px; margin:15px 0; flex-wrap:wrap}
- .filter-bar select{padding:6px; border-radius:4px; border:1px solid #ddd}
+.add-cart-btn{background:#fb641b; color:#fff; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; width:100%; margin-top:8px; font-weight:bold}
+.add-cart-btn:hover{background:#e55a0f}
+.add-cart-btn:disabled{background:#ccc; cursor:not-allowed}
+.search-wrap{display:flex; gap:5px}
+.search-wrap input{padding:8px; border-radius:4px; border:none; width:300px}
+.search-wrap button{padding:8px 12px; border:none; border-radius:4px; background:#fff; cursor:pointer}
+.product-grid-4{display:grid; grid-template-columns:repeat(4,1fr); gap:15px}
+.product-card{background:#fff; padding:10px; border:1px solid #eee; border-radius:8px; text-align:center; position:relative}
+.product-card img{width:100%; height:200px; object-fit:cover; border-radius:4px; background:#f5f5f5}
+.product-card h3{font-size:14px; margin:8px 0; height:40px; overflow:hidden}
+.price{font-weight:bold; color:#388e3c}
+.oldPrice{text-decoration:line-through; color:#878787; font-size:12px; margin-left:5px}
+.discount{color:#388e3c; font-size:12px; font-weight:bold}
+.out-stock{position:absolute; top:10px; right:10px; background:red; color:#fff; padding:3px 6px; font-size:10px; border-radius:3px}
+.stars{color:#ffa500; font-size:12px; margin:4px 0}
+.gst-tag{font-size:10px; color:#666}
+.filter-bar{display:flex; gap:10px; margin:15px 0; flex-wrap:wrap}
+.filter-bar select{padding:6px; border-radius:4px; border:1px solid #ddd}
   @media(max-width:768px){.search-wrap input{width:150px}.product-grid-4{grid-template-columns:repeat(2,1fr)} }
   </style>
 </head>
@@ -46,6 +46,7 @@
     <div class="nav-icons">
       <a href="seller/login.html" id="authLink">Login / Sell</a>
       <a href="customer/wishlist.html">♡ Wishlist</a>
+      <a href="customer/order.html">📦 Orders</a> <!-- NEW: Orders Link -->
       <a href="customer/cart.html" id="cartLink" style="color:#fff; text-decoration:none; font-weight:bold; background:#fb641b; padding:8px 15px; border-radius:4px">🛒 Cart(0)</a>
     </div>
   </header>
@@ -131,6 +132,7 @@
   <div class="bottom-nav">
     <a href="index.html">🏠<br>Home</a>
     <a href="#" onclick="loadAll()">🛍️<br>Shop</a>
+    <a href="customer/order.html">📦<br>Orders</a> <!-- NEW: Orders Link -->
     <a href="customer/cart.html">🛒<br>Cart</a>
     <a href="customer/profile.html">👤<br>Account</a>
   </div>
