@@ -39,6 +39,16 @@ header a{color:#fff; text-decoration:none; font-weight:bold; font-size:18px}
 .disabled-btn{background:#ccc!important; cursor:not-allowed!important}
 .desc-box{background:#fff; padding:20px; border-radius:8px; margin-top:15px}
 .desc-box h3{margin-bottom:10px; font-size:18px}
+
+/* NEW: REVIEWS SECTION */
+.review-section{background:#fff; padding:20px; border-radius:8px; margin-top:15px}
+.review-head{display:flex; align-items:center; gap:15px; margin-bottom:20px}
+.review-stars{font-size:32px; color:#ffa500}
+.review-count{color:#878787; font-size:14px}
+.review-card{border-bottom:1px solid #eee; padding:15px 0}
+.review-card.stars{color:#ffa500; font-size:16px}
+.review-card.user{font-weight:bold; font-size:14px}
+.review-card.date{color:#878787; font-size:12px}
 @media(max-width:768px){.product-box{flex-direction:column}.product-img{height:300px}}
 </style>
 </head>
@@ -59,7 +69,7 @@ header a{color:#fff; text-decoration:none; font-weight:bold; font-size:18px}
 
     <div class="right">
       <div class="product-title" id="productName">Loading...</div>
-      <span class="rating">4.2 ★</span>
+      <span class="rating" id="productRating">4.2 ★</span> <!-- CHANGED TO DYNAMIC -->
 
       <div class="price-section">
         <span class="price" id="productPrice">₹0</span>
@@ -106,6 +116,20 @@ header a{color:#fff; text-decoration:none; font-weight:bold; font-size:18px}
     <h3>Product Description</h3>
     <p id="productDescription" style="line-height:1.7; color:#333">Loading...</p>
   </div>
+
+  <!-- NEW: RATINGS AND REVIEWS SECTION -->
+  <div class="review-section">
+    <h3>Customer Ratings & Reviews</h3>
+    <div class="review-head">
+      <div class="review-stars" id="avgStars">0 ★</div>
+      <div>
+        <div><b id="avgRating">0.0</b> out of 5</div>
+        <div class="review-count" id="reviewCount">0 Reviews</div>
+      </div>
+    </div>
+    <div id="reviewsList">No reviews yet. Be the first to review after delivery!</div>
+  </div>
+
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -149,12 +173,12 @@ function updateCartCount(){
 }
 
 function loadProduct(p){
-  // 1. IMAGE - FIX: support old 'image' and new 'images[0]'
+  // 1. IMAGE
   const mainImg = p.images && p.images[0]? p.images[0] : p.image? p.image : 'https://via.placeholder.com/400?text=No+Image';
   document.getElementById('productImage').src = mainImg;
-  
+
   var thumbHtml = '';
-  let imagesToShow = p.images && p.images.length > 0 ? p.images : [p.image];
+  let imagesToShow = p.images && p.images.length > 0? p.images : [p.image];
   if(imagesToShow){
     imagesToShow.forEach(function(img, i){
       if(img) thumbHtml += '<img src="'+img+'" class="'+(i==0?'active':'')+'" onclick="changeImage(this, \''+img+'\')" onerror="this.style.display=\'none\'">';
@@ -183,10 +207,37 @@ function loadProduct(p){
     document.getElementById('btnBuy').disabled = true;
   }
 
-  // 4. CATEGORY
+  // 4. RATING - NEW
+  let rating = p.rating || 0;
+  let reviews = p.reviews || [];
+  document.getElementById('productRating').innerText = rating + ' ★';
+  document.getElementById('avgStars').innerText = '★'.repeat(Math.round(rating)) + '☆'.repeat(5-Math.round(rating));
+  document.getElementById('avgRating').innerText = rating;
+  document.getElementById('reviewCount').innerText = reviews.length + ' Reviews';
+
+  // 5. SHOW REVIEWS - ONLY FROM BUYERS
+  let reviewsHTML = '';
+  if(reviews.length > 0){
+    reviews.slice().reverse().forEach(r=>{
+      let stars = '★'.repeat(r.rating) + '☆'.repeat(5-r.rating);
+      let date = r.date? r.date.toDate().toLocaleDateString("en-IN") : '';
+      reviewsHTML += `
+      <div class="review-card">
+        <div class="stars">${stars}</div>
+        <div class="user">Verified Buyer</div>
+        <div class="date">${date}</div>
+        <p style="margin-top:5px">${r.review}</p>
+      </div>`;
+    });
+  } else {
+    reviewsHTML = '<p style="color:#878787">No reviews yet. Be the first to review after delivery!</p>';
+  }
+  document.getElementById('reviewsList').innerHTML = reviewsHTML;
+
+  // 5. CATEGORY
   document.getElementById('productCategory').innerText = (p.category || 'N/A') + ' > ' + (p.subcategory || 'N/A');
 
-  // 5. SIZES - CLICKABLE CHIPS
+  // 6. SIZES
   var sizeHtml = '';
   if(p.sizes && p.sizes.length > 0){
     p.sizes.forEach(function(s){
@@ -195,7 +246,7 @@ function loadProduct(p){
   } else { sizeHtml = '<span style="color:#878787">No sizes available</span>'; }
   document.getElementById('productSizes').innerHTML = sizeHtml;
 
-  // 6. COLORS - CHIP STYLE WITH COLOR DOT INSIDE
+  // 7. COLORS
   var colorHtml = '';
   if(p.colors && p.colors.length > 0){
     p.colors.forEach(function(c){
@@ -207,7 +258,7 @@ function loadProduct(p){
   } else { colorHtml = '<span style="color:#878787">No colors available</span>'; }
   document.getElementById('productColors').innerHTML = colorHtml;
 
-  // 7. ATTRIBUTES
+  // 8. ATTRIBUTES
   document.getElementById('productFabric').innerText = p.fabric || 'N/A';
   document.getElementById('productSleeve').innerText = p.sleeve || 'N/A';
   document.getElementById('productFit').innerText = p.fit || 'N/A';
@@ -216,19 +267,18 @@ function loadProduct(p){
   document.getElementById('productBrand').innerText = p.brand || 'N/A';
   document.getElementById('productDistrict').innerText = p.district || 'N/A';
 
-  // 8. DESCRIPTION
+  // 9. DESCRIPTION
   document.getElementById('productDescription').innerText = p.description || 'No description provided';
 }
 
-// FIXED: querySelectorAll now correct
 function selectSize(el, size){
-  document.querySelectorAll('#productSizes .chip').forEach(function(c){ c.classList.remove('active') });
+  document.querySelectorAll('#productSizes.chip').forEach(function(c){ c.classList.remove('active') });
   el.classList.add('active');
   selectedSize = size;
 }
 
 function selectColor(el, name){
-  document.querySelectorAll('#productColors .chip').forEach(function(c){ c.classList.remove('active') });
+  document.querySelectorAll('#productColors.chip').forEach(function(c){ c.classList.remove('active') });
   el.classList.add('active');
   selectedColor = name;
 }
@@ -241,17 +291,17 @@ function changeImage(el, src){
 
 function addToCart(){
   if(currentProduct.stockQty <= 0) return alert("Out of Stock");
-  if(currentProduct.sizes && currentProduct.sizes.length > 0 && !selectedSize) return alert("Please select a size");
-  if(currentProduct.colors && currentProduct.colors.length > 0 && !selectedColor) return alert("Please select a color");
+  if(currentProduct.sizes && currentProduct.sizes.length > 0 &&!selectedSize) return alert("Please select a size");
+  if(currentProduct.colors && currentProduct.colors.length > 0 &&!selectedColor) return alert("Please select a color");
 
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
   let variant = selectedSize + ' / ' + selectedColor;
   let cartItem = {
     id: productId,
     name: currentProduct.name,
-    image: currentProduct.images && currentProduct.images[0] ? currentProduct.images[0] : currentProduct.image,
+    image: currentProduct.images && currentProduct.images[0]? currentProduct.images[0] : currentProduct.image,
     price: currentProduct.customerPrice,
-    sellerId: currentProduct.sellerId || '', // ADDED FOR RULES
+    sellerId: currentProduct.sellerId || '',
     size: selectedSize || 'NA',
     color: selectedColor || 'NA',
     variant: variant,
