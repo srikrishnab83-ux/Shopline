@@ -6,23 +6,23 @@
   <title>Your Cart - Shopline Kerala</title>
   <link rel="stylesheet" href="../css/style.css">
   <style>
- .container-cart{max-width:1100px; margin:20px auto; display:flex; gap:20px; padding:0 20px}
- .cart-items{flex:2; background:#fff; padding:15px; border-radius:4px}
- .price-box{flex:1; background:#fff; padding:15px; border-radius:4px; height:fit-content; position:sticky; top:20px}
- .cart-item{display:flex; gap:15px; border-bottom:1px solid #eee; padding:15px 0}
- .cart-item img{width:100px; height:100px; object-fit:cover; border:1px solid #eee; border-radius:4px}
- .qty-box{display:flex; align-items:center; gap:8px; margin:8px 0}
- .qty-btn{width:30px; height:30px; border:1px solid #ddd; background:#fff; cursor:pointer; font-size:18px}
- .qty-input{width:40px; text-align:center; border:1px solid #ddd; height:28px}
- .remove-btn{color:#2874f0; border:none; background:none; cursor:pointer; font-weight:bold}
- .checkout-btn{width:100%; padding:12px; background:#fb641b; color:#fff; border:none; font-size:16px; cursor:pointer; border-radius:4px; margin-top:10px}
- .form-group{margin:10px 0}
- .form-group label{font-size:13px; font-weight:bold}
- .form-group input,.form-group textarea{padding:10px; margin-top:5px; border:1px solid #ccc; border-radius:4px; width:95%}
- .req{color:red}
- .free-tag{color:green; font-weight:bold}
- .policy-box{font-size:13px; color:#555; margin-top:15px; line-height:1.6}
- .back-btn{display:inline-block; margin-bottom:15px; text-decoration:none; color:#2874f0; font-weight:bold; font-size:14px}
+.container-cart{max-width:1100px; margin:20px auto; display:flex; gap:20px; padding:0 20px}
+.cart-items{flex:2; background:#fff; padding:15px; border-radius:4px}
+.price-box{flex:1; background:#fff; padding:15px; border-radius:4px; height:fit-content; position:sticky; top:20px}
+.cart-item{display:flex; gap:15px; border-bottom:1px solid #eee; padding:15px 0}
+.cart-item img{width:100px; height:100px; object-fit:cover; border:1px solid #eee; border-radius:4px}
+.qty-box{display:flex; align-items:center; gap:8px; margin:8px 0}
+.qty-btn{width:30px; height:30px; border:1px solid #ddd; background:#fff; cursor:pointer; font-size:18px}
+.qty-input{width:40px; text-align:center; border:1px solid #ddd; height:28px}
+.remove-btn{color:#2874f0; border:none; background:none; cursor:pointer; font-weight:bold}
+.checkout-btn{width:100%; padding:12px; background:#fb641b; color:#fff; border:none; font-size:16px; cursor:pointer; border-radius:4px; margin-top:10px}
+.form-group{margin:10px 0}
+.form-group label{font-size:13px; font-weight:bold}
+.form-group input,.form-group textarea{padding:10px; margin-top:5px; border:1px solid #ccc; border-radius:4px; width:95%}
+.req{color:red}
+.free-tag{color:green; font-weight:bold}
+.policy-box{font-size:13px; color:#555; margin-top:15px; line-height:1.6}
+.back-btn{display:inline-block; margin-bottom:15px; text-decoration:none; color:#2874f0; font-weight:bold; font-size:14px}
   @media (max-width: 768px){
    .container-cart{flex-direction: column; padding: 0 10px}
    .cart-items,.price-box{flex: 1; width: 100%}
@@ -86,21 +86,24 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"; // ADDED AUTH
+import { getFirestore, collection, addDoc, serverTimestamp, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"; // ADDED Timestamp
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth(app); // ADDED
+const auth = getAuth(app);
 
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let productTotal = 0;
-let currentUserId = null; // ADDED
+let currentUserId = null;
 
-onAuthStateChanged(auth, (user) => { // ADDED: Get logged in user
+onAuthStateChanged(auth, (user) => {
   if(user){
     currentUserId = user.uid;
+  } else {
+    alert("Please login to place order");
+    window.location.href = '../index.html';
   }
 });
 
@@ -183,27 +186,32 @@ window.checkout = async function(){
   if(phone.length!== 10) return alert('Enter 10 digit mobile number');
   if(pincode.length!== 6) return alert('Enter 6 digit pincode');
   if(cart.length === 0) return alert('Cart is empty');
-  if(!currentUserId) return alert('Please login to place order'); // ADDED CHECK
+  if(!currentUserId) return alert('Please login to place order');
 
   let shippingCharge = productTotal > 999? 0 : parseInt(document.querySelector('input[name="shipping"]:checked').value);
-
-  // GET ALL UNIQUE SELLER IDS FROM CART
   let sellerIds = [...new Set(cart.map(item => item.sellerId).filter(id => id))];
 
+  // NEW: 3 Day Return Window
+  let returnDate = new Date();
+  returnDate.setDate(returnDate.getDate() + 3);
+
   await addDoc(collection(db, "orders"), {
-    customerId: currentUserId, // ADDED: For return rules
+    userId: currentUserId, // FIXED: was customerId. Now order.html will work
     customer: {name, phone, street, district, state, pincode, landmark},
     items: cart,
     sellerIds: sellerIds,
     productTotal, shippingCharge, finalTotal: productTotal + shippingCharge,
     status: "New Order", 
-    returnStatus: "none", // ADDED: For return tracking
+    orderStatus: "new", // NEW: for dashboard
+    trackingStatus: "Order Received", // NEW: for timeline
+    returnStatus: "none",
+    canReturnTill: Timestamp.fromDate(returnDate), // NEW: 3 days return
     createdAt: serverTimestamp()
   });
 
   alert(`Order Placed Successfully! Total: ₹${productTotal + shippingCharge}`);
   localStorage.removeItem('cart');
-  window.location.href = '../index.html';
+  window.location.href = '../customer/order.html'; // CHANGED: Go to Orders page directly
 }
 
 window.exitAndClearCart = function(){
