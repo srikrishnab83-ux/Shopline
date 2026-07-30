@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Seller Dashboard - Shopline Kerala</title>
   <script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> <!-- NEW: For Invoice -->
   <link rel="stylesheet" href="../css/style.css">
   <style>
 .dashboard{max-width:1200px; margin:20px auto; padding:20px}
@@ -26,8 +27,10 @@
 .btn-back{background:#555; color:#fff; padding:8px 15px; border:none; border-radius:4px; cursor:pointer; margin-right:8px}
 .btn-delete{background:#d32f2f; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer; margin-right:5px}
 .btn-cancel{background:#ff9800; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer}
-.btn-approve{background:#388e3c; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer; margin-right:5px} /* NEW */
-.btn-reject{background:#d32f2f; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer} /* NEW */
+.btn-approve{background:#388e3c; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer; margin-right:5px}
+.btn-reject{background:#d32f2f; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer}
+.btn-invoice{background:#9c27b0; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer; margin-right:5px} /* NEW */
+.btn-stock{background:#2874f0; color:#fff; padding:4px 8px; border:none; border-radius:4px; cursor:pointer; font-size:12px} /* NEW */
 .btn-add{background:#2874f0; color:#fff; padding:8px 12px; border:none; border-radius:4px; cursor:pointer}
 .btn-upload{padding:10px 20px; background:#2874f0; color:#fff; border:none; border-radius:4px; cursor:pointer; font-weight:bold; width:100%}
 
@@ -41,8 +44,13 @@
 .note{background:#fff3cd; padding:10px; border-left:4px solid #ffc107; margin:15px 0; font-size:13px}
 .price-box{background:#e8f5e9; padding:15px; border-radius:8px; margin-top:10px}
 .section-title{margin-top:20px; margin-bottom:10px; color:#2874f0; border-bottom:1px solid #ddd; padding-bottom:5px}
-.badge-cancel{background:#ffebee; color:#d32f2f; padding:4px 8px; border-radius:4px; font-size:12px}
-.badge-return{background:#e3f2fd; color:#1976d2; padding:4px 8px; border-radius:4px; font-size:12px}
+.badge{background:#e0e0e0; padding:4px 8px; border-radius:4px; font-size:12px} /* NEW */
+.badge-new{background:#fff3cd; color:#856404}
+.badge-approved{background:#d4edda; color:#155724}
+.badge-shipped{background:#cce5ff; color:#004085}
+.badge-delivered{background:#d4edda; color:#155724; font-weight:bold}
+.badge-cancel{background:#ffebee; color:#d32f2f}
+.badge-return{background:#e3f2fd; color:#1976d2}
  @media(max-width:768px){.form-grid,.stats{grid-template-columns:1fr 1fr}}
   </style>
 </head>
@@ -79,7 +87,7 @@
         <div class="stat-card" style="background:#9c27b0"><h3 id="totalProducts">0</h3><p>My Products</p></div>
       </div>
       <table class="orders-table">
-        <thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Amount</th><th>Action</th></tr></thead>
+        <thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead> <!-- ADDED Status -->
         <tbody id="ordersList"></tbody>
       </table>
     </div>
@@ -97,7 +105,7 @@
     <div id="returns" class="tab-content">
       <h2>Return Orders</h2>
       <table class="orders-table">
-        <thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Amount</th><th>Action</th></tr></thead> <!-- CHANGED: Reason -> Action -->
+        <thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Amount</th><th>Action</th></tr></thead>
         <tbody id="returnList"></tbody>
       </table>
     </div>
@@ -130,7 +138,8 @@
               <option>Books</option><option>Automotive</option><option>Jewelry</option>
             </select>
           </div>
-          <div class="form-group"><label>Sub Category *</label><select id="pSubcategory" required><option value="">Select Category First</option></select></div>
+          <div class="form-group"><label>Sub Category *</label><select id="pSubcategory" onchange="loadSubSubCat()" required><option value="">Select Category First</option></select></div>
+          <div class="form-group"><label>Sub-Sub Category</label><select id="pSubSubCategory"><option value="">Select Subcategory First</option></select></div> <!-- NEW -->
           <div class="form-group"><label>District *</label>
             <select id="pDistrict" required>
               <option value="">Select District</option>
@@ -143,12 +152,21 @@
           </div>
         </div>
 
-        <h3 class="section-title">2. Price & Stock</h3>
+        <h3 class="section-title">2. Price, Stock & GST</h3> <!-- UPDATED -->
         <div class="price-box">
           <div class="form-grid">
             <div class="form-group"><label>Your Selling Price ₹ *</label><input id="pPrice" type="number" oninput="calcPrice()" required></div>
             <div class="form-group"><label>Old Price ₹</label><input id="pOldPrice" type="number"></div>
             <div class="form-group"><label>Stock Quantity *</label><input id="pStockQty" type="number" value="10" required></div>
+            <div class="form-group"><label>GST %</label> <!-- NEW -->
+              <select id="pGst">
+                <option value="0">0%</option>
+                <option value="5">5%</option>
+                <option value="12">12%</option>
+                <option value="18">18%</option>
+                <option value="28">28%</option>
+              </select>
+            </div>
           </div>
           <p>Platform Fee: ₹20 | <b>Customer Pays: ₹<span id="customerPrice">0</span></b></p>
         </div>
@@ -190,6 +208,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
+const { jsPDF } = window.jspdf; // NEW
 const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
@@ -215,6 +234,14 @@ const subCategories = {
   "Jewelry": ["Gold Jewelry", "Silver Jewelry", "Bangles", "Earrings"]
 };
 
+// NEW: Sub-Sub Categories
+const subSubCategories = {
+  "Men's Wear": ["T-Shirts", "Shirts", "Jeans", "Pants", "Kurta"],
+  "Women's Wear": ["Sarees", "Kurtis", "Dresses", "Tops", "Leggings"],
+  "Smartphones": ["Android", "iPhone"],
+  "Kitchen": ["Cookware", "Utensils", "Mixer"]
+};
+
 auth.onAuthStateChanged(user => {
   if (!user) location.href = 'login.html';
   else { currentUser = user; loadOrders(); loadProducts(); renderSizeColor(); }
@@ -235,6 +262,14 @@ function loadSubCat(){
   const sub = document.getElementById('pSubcategory');
   sub.innerHTML='<option value="">Select Subcategory</option>';
   if(subCategories[cat]){ subCategories[cat].forEach(s => sub.innerHTML += `<option>${s}</option>`); }
+  loadSubCat(); // reset subsub
+}
+
+function loadSubSubCat(){ // NEW
+  const sub = document.getElementById('pSubcategory').value;
+  const subsub = document.getElementById('pSubCategory');
+  subsub.innerHTML='<option value="">Select Type</option>';
+  if(subSubCategories[sub]){ subSubCategories[sub].forEach(s => subsub.innerHTML += `<option>${s}</option>`); }
 }
 
 function calcPrice(){ const price = Number(document.getElementById('pPrice').value)||0; document.getElementById('customerPrice').innerText = price + 20; }
@@ -279,9 +314,12 @@ function addProduct(e){
   if(uploadedUrls.length==0) return alert("Upload atleast 1 image");
   let product = {
     name: pName.value, brand: pBrand.value, images: uploadedUrls, price: Number(pPrice.value),
-    customerPrice: Number(pPrice.value)+20, oldPrice: Number(pOldPrice.value)||0, stockQty: Number(pStockQty.value),
-    category: pCategory.value, subcategory: pSubcategory.value, district: pDistrict.value, description: pDesc.value,
-    sizes: selectedSizes, colors: selectedColors, sellerId: currentUser.uid, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    customerPrice: Number(pPrice.value)+20, oldPrice: Number(pOldPrice.value)||0,
+    stock: Number(pStockQty.value), // CHANGED: stockQty -> stock
+    category: pCategory.value, subcategory: pSubcategory.value, sub_subcategory: pSubCategory.value, // NEW
+    district: pDistrict.value, description: pDesc.value, gstPercent: Number(pGst.value), // NEW
+    sizes: selectedSizes, colors: selectedColors, sellerId: currentUser.uid,
+    rating: 0, reviews: [], createdAt: firebase.firestore.FieldValue.serverTimestamp() // NEW
   };
   db.collection("products").add(product).then(() => {
     alert('✅ Product Added Successfully!');
@@ -294,10 +332,9 @@ function addProduct(e){
   }).catch(err => alert("Error: " + err.message));
 }
 
-// UPDATED: KEY FIX IS HERE
+// UPDATED: ORDERS WITH APPROVE + TRACKING + INVOICE
 async function loadOrders() {
   try{
-    // CHANGED: array-contains to only show orders for this seller
     const snap = await db.collection("orders").where("sellerIds", "array-contains", currentUser.uid).orderBy("createdAt", "desc").get();
     let total=0, active=0, cancelled=0, returns=0, revenue=0;
     let html='', cancelledHtml='', returnHtml='';
@@ -307,12 +344,19 @@ async function loadOrders() {
       total++;
       revenue += o.finalTotal || 0;
       const canReturn = o.canReturnTill && o.canReturnTill.toDate() > new Date();
+      const status = o.orderStatus || 'new'; // NEW
+      const tracking = o.trackingStatus || 'Order Received'; // NEW
+
+      let statusBadge = `<span class="badge badge-new">New</span>`;
+      if(status==='approved') statusBadge = `<span class="badge badge-approved">Approved</span>`;
+      if(status==='shipped') statusBadge = `<span class="badge badge-shipped">Shipped</span>`;
+      if(status==='delivered') statusBadge = `<span class="badge badge-delivered">Delivered</span>`;
 
       if(o.status === 'Cancelled'){
         cancelled++;
         cancelledHtml += `<tr><td>#${d.id.substring(0,6)}</td><td>${o.customer.name}</td><td>${o.items.length} items</td><td>₹${o.finalTotal}</td><td><span class="badge-cancel">${o.cancelReason || 'User Cancelled'}</span></td></tr>`;
       }
-      else if(o.returnStatus === 'requested'){ // CHANGED: check returnStatus
+      else if(o.returnStatus === 'requested'){
         returns++;
         returnHtml += `<tr>
           <td>#${d.id.substring(0,6)}</td>
@@ -334,7 +378,20 @@ async function loadOrders() {
           <td>${o.customer.name}<br><small>${o.customer.phone}</small></td>
           <td>${o.items.length} items</td>
           <td>₹${o.finalTotal}</td>
+          <td>${statusBadge}<br>
+            <select onchange="updateTracking('${d.id}', this.value)" style="margin-top:5px">
+              <option ${tracking==='Order Received'?'selected':''}>Order Received</option>
+              <option ${tracking==='Approved'?'selected':''}>Approved</option>
+              <option ${tracking==='Packed'?'selected':''}>Packed</option>
+              <option ${tracking==='Shipped'?'selected':''}>Shipped</option>
+              <option ${tracking==='Reached Hub'?'selected':''}>Reached Hub</option>
+              <option ${tracking==='Out for Delivery'?'selected':''}>Out for Delivery</option>
+              <option ${tracking==='Delivered'?'selected':''}>Delivered</option>
+            </select>
+          </td>
           <td>
+            ${status==='new'? `<button class="btn-approve" onclick="approveOrder('${d.id}')">Approve</button>` : ''}
+            <button class="btn-invoice" onclick="generateInvoice('${d.id}')">Invoice</button>
             <button class="btn-cancel" onclick="cancelOrder('${d.id}')">Cancel</button>
             <button class="btn-delete" onclick="deleteOrder('${d.id}')">Delete</button>
           </td>
@@ -348,10 +405,26 @@ async function loadOrders() {
     document.getElementById('returnCount').innerText=returns;
     document.getElementById('totalRevenue').innerText='₹'+revenue.toLocaleString();
 
-    document.getElementById('ordersList').innerHTML=html || '<tr><td colspan="5">No active orders</td></tr>';
+    document.getElementById('ordersList').innerHTML=html || '<tr><td colspan="6">No active orders</td></tr>';
     document.getElementById('cancelledList').innerHTML=cancelledHtml || '<tr><td colspan="5">No cancelled orders</td></tr>';
     document.getElementById('returnList').innerHTML=returnHtml || '<tr><td colspan="5">No return requests</td></tr>';
   }catch(e){ console.log("Orders error:", e) }
+}
+
+// NEW: Approve Order
+function approveOrder(id){
+  db.collection("orders").doc(id).update({
+    orderStatus: 'approved',
+    trackingStatus: 'Approved'
+  }).then(()=>{ alert('Order Approved'); loadOrders(); });
+}
+
+// NEW: Update Tracking
+function updateTracking(id, status){
+  db.collection("orders").doc(id).update({
+    trackingStatus: status,
+    orderStatus: status==='Delivered'?'delivered': status==='Shipped'?'shipped':'approved'
+  }).then(()=>{ alert('Status Updated: ' + status); });
 }
 
 async function loadProducts() {
@@ -360,13 +433,15 @@ async function loadProducts() {
     let count=0, html='';
     snap.forEach(d => { const p = d.data(); if(p.sellerId === currentUser.uid){
       count++;
+      const stock = p.stock!== undefined? p.stock : 0; // NEW
+      const stockBadge = stock<=0? '<span style="color:red">Out</span>' : stock;
       html += `<tr>
         <td><img src="${p.images[0]}" width="50"></td>
         <td>${p.name}</td>
         <td>₹${p.customerPrice}</td>
         <td>${p.category}</td>
         <td>${p.district}</td>
-        <td>${p.stockQty}</td>
+        <td>${stockBadge} <button class="btn-stock" onclick="updateStock('${d.id}', 1)">+1</button> <button class="btn-stock" onclick="updateStock('${d.id}', -1)">-1</button></td> <!-- NEW -->
         <td><button class="btn-delete" onclick="deleteProduct('${d.id}')">Delete</button></td>
       </tr>`;
     }});
@@ -375,38 +450,66 @@ async function loadProducts() {
   }catch(e){ console.log("Products error:", e) }
 }
 
+// NEW: Update Stock
+function updateStock(id, change){
+  db.collection("products").doc(id).get().then(doc=>{
+    let current = doc.data().stock || 0;
+    let newStock = current + change;
+    if(newStock < 0) newStock = 0;
+    db.collection("products").doc(id).update({stock: newStock}).then(loadProducts);
+  })
+}
+
 function deleteProduct(id){ if(confirm('Delete this product?')){ db.collection("products").doc(id).delete().then(loadProducts); }}
 
 function cancelOrder(id){
   let reason = prompt("Enter cancellation reason:");
   if(reason){
-    db.collection("orders").doc(id).update({
-      status: 'Cancelled',
-      cancelReason: reason
-    }).then(()=>{ alert('Order Cancelled'); loadOrders(); }).catch(e=>alert(e.message));
+    db.collection("orders").doc(id).update({ status: 'Cancelled', cancelReason: reason }).then(()=>{ alert('Order Cancelled'); loadOrders(); });
   }
 }
 
 function deleteOrder(id){
   if(confirm('Delete this order permanently?')){
-    db.collection("orders").doc(id).delete().then(()=>{ alert('Order Deleted'); loadOrders(); }).catch(e=>alert(e.message));
+    db.collection("orders").doc(id).delete().then(()=>{ alert('Order Deleted'); loadOrders(); });
   }
 }
 
-// NEW FUNCTIONS FOR RETURNS
 function approveReturn(id){
   if(confirm('Approve return for this order?')){
-    db.collection("orders").doc(id).update({
-      returnStatus: 'approved'
-    }).then(()=>{ alert('Return Approved'); loadOrders(); }).catch(e=>alert(e.message));
+    db.collection("orders").doc(id).update({ returnStatus: 'approved' }).then(()=>{ alert('Return Approved'); loadOrders(); });
   }
 }
 function rejectReturn(id){
   if(confirm('Reject return request?')){
-    db.collection("orders").doc(id).update({
-      returnStatus: 'rejected'
-    }).then(()=>{ alert('Return Rejected'); loadOrders(); }).catch(e=>alert(e.message));
+    db.collection("orders").doc(id).update({ returnStatus: 'rejected' }).then(()=>{ alert('Return Rejected'); loadOrders(); });
   }
+}
+
+// NEW: GENERATE INVOICE PDF
+function generateInvoice(orderId){
+  db.collection("orders").doc(orderId).get().then(doc=>{
+    const o = doc.data();
+    const docPDF = new jsPDF();
+    docPDF.setFontSize(18);
+    docPDF.text("Shopline Kerala - Tax Invoice", 105, 20, {align: "center"});
+    docPDF.setFontSize(12);
+    docPDF.text(`Order ID: #${orderId.substring(0,6)}`, 14, 40);
+    docPDF.text(`Customer: ${o.customer.name}`, 14, 50);
+    docPDF.text(`Phone: ${o.customer.phone}`, 14, 60);
+    docPDF.text(`Address: ${o.address}`, 14, 70);
+    docPDF.text("----------------------------------------", 14, 80);
+    let y = 90;
+    o.items.forEach(item=>{
+      docPDF.text(`${item.name} x ${item.qty}`, 14, y);
+      docPDF.text(`₹${item.price * item.qty}`, 180, y, {align: "right"});
+      y += 10;
+    });
+    docPDF.text("----------------------------------------", 14, y);
+    y += 10;
+    docPDF.text(`Total Amount: ₹${o.finalTotal}`, 14, y);
+    docPDF.save(`Invoice-${orderId.substring(0,6)}.pdf`);
+  })
 }
 </script>
 </body>
