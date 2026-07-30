@@ -65,6 +65,12 @@
 .badge-cancel{background:#ffebee; color:#d32f2f; padding:4px 8px; border-radius:4px; font-size:12px}
 .badge-return{background:#e3f2fd; color:#1976d2; padding:4px 8px; border-radius:4px; font-size:12px}
 .gst-breakup{background:#fff; padding:12px; border-radius:6px; margin-top:10px; font-size:14px; border:1px dashed #388e3c; line-height:1.8}
+/* EDIT POPUP STYLES */
+.edit-modal{position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; display:none; justify-content:center; align-items:flex-start; overflow-y:auto; padding:20px}
+.edit-modal-content{background:#fff; width:95%; max-width:900px; margin:20px auto; border-radius:12px; padding:20px; max-height:95vh; overflow-y:auto}
+.edit-header{display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #eee; padding-bottom:10px; margin-bottom:15px}
+.edit-header h2{color:#2874f0; margin:0}
+.close-edit{font-size:28px; cursor:pointer; background:none; border:none}
  @media(max-width:768px){.form-grid,.stats{grid-template-columns:1fr 1fr}}
   </style>
 </head>
@@ -89,7 +95,6 @@
       <button class="tab-btn" onclick="openTab(event,'add')">➕ Add Product</button>
     </div>
 
-    <!-- ORDERS TAB -->
     <div id="orders" class="tab-content active">
       <h2>Recent Orders</h2>
       <div class="stats">
@@ -106,7 +111,6 @@
       </table>
     </div>
 
-    <!-- CANCELLED ORDERS TAB -->
     <div id="cancelled" class="tab-content">
       <h2>Cancelled Orders</h2>
       <table class="orders-table">
@@ -115,7 +119,6 @@
       </table>
     </div>
 
-    <!-- RETURN ORDERS TAB -->
     <div id="returns" class="tab-content">
       <h2>Return Orders</h2>
       <table class="orders-table">
@@ -124,7 +127,6 @@
       </table>
     </div>
 
-    <!-- PRODUCTS TAB -->
     <div id="products" class="tab-content">
       <h2>My Products</h2>
       <table class="products-table">
@@ -133,11 +135,9 @@
       </table>
     </div>
 
-    <!-- ADD PRODUCT TAB -->
     <div id="add" class="tab-content">
       <h2>Add New Product</h2>
       <div class="note"><b>Note:</b> Delivery payment will be credited to you in 2-3 days after successful delivery and return period is over.</div>
-
       <form id="addProductForm" onsubmit="addProduct(event)">
         <h3 class="section-title">1. Basic Details</h3>
         <div class="form-grid">
@@ -172,11 +172,10 @@
             </select>
           </div>
         </div>
-
         <h3 class="section-title">2. Price, Stock & GST (With Total)</h3>
         <div class="price-box">
           <div class="form-grid">
-            <div class="form-group"><label>Your Selling Price ₹ * (Base Price without GST)</label><input id="pPrice" type="number" min="0" step="0.01" oninput="calcPrice()" required></div>
+            <div class="form-group"><label>Your Selling Price ₹ * (Base without GST)</label><input id="pPrice" type="number" min="0" step="0.01" oninput="calcPrice()" required></div>
             <div class="form-group"><label>Old MRP Price ₹</label><input id="pOldPrice" type="number" min="0"></div>
             <div class="form-group"><label>Stock Quantity *</label><input id="pStockQty" type="number" value="10" required></div>
             <div class="form-group"><label>GST Rate % *</label>
@@ -189,10 +188,9 @@
               </select>
             </div>
           </div>
-          <p style="margin-top:10px"><b>Platform Fee:</b> ₹20 (Fixed) - Added to customer price</p>
+          <p style="margin-top:10px"><b>Platform Fee:</b> ₹20 (Fixed)</p>
           <div class="gst-breakup" id="gstBreakup">Enter Price and GST to see total breakup</div>
         </div>
-
         <h3 class="section-title">3. Variants - Size & Color</h3>
         <div class="form-group">
           <label>Sizes</label>
@@ -202,7 +200,6 @@
             <button type="button" class="btn-add" onclick="addExtraSize()">+ Add Size</button>
           </div>
         </div>
-
         <div class="form-group">
           <label>Colors</label>
           <div class="color-grid" id="colorGrid"></div>
@@ -212,7 +209,6 @@
             <button type="button" class="btn-add" onclick="addExtraColor()">+ Add Color</button>
           </div>
         </div>
-
         <h3 class="section-title">4. Images & Description</h3>
         <div class="form-group">
           <label>Product Images * Max 4</label>
@@ -222,6 +218,94 @@
         </div>
         <div class="form-group"><label>Description</label><textarea id="pDesc" rows="4"></textarea></div>
         <button type="submit" class="btn-save">Save Product</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- EDIT PRODUCT MODAL -->
+  <div id="editModal" class="edit-modal">
+    <div class="edit-modal-content">
+      <div class="edit-header">
+        <h2>✏️ Edit Product - Update All Details</h2>
+        <button class="close-edit" onclick="closeEditPopup()">×</button>
+      </div>
+      <form id="editProductForm" onsubmit="updateProduct(event)">
+        <input type="hidden" id="editId">
+        <h3 class="section-title">1. Basic Details</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>Product Name *</label><input id="editName" required></div>
+          <div class="form-group"><label>Brand</label><input id="editBrand"></div>
+          <div class="form-group"><label>Category *</label>
+            <select id="editCategory" onchange="loadEditSubCat()" required>
+              <option>Mobiles</option><option>Fashion</option><option>Electronics</option><option>Home</option><option>Grocery</option><option>Beauty</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Sub Category *</label><select id="editSubcategory" required></select></div>
+          <div class="form-group"><label>HSN Code</label><input id="editHsn"></div>
+          <div class="form-group"><label>District *</label>
+            <select id="editDistrict" required>
+              <option value="Kasaragod">Kasaragod</option>
+              <option value="Kannur">Kannur</option>
+              <option value="Wayanad">Wayanad</option>
+              <option value="Kozhikode">Kozhikode</option>
+              <option value="Malappuram">Malappuram</option>
+              <option value="Palakkad">Palakkad</option>
+              <option value="Thrissur">Thrissur</option>
+              <option value="Ernakulam">Ernakulam</option>
+              <option value="Idukki">Idukki</option>
+              <option value="Kottayam">Kottayam</option>
+              <option value="Alappuzha">Alappuzha</option>
+              <option value="Pathanamthitta">Pathanamthitta</option>
+              <option value="Kollam">Kollam</option>
+              <option value="Thiruvananthapuram">Thiruvananthapuram</option>
+            </select>
+          </div>
+        </div>
+
+        <h3 class="section-title">2. Price, Stock & GST</h3>
+        <div class="price-box">
+          <div class="form-grid">
+            <div class="form-group"><label>Base Price ₹ *</label><input id="editPrice" type="number" min="0" step="0.01" oninput="calcEditPrice()" required></div>
+            <div class="form-group"><label>Old MRP ₹</label><input id="editOldPrice" type="number"></div>
+            <div class="form-group"><label>Stock Qty *</label><input id="editStock" type="number" required></div>
+            <div class="form-group"><label>GST %</label>
+              <select id="editGst" onchange="calcEditPrice()">
+                <option value="0">0%</option><option value="5">5%</option><option value="12">12%</option><option value="18">18%</option><option value="28">28%</option>
+              </select>
+            </div>
+          </div>
+          <div class="gst-breakup" id="editGstBreakup"></div>
+        </div>
+
+        <h3 class="section-title">3. Variants</h3>
+        <div class="form-group">
+          <label>Sizes</label>
+          <div class="size-grid" id="editSizeGrid"></div>
+          <div style="display:flex; gap:8px; margin-top:8px">
+            <input id="editExtraSize" placeholder="Custom size" style="flex:1">
+            <button type="button" class="btn-add" onclick="addEditExtraSize()">+ Add</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Colors</label>
+          <div class="color-grid" id="editColorGrid"></div>
+          <div style="display:flex; gap:8px; margin-top:10px">
+            <input type="color" id="editExtraColor" value="#ff0000" style="width:50px; height:40px">
+            <input id="editColorName" placeholder="Color Name" style="flex:1">
+            <button type="button" class="btn-add" onclick="addEditExtraColor()">+ Add Color</button>
+          </div>
+        </div>
+
+        <h3 class="section-title">4. Images</h3>
+        <div class="form-group">
+          <button type="button" class="btn-upload" onclick="editOpenUpload()">📷 Add More Images (Max 4)</button>
+          <div class="img-preview" id="editImgPreview"></div>
+        </div>
+        <div class="form-group"><label>Description</label><textarea id="editDesc" rows="3"></textarea></div>
+        <div style="display:flex; gap:10px; margin-top:20px">
+          <button type="submit" class="btn-save" style="flex:1">💾 Update Product</button>
+          <button type="button" class="btn-delete" style="flex:1; padding:12px" onclick="closeEditPopup()">Cancel</button>
+        </div>
       </form>
     </div>
   </div>
@@ -242,11 +326,20 @@ let selectedColors = [];
 let uploadedUrls = [];
 let lastCalc = { base:0, gstPercent:18, customerTotal:0 };
 
+// EDIT VARIABLES
+let editUploadedUrls = [];
+let editSelectedSizes = [];
+let editSelectedColors = [];
+let editLastCalc = { base:0, gstPercent:18, customerTotal:0 };
+let currentEditId = null;
+
 const subCategories = {
   "Mobiles": ["Smartphones", "Feature Phones", "Mobile Accessories"],
   "Fashion": ["Men's Wear", "Women's Wear", "Kids Wear"],
   "Electronics": ["TV", "Laptops", "Headphones"],
-  "Home": ["Kitchen", "Furniture", "Decor"]
+  "Home": ["Kitchen", "Furniture", "Decor"],
+  "Grocery": ["Rice", "Spices", "Oils"],
+  "Beauty": ["Makeup", "Skincare", "Haircare"]
 };
 
 auth.onAuthStateChanged(user => {
@@ -256,34 +349,33 @@ auth.onAuthStateChanged(user => {
 
 function logout(){ auth.signOut().then(() => location.href = 'login.html'); }
 function goHome(){ location.href = '../index.html'; }
-
 function openTab(evt, tab){
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById(tab).classList.add('active');
   evt.currentTarget.classList.add('active');
 }
-
 function loadSubCat(){
   const cat = document.getElementById('pCategory').value;
   const sub = document.getElementById('pSubcategory');
   sub.innerHTML='<option value="">Select Subcategory</option>';
   if(subCategories[cat]){ subCategories[cat].forEach(s => sub.innerHTML += `<option>${s}</option>`); }
 }
-
-// FIXED PRICE CALCULATION WITH TOTAL AMOUNT
+function loadEditSubCat(){
+  const cat = document.getElementById('editCategory').value;
+  const sub = document.getElementById('editSubcategory');
+  const prev = sub.value;
+  sub.innerHTML='<option value="">Select Subcategory</option>';
+  if(subCategories[cat]){ subCategories[cat].forEach(s => sub.innerHTML += `<option ${s===prev?'selected':''}>${s}</option>`); }
+}
 function calcPrice(){
   const base = Number(document.getElementById('pPrice').value)||0;
   const gstP = Number(document.getElementById('pGst').value)||0;
   const PLATFORM_FEE = 20;
-  
   const gstAmount = (base * gstP) / 100;
-  const cgst = gstAmount / 2;
-  const sgst = gstAmount / 2;
+  const cgst = gstAmount / 2; const sgst = gstAmount / 2;
   const customerPays = base + gstAmount + PLATFORM_FEE;
-
-  lastCalc = { base: base, gstPercent: gstP, gstAmount: gstAmount, cgst: cgst, sgst: sgst, customerTotal: customerPays };
-
+  lastCalc = { base, gstPercent: gstP, gstAmount, cgst, sgst, customerTotal: customerPays };
   document.getElementById('gstBreakup').innerHTML = `
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;">
       <span>Base Price:</span><span>₹${base.toFixed(2)}</span>
@@ -292,10 +384,25 @@ function calcPrice(){
       <span>Platform Fee:</span><span>₹${PLATFORM_FEE.toFixed(2)}</span>
       <span style="border-top:1px solid #388e3c; margin-top:5px; padding-top:5px; font-weight:bold; font-size:16px;">Total Customer Pays:</span>
       <span style="border-top:1px solid #388e3c; margin-top:5px; padding-top:5px; font-weight:bold; font-size:16px; color:#d32f2f;">₹${customerPays.toFixed(2)}</span>
-    </div>
-  `;
+    </div>`;
 }
-
+function calcEditPrice(){
+  const base = Number(document.getElementById('editPrice').value)||0;
+  const gstP = Number(document.getElementById('editGst').value)||0;
+  const PLATFORM_FEE = 20;
+  const gstAmount = (base * gstP) / 100;
+  const cgst = gstAmount / 2; const sgst = gstAmount / 2;
+  const customerPays = base + gstAmount + PLATFORM_FEE;
+  editLastCalc = { base, gstPercent: gstP, gstAmount, cgst, sgst, customerTotal: customerPays };
+  document.getElementById('editGstBreakup').innerHTML = `
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;">
+      <span>Base:</span><span>₹${base.toFixed(2)}</span>
+      <span>CGST @${(gstP/2).toFixed(1)}%:</span><span>₹${cgst.toFixed(2)}</span>
+      <span>SGST @${(gstP/2).toFixed(1)}%:</span><span>₹${sgst.toFixed(2)}</span>
+      <span>Fee:</span><span>₹20</span>
+      <span style="font-weight:bold; color:#d32f2f;">Total:</span><span style="font-weight:bold; color:#d32f2f;">₹${customerPays.toFixed(2)}</span>
+    </div>`;
+}
 function renderSizeColor(){
   const sizeGrid = document.getElementById('sizeGrid');
   sizeGrid.innerHTML='';
@@ -309,12 +416,36 @@ function renderSizeColor(){
     colorGrid.innerHTML += `<div class="chip active" style="background:${c.code}; color:#fff">${c.name} <span onclick="removeColor('${c.name}')" style="cursor:pointer; font-weight:bold">X</span></div>`;
   });
 }
-
 function toggleSize(s){ selectedSizes.includes(s)? selectedSizes=selectedSizes.filter(x=>x!=s) : selectedSizes.push(s); renderSizeColor(); }
 function addExtraSize(){ const val = document.getElementById('extraSize').value.toUpperCase().trim(); if(!val){ alert("Enter size"); return; } if(!selectedSizes.includes(val)){ selectedSizes.push(val); document.getElementById('extraSize').value=''; renderSizeColor(); }}
 function removeSize(s){ selectedSizes=selectedSizes.filter(x=>x!=s); renderSizeColor(); }
 function addExtraColor(){ const code = document.getElementById('extraColor').value; const name = document.getElementById('colorName').value.trim(); if(!name){ alert("Please enter color name"); return; } if(selectedColors.find(x=>x.name.toLowerCase()==name.toLowerCase())){ alert("Color already added"); return; } selectedColors.push({name:name, code:code}); document.getElementById('colorName').value=''; renderSizeColor(); }
 function removeColor(name){ selectedColors=selectedColors.filter(x=>x.name!=name); renderSizeColor(); }
+
+// EDIT SIZE COLOR
+function renderEditSizeColor(){
+  const sizeGrid = document.getElementById('editSizeGrid');
+  sizeGrid.innerHTML='';
+  ['S','M','L','XL','XXL'].forEach(s => {
+    const active = editSelectedSizes.includes(s)? 'active':'';
+    sizeGrid.innerHTML += `<div class="chip ${active}" onclick="editToggleSize('${s}')">${s} ${editSelectedSizes.includes(s)? '<span onclick="editRemoveSize(\''+s+'\'); event.stopPropagation();" style="cursor:pointer">X</span>' : ''}</div>`;
+  });
+  editSelectedSizes.forEach(s=>{
+    if(!['S','M','L','XL','XXL'].includes(s)){
+      sizeGrid.innerHTML += `<div class="chip active">${s} <span onclick="editRemoveSize('${s}')" style="cursor:pointer">X</span></div>`;
+    }
+  });
+  const colorGrid = document.getElementById('editColorGrid');
+  colorGrid.innerHTML='';
+  editSelectedColors.forEach(c => {
+    colorGrid.innerHTML += `<div class="chip active" style="background:${c.code}; color:#fff">${c.name} <span onclick="editRemoveColor('${c.name}')" style="cursor:pointer; font-weight:bold">X</span></div>`;
+  });
+}
+function editToggleSize(s){ editSelectedSizes.includes(s)? editSelectedSizes=editSelectedSizes.filter(x=>x!=s) : editSelectedSizes.push(s); renderEditSizeColor(); }
+function addEditExtraSize(){ const val = document.getElementById('editExtraSize').value.toUpperCase().trim(); if(!val) return; if(!editSelectedSizes.includes(val)){ editSelectedSizes.push(val); document.getElementById('editExtraSize').value=''; renderEditSizeColor(); }}
+function editRemoveSize(s){ editSelectedSizes=editSelectedSizes.filter(x=>x!=s); renderEditSizeColor(); }
+function addEditExtraColor(){ const code = document.getElementById('editExtraColor').value; const name = document.getElementById('editColorName').value.trim(); if(!name) return alert("Enter color name"); if(editSelectedColors.find(x=>x.name.toLowerCase()==name.toLowerCase())) return alert("Already added"); editSelectedColors.push({name, code}); document.getElementById('editColorName').value=''; renderEditSizeColor(); }
+function editRemoveColor(name){ editSelectedColors=editSelectedColors.filter(x=>x.name!=name); renderEditSizeColor(); }
 
 var cloudName = "omve98do";
 var uploadPreset = "shopline_unsigned";
@@ -330,101 +461,79 @@ function openUpload(){
   });
 }
 function removeImg(url){ uploadedUrls = uploadedUrls.filter(u => u!= url); document.getElementById('imgPreview').innerHTML = ''; uploadedUrls.forEach(u => document.getElementById('imgPreview').innerHTML += `<div class="img-box"><img src="${u}"><span onclick="removeImg('${u}')">X</span></div>`); }
+function editOpenUpload(){
+  if(editUploadedUrls.length >= 4) return alert("Max 4 images allowed");
+  cloudinary.openUploadWidget({cloudName, uploadPreset, sources: ["local", "camera"], multiple: true, maxFiles: 4 - editUploadedUrls.length},
+  (error, result) => {
+    if(!error && result.event === "success"){
+      editUploadedUrls.push(result.info.secure_url);
+      renderEditImages();
+    }
+  });
+}
+function renderEditImages(){
+  const div = document.getElementById('editImgPreview');
+  div.innerHTML='';
+  editUploadedUrls.forEach(u=>{
+    div.innerHTML += `<div class="img-box"><img src="${u}"><span onclick="removeEditImg('${u}')">X</span></div>`;
+  });
+}
+function removeEditImg(url){ editUploadedUrls = editUploadedUrls.filter(u=>u!=url); renderEditImages(); }
 
 function addProduct(e){
   e.preventDefault();
   if(uploadedUrls.length==0) return alert("Upload atleast 1 image");
-  calcPrice(); // ensure latest calc
+  calcPrice();
   let product = {
     name: pName.value, brand: pBrand.value, images: uploadedUrls, 
-    price: lastCalc.base,
-    customerPrice: lastCalc.customerTotal,
+    price: lastCalc.base, customerPrice: lastCalc.customerTotal,
     oldPrice: Number(pOldPrice.value)||0, stockQty: Number(pStockQty.value),
     category: pCategory.value, subcategory: pSubcategory.value, district: pDistrict.value, description: pDesc.value,
-    gstPercent: lastCalc.gstPercent,
-    hsn: document.getElementById('pHsn').value || '9999',
+    gstPercent: lastCalc.gstPercent, hsn: document.getElementById('pHsn').value || '9999',
     sizes: selectedSizes, colors: selectedColors, sellerId: currentUser.uid, createdAt: firebase.firestore.FieldValue.serverTimestamp()
   };
   db.collection("products").add(product).then(() => {
-    alert(`✅ Product Added! Customer Price: ₹${lastCalc.customerTotal.toFixed(2)} (incl. GST + Fee)`);
+    alert(`✅ Product Added! Customer Price: ₹${lastCalc.customerTotal.toFixed(2)}`);
     document.getElementById('addProductForm').reset();
     selectedSizes=[]; selectedColors=[]; uploadedUrls=[];
     document.getElementById('imgPreview').innerHTML='';
     document.getElementById('gstBreakup').innerHTML='Enter Price and GST to see total breakup';
-    renderSizeColor();
-    loadProducts();
+    renderSizeColor(); loadProducts();
     document.querySelectorAll('.tab-btn')[3].click();
   }).catch(err => alert("Error: " + err.message));
 }
 
-// ORDERS WITH APPROVE + TRACKING + INVOICE
 async function loadOrders() {
   try{
     const snap = await db.collection("orders").where("sellerIds", "array-contains", currentUser.uid).orderBy("createdAt", "desc").get();
     let total=0, active=0, cancelled=0, returns=0, revenue=0;
     let html='', cancelledHtml='', returnHtml='';
-
     snap.forEach(d => {
       const o = d.data();
-      total++;
-      revenue += o.finalTotal || 0;
+      total++; revenue += o.finalTotal || 0;
       const canReturn = o.canReturnTill && o.canReturnTill.toDate() > new Date();
       const tracking = o.trackingStatus || 'Order Received';
       const orderStatus = o.orderStatus || 'new';
-
       if(o.status === 'Cancelled'){
         cancelled++;
         cancelledHtml += `<tr><td>#${d.id.substring(0,6)}</td><td>${o.customer.name}</td><td>${o.items.length} items</td><td>₹${o.finalTotal}</td><td><span class="badge-cancel">${o.cancelReason || 'User Cancelled'}</span></td></tr>`;
-      }
-      else if(o.returnStatus === 'requested'){
+      } else if(o.returnStatus === 'requested'){
         returns++;
-        returnHtml += `<tr>
-          <td>#${d.id.substring(0,6)}</td>
-          <td>${o.customer.name}<br><small>${o.customer.phone}</small></td>
-          <td>${o.items.length} items</td>
-          <td>₹${o.finalTotal}</td>
-          <td>
-            ${canReturn?
-              `<button class="btn-approve" onclick="approveReturn('${d.id}')">Approve</button>
-               <button class="btn-reject" onclick="rejectReturn('${d.id}')">Reject</button>`
-              : '<span class="badge-cancel">Return Window Expired</span>'}
-          </td>
-        </tr>`;
-      }
-      else{
+        returnHtml += `<tr><td>#${d.id.substring(0,6)}</td><td>${o.customer.name}<br><small>${o.customer.phone}</small></td><td>${o.items.length} items</td><td>₹${o.finalTotal}</td><td>${canReturn?`<button class="btn-approve" onclick="approveReturn('${d.id}')">Approve</button><button class="btn-reject" onclick="rejectReturn('${d.id}')">Reject</button>`:'<span class="badge-cancel">Expired</span>'}</td></tr>`;
+      } else{
         active++;
-        let trackingSelect = `<select onchange="updateTracking('${d.id}', this.value)" style="padding:4px">
-          <option ${tracking==='Order Received'?'selected':''}>Order Received</option>
-          <option ${tracking==='Approved'?'selected':''}>Approved</option>
-          <option ${tracking==='Packed'?'selected':''}>Packed</option>
-          <option ${tracking==='Shipped'?'selected':''}>Shipped</option>
-          <option ${tracking==='Delivered'?'selected':''}>Delivered</option>
-        </select>`;
-
+        let trackingSelect = `<select onchange="updateTracking('${d.id}', this.value)" style="padding:4px"><option ${tracking==='Order Received'?'selected':''}>Order Received</option><option ${tracking==='Approved'?'selected':''}>Approved</option><option ${tracking==='Packed'?'selected':''}>Packed</option><option ${tracking==='Shipped'?'selected':''}>Shipped</option><option ${tracking==='Delivered'?'selected':''}>Delivered</option></select>`;
         let actionBtn = '';
-        if(orderStatus === 'new'){
-          actionBtn += `<button class="btn-approve" onclick="approveOrder('${d.id}')">Approve</button>`;
-        }
-        actionBtn += `<button class="btn-invoice" onclick="downloadInvoice('${d.id}')">Invoice</button>`;
-        actionBtn += `<button class="btn-cancel" onclick="cancelOrder('${d.id}')">Cancel</button>`;
-
-        html += `<tr>
-          <td>#${d.id.substring(0,6)}</td>
-          <td>${o.customer.name}<br><small>${o.customer.phone}</small></td>
-          <td>${o.items.length} items</td>
-          <td>₹${o.finalTotal}</td>
-          <td>${trackingSelect}</td>
-          <td>${actionBtn}</td>
-        </tr>`;
+        if(orderStatus === 'new'){ actionBtn += `<button class="btn-approve" onclick="approveOrder('${d.id}')">Approve</button>`; }
+        actionBtn += `<button class="btn-invoice" onclick="downloadInvoice('${d.id}')">Invoice</button><button class="btn-cancel" onclick="cancelOrder('${d.id}')">Cancel</button>`;
+        html += `<tr><td>#${d.id.substring(0,6)}</td><td>${o.customer.name}<br><small>${o.customer.phone}</small></td><td>${o.items.length} items</td><td>₹${o.finalTotal}</td><td>${trackingSelect}</td><td>${actionBtn}</td></tr>`;
       }
     });
-
     document.getElementById('totalOrders').innerText=total;
     document.getElementById('newOrders').innerText=active;
     document.getElementById('cancelledCount').innerText=cancelled;
     document.getElementById('returnCount').innerText=returns;
     document.getElementById('totalRevenue').innerText='₹'+revenue.toLocaleString();
-
     document.getElementById('ordersList').innerHTML=html || '<tr><td colspan="6">No active orders</td></tr>';
     document.getElementById('cancelledList').innerHTML=cancelledHtml || '<tr><td colspan="5">No cancelled orders</td></tr>';
     document.getElementById('returnList').innerHTML=returnHtml || '<tr><td colspan="5">No return requests</td></tr>';
@@ -437,15 +546,7 @@ async function loadProducts() {
     let count=0, html='';
     snap.forEach(d => { const p = d.data(); if(p.sellerId === currentUser.uid){
       count++;
-      html += `<tr>
-        <td><img src="${p.images[0]}" width="50"></td>
-        <td>${p.name}</td>
-        <td>₹${p.customerPrice} <br><small style="color:green">Base: ₹${p.price} + GST ${p.gstPercent}%</small></td>
-        <td>${p.category}</td>
-        <td>${p.district}</td>
-        <td>${p.stockQty}</td>
-        <td><button class="btn-edit" onclick="editProduct('${d.id}')">Edit</button><button class="btn-delete" onclick="deleteProduct('${d.id}')">Delete</button></td>
-      </tr>`;
+      html += `<tr><td><img src="${p.images[0]}" width="50"></td><td>${p.name}</td><td>₹${p.customerPrice} <br><small style="color:green">Base: ₹${p.price} + GST ${p.gstPercent}%</small></td><td>${p.category}</td><td>${p.district}</td><td>${p.stockQty}</td><td><button class="btn-edit" onclick="editProduct('${d.id}')">Edit</button><button class="btn-delete" onclick="deleteProduct('${d.id}')">Delete</button></td></tr>`;
     }});
     document.getElementById('totalProducts').innerText=count;
     document.getElementById('productsList').innerHTML=html || '<tr><td colspan="7">No products yet. Add one!</td></tr>';
@@ -453,48 +554,95 @@ async function loadProducts() {
 }
 
 function deleteProduct(id){ if(confirm('Delete this product?')){ db.collection("products").doc(id).delete().then(loadProducts); }}
-function editProduct(id){ alert('Next Update: Edit popup coming. Tell me to build it now.'); }
+
+// FULL EDIT PRODUCT FUNCTION
+async function editProduct(id){
+  currentEditId = id;
+  const doc = await db.collection("products").doc(id).get();
+  if(!doc.exists){ alert("Product not found"); return; }
+  const p = doc.data();
+  
+  document.getElementById('editId').value = id;
+  document.getElementById('editName').value = p.name || '';
+  document.getElementById('editBrand').value = p.brand || '';
+  document.getElementById('editCategory').value = p.category || 'Fashion';
+  loadEditSubCat();
+  setTimeout(()=>{ document.getElementById('editSubcategory').value = p.subcategory || ''; }, 100);
+  document.getElementById('editDistrict').value = p.district || 'Kozhikode';
+  document.getElementById('editHsn').value = p.hsn || '';
+  document.getElementById('editPrice').value = p.price || 0;
+  document.getElementById('editOldPrice').value = p.oldPrice || 0;
+  document.getElementById('editStock').value = p.stockQty || 0;
+  document.getElementById('editGst').value = p.gstPercent || 18;
+  document.getElementById('editDesc').value = p.description || '';
+
+  editUploadedUrls = p.images || [];
+  editSelectedSizes = p.sizes || [];
+  editSelectedColors = p.colors || [];
+
+  renderEditImages();
+  renderEditSizeColor();
+  calcEditPrice();
+
+  document.getElementById('editModal').style.display='flex';
+}
+function closeEditPopup(){ document.getElementById('editModal').style.display='none'; currentEditId=null; }
+
+async function updateProduct(e){
+  e.preventDefault();
+  if(editUploadedUrls.length==0) return alert("Need at least 1 image");
+  calcEditPrice();
+  const updated = {
+    name: document.getElementById('editName').value,
+    brand: document.getElementById('editBrand').value,
+    category: document.getElementById('editCategory').value,
+    subcategory: document.getElementById('editSubcategory').value,
+    district: document.getElementById('editDistrict').value,
+    hsn: document.getElementById('editHsn').value || '9999',
+    price: editLastCalc.base,
+    oldPrice: Number(document.getElementById('editOldPrice').value)||0,
+    stockQty: Number(document.getElementById('editStock').value),
+    gstPercent: editLastCalc.gstPercent,
+    customerPrice: editLastCalc.customerTotal,
+    description: document.getElementById('editDesc').value,
+    images: editUploadedUrls,
+    sizes: editSelectedSizes,
+    colors: editSelectedColors,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+  try{
+    await db.collection("products").doc(currentEditId).update(updated);
+    alert(`✅ Product Updated! New Customer Price: ₹${editLastCalc.customerTotal.toFixed(2)}`);
+    closeEditPopup();
+    loadProducts();
+  }catch(err){ alert("Update failed: " + err.message); }
+}
 
 function cancelOrder(id){
   let reason = prompt("Enter cancellation reason:");
-  if(reason){
-    db.collection("orders").doc(id).update({ status: 'Cancelled', cancelReason: reason })
-   .then(()=>{ alert('Order Cancelled'); loadOrders(); }).catch(e=>alert(e.message));
-  }
+  if(reason){ db.collection("orders").doc(id).update({ status: 'Cancelled', cancelReason: reason }).then(()=>{ alert('Order Cancelled'); loadOrders(); }).catch(e=>alert(e.message)); }
 }
-function approveOrder(id){
-  db.collection("orders").doc(id).update({ orderStatus: 'approved', trackingStatus: 'Approved' })
- .then(()=>{ alert('Order Approved'); loadOrders(); });
-}
-function updateTracking(id, status){
-  db.collection("orders").doc(id).update({ trackingStatus: status, orderStatus: status==='Delivered'?'delivered': status==='Shipped'?'shipped':'approved' })
- .then(()=>{ alert('Status Updated: ' + status); });
-}
+function approveOrder(id){ db.collection("orders").doc(id).update({ orderStatus: 'approved', trackingStatus: 'Approved' }).then(()=>{ alert('Order Approved'); loadOrders(); }); }
+function updateTracking(id, status){ db.collection("orders").doc(id).update({ trackingStatus: status, orderStatus: status==='Delivered'?'delivered': status==='Shipped'?'shipped':'approved' }).then(()=>{ alert('Status Updated: ' + status); }); }
 
-// PROFESSIONAL MEESHO-STYLE INVOICE WITH CGST/SGST
 function downloadInvoice(orderId){
   db.collection("orders").doc(orderId).get().then(doc=>{
     const o = doc.data();
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF();
     let y = 12;
-
-    // Top Header
     pdf.setFillColor(40, 116, 240); pdf.rect(0,0,210,16,'F');
     pdf.setTextColor(255,255,255); pdf.setFontSize(14); pdf.setFont("helvetica","bold");
     pdf.text("Shopline Kerala - Tax Invoice", 105, 10, {align:"center"});
     pdf.setTextColor(0,0,0);
-
     y=22;
     pdf.setFontSize(10); pdf.setFont("helvetica","bold");
     pdf.text("Sold By (Shipper):", 14, y); pdf.text("Billing Address (Customer):", 110, y); y+=5;
     pdf.setFont("helvetica","normal"); pdf.setFontSize(8.5);
     pdf.text("Shopline Kerala Pvt Ltd", 14, y); pdf.text(o.customer.name || 'Customer', 110, y); y+=4;
-    pdf.text("KINFRA Park, Calicut, Kerala - 673001", 14, y); 
-    pdf.text((o.customer.street || '') + ', ' + (o.customer.district || ''), 110, y, {maxWidth:85}); y+=4;
+    pdf.text("KINFRA Park, Calicut, Kerala - 673001", 14, y); pdf.text((o.customer.street || '') + ', ' + (o.customer.district || ''), 110, y, {maxWidth:85}); y+=4;
     pdf.text("GSTIN: 32ABCDE1234F1Z5", 14, y); pdf.text("Phone: " + (o.customer.phone || ''), 110, y); y+=4;
     pdf.text("Email: support@shoplinekerala.com", 14, y); y+=6;
-
     pdf.setFont("helvetica","bold"); pdf.setFontSize(9);
     pdf.text(`Order ID: #${orderId.substring(0,12).toUpperCase()}`, 14, y);
     pdf.text(`Invoice No: INV-${orderId.substring(0,8).toUpperCase()}`, 110, y); y+=5;
@@ -502,34 +650,26 @@ function downloadInvoice(orderId){
     let orderDate = o.createdAt ? new Date(o.createdAt.seconds*1000).toLocaleDateString('en-IN') : new Date().toLocaleDateString('en-IN');
     pdf.text(`Order Date: ${orderDate}`, 14, y);
     pdf.text(`Payment: ${o.paymentMode || 'Prepaid'} | ${o.status || 'Paid'}`, 110, y); y+=7;
-
-    // Line
     pdf.setDrawColor(200); pdf.line(14, y, 196, y); y+=6;
-
-    // Table Header
     pdf.setFillColor(245,245,245); pdf.rect(14, y-4, 182, 8, 'F');
     pdf.setFont("helvetica","bold"); pdf.setFontSize(8);
     pdf.text("S.No", 15, y); pdf.text("Product Description", 25, y); pdf.text("HSN", 85, y);
     pdf.text("Qty", 100, y); pdf.text("Taxable", 112, y); pdf.text("CGST", 132, y); pdf.text("SGST", 152, y); pdf.text("Total", 175, y); y+=5;
-
     pdf.setFont("helvetica","normal");
-    let subtotalTaxable=0, totalCgst=0, totalSgst=0, grandTotal=0;
-    let sNo=1;
+    let subtotalTaxable=0, totalCgst=0, totalSgst=0, grandTotal=0; let sNo=1;
     o.items.forEach(item=>{
       const qty = item.qty || 1;
-      const basePrice = item.price || 0; // base price per unit
+      const basePrice = item.price || 0;
       const taxable = basePrice * qty;
-      const gstP = item.gstPercent || o.gstPercent || 18;
+      const gstP = item.gstPercent || 18;
       const gstAmt = taxable * gstP / 100;
       const cgst = gstAmt/2; const sgst = gstAmt/2;
       const totalItem = taxable + gstAmt;
-
       subtotalTaxable+=taxable; totalCgst+=cgst; totalSgst+=sgst; grandTotal+=totalItem;
-
       if(y > 265){ pdf.addPage(); y=15; }
       pdf.text(String(sNo), 15, y);
       pdf.text((item.name || 'Product').substring(0,28), 25, y, {maxWidth:58});
-      pdf.text(item.hsn || item.HSN || '9999', 85, y);
+      pdf.text(item.hsn || '9999', 85, y);
       pdf.text(String(qty), 100, y);
       pdf.text(`Rs.${taxable.toFixed(0)}`, 112, y);
       pdf.text(`Rs.${cgst.toFixed(0)} ${gstP/2}%`, 132, y);
@@ -537,23 +677,19 @@ function downloadInvoice(orderId){
       pdf.text(`Rs.${totalItem.toFixed(0)}`, 175, y);
       y+=6; sNo++;
     });
-
     y+=2; pdf.line(14, y, 196, y); y+=7;
     pdf.setFont("helvetica","bold");
-    pdf.text(`Taxable Amount: Rs.${subtotalTaxable.toFixed(2)}`, 120, y, {align:"left"}); y+=5;
+    pdf.text(`Taxable Amount: Rs.${subtotalTaxable.toFixed(2)}`, 120, y); y+=5;
     pdf.text(`Total CGST: Rs.${totalCgst.toFixed(2)}`, 120, y); y+=5;
     pdf.text(`Total SGST: Rs.${totalSgst.toFixed(2)}`, 120, y); y+=6;
     pdf.setFontSize(11);
     pdf.text(`Grand Total (Incl. GST): Rs.${grandTotal.toFixed(2)}`, 120, y); y+=10;
-
     pdf.setFontSize(8); pdf.setFont("helvetica","normal");
-    pdf.text("Note: This is computer generated invoice. Platform fee Rs.20 included in product price breakup.", 14, y); y+=4;
-    pdf.text("Thank you for shopping with Shopline Kerala! | For support: support@shoplinekerala.com", 14, y);
-
+    pdf.text("Note: This is computer generated invoice. Platform fee Rs.20 included.", 14, y); y+=4;
+    pdf.text("Thank you for shopping with Shopline Kerala!", 14, y);
     pdf.save(`Shopline-Tax-Invoice-${orderId.substring(0,8).toUpperCase()}.pdf`);
   });
 }
-
 function approveReturn(id){ if(confirm('Approve return?')){ db.collection("orders").doc(id).update({returnStatus: 'approved'}).then(()=>{ alert('Return Approved'); loadOrders(); }); }}
 function rejectReturn(id){ if(confirm('Reject return?')){ db.collection("orders").doc(id).update({returnStatus: 'rejected'}).then(()=>{ alert('Return Rejected'); loadOrders(); }); }}
 </script>
