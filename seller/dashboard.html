@@ -1,10 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><!-- PLAYABLE_TOUCH_PATCH_V1 --><script>
+(function() {
+  if (window.__playableTouchPatchInstalled) return;
+  window.__playableTouchPatchInstalled = true;
+  var origAdd = EventTarget.prototype.addEventListener;
+  var blockedTypes = { touchstart: 1, touchmove: 1, wheel: 1 };
+  EventTarget.prototype.addEventListener = function(type, listener, options) {
+    if (blockedTypes[type]) {
+      if (options === undefined || options === null) {
+        options = { passive: true };
+      } else if (typeof options === 'boolean') {
+        options = { capture: options, passive: true };
+      } else {
+        options = Object.assign({}, options, { passive: true });
+      }
+    }
+    return origAdd.call(this, type, listener, options);
+  };
+})();
+</script><script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
   <meta charset="UTF-8">
   <title>Seller Dashboard - Shopline Kerala</title>
   <script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> <!-- NEW FOR INVOICE -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <link rel="stylesheet" href="../css/style.css">
   <style>
 .dashboard{max-width:1200px; margin:20px auto; padding:20px}
@@ -31,9 +50,8 @@
 .btn-reject{background:#d32f2f; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer}
 .btn-add{background:#2874f0; color:#fff; padding:8px 12px; border:none; border-radius:4px; cursor:pointer}
 .btn-upload{padding:10px 20px; background:#2874f0; color:#fff; border:none; border-radius:4px; cursor:pointer; font-weight:bold; width:100%}
-.btn-invoice{background:#9c27b0; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer; margin-right:5px} /* NEW */
-.btn-edit{background:#2874f0; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer; margin-right:5px} /* NEW */
-
+.btn-invoice{background:#9c27b0; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer; margin-right:5px}
+.btn-edit{background:#2874f0; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer; margin-right:5px}
 .img-preview{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap}
 .img-box{position:relative}
 .img-box img{width:100px; height:100px; object-fit:cover; border:1px solid #ddd; border-radius:4px}
@@ -42,11 +60,11 @@
 .chip{padding:8px 12px; border:2px solid #ddd; border-radius:20px; cursor:pointer; background:#fff; display:flex; align-items:center; gap:5px}
 .chip.active{border-color:#2874f0; background:#e3f2fd; color:#2874f0; font-weight:bold}
 .note{background:#fff3cd; padding:10px; border-left:4px solid #ffc107; margin:15px 0; font-size:13px}
-.price-box{background:#e8f5e9; padding:15px; border-radius:8px; margin-top:10px}
+.price-box{background:#e8f5e9; padding:15px; border-radius:8px; margin-top:10px; border:1px solid #c8e6c9}
 .section-title{margin-top:20px; margin-bottom:10px; color:#2874f0; border-bottom:1px solid #ddd; padding-bottom:5px}
 .badge-cancel{background:#ffebee; color:#d32f2f; padding:4px 8px; border-radius:4px; font-size:12px}
 .badge-return{background:#e3f2fd; color:#1976d2; padding:4px 8px; border-radius:4px; font-size:12px}
-.gst-breakup{background:#f1f8e9; padding:10px; border-radius:6px; margin-top:8px; font-size:13px} /* NEW */
+.gst-breakup{background:#fff; padding:12px; border-radius:6px; margin-top:10px; font-size:14px; border:1px dashed #388e3c; line-height:1.8}
  @media(max-width:768px){.form-grid,.stats{grid-template-columns:1fr 1fr}}
   </style>
 </head>
@@ -83,7 +101,7 @@
         <div class="stat-card" style="background:#9c27b0"><h3 id="totalProducts">0</h3><p>My Products</p></div>
       </div>
       <table class="orders-table">
-        <thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Amount</th><th>Status / Tracking</th><th>Action</th></tr></thead> <!-- ADDED COLUMN -->
+        <thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Amount</th><th>Status / Tracking</th><th>Action</th></tr></thead>
         <tbody id="ordersList"></tbody>
       </table>
     </div>
@@ -133,32 +151,46 @@
             </select>
           </div>
           <div class="form-group"><label>Sub Category *</label><select id="pSubcategory" required><option value="">Select Category First</option></select></div>
+          <div class="form-group"><label>HSN Code</label><input id="pHsn" placeholder="Ex: 8517 for mobiles"></div>
           <div class="form-group"><label>District *</label>
             <select id="pDistrict" required>
               <option value="">Select District</option>
-              <option>Thiruvananthapuram</option><option>Kollam</option><option>Ernakulam</option><option>Thrissur</option><option>Kozhikode</option>
+              <option value="Kasaragod">Kasaragod</option>
+              <option value="Kannur">Kannur</option>
+              <option value="Wayanad">Wayanad</option>
+              <option value="Kozhikode">Kozhikode</option>
+              <option value="Malappuram">Malappuram</option>
+              <option value="Palakkad">Palakkad</option>
+              <option value="Thrissur">Thrissur</option>
+              <option value="Ernakulam">Ernakulam</option>
+              <option value="Idukki">Idukki</option>
+              <option value="Kottayam">Kottayam</option>
+              <option value="Alappuzha">Alappuzha</option>
+              <option value="Pathanamthitta">Pathanamthitta</option>
+              <option value="Kollam">Kollam</option>
+              <option value="Thiruvananthapuram">Thiruvananthapuram</option>
             </select>
           </div>
         </div>
 
-        <h3 class="section-title">2. Price, Stock & GST</h3> <!-- UPDATED TITLE -->
+        <h3 class="section-title">2. Price, Stock & GST (With Total)</h3>
         <div class="price-box">
           <div class="form-grid">
-            <div class="form-group"><label>Your Selling Price ₹ *</label><input id="pPrice" type="number" oninput="calcPrice()" required></div>
-            <div class="form-group"><label>Old Price ₹</label><input id="pOldPrice" type="number"></div>
+            <div class="form-group"><label>Your Selling Price ₹ * (Base Price without GST)</label><input id="pPrice" type="number" min="0" step="0.01" oninput="calcPrice()" required></div>
+            <div class="form-group"><label>Old MRP Price ₹</label><input id="pOldPrice" type="number" min="0"></div>
             <div class="form-group"><label>Stock Quantity *</label><input id="pStockQty" type="number" value="10" required></div>
-            <div class="form-group"><label>GST Rate %</label> <!-- NEW -->
+            <div class="form-group"><label>GST Rate % *</label>
               <select id="pGst" onchange="calcPrice()">
-                <option value="0">0% - No GST</option>
+                <option value="0">0% - Exempted</option>
                 <option value="5">5%</option>
                 <option value="12">12%</option>
-                <option value="18">18%</option>
+                <option value="18" selected>18%</option>
                 <option value="28">28%</option>
               </select>
             </div>
           </div>
-          <p>Platform Fee: ₹20</p>
-          <div class="gst-breakup" id="gstBreakup"></div> <!-- NEW -->
+          <p style="margin-top:10px"><b>Platform Fee:</b> ₹20 (Fixed) - Added to customer price</p>
+          <div class="gst-breakup" id="gstBreakup">Enter Price and GST to see total breakup</div>
         </div>
 
         <h3 class="section-title">3. Variants - Size & Color</h3>
@@ -208,6 +240,7 @@ let currentUser = null;
 let selectedSizes = [];
 let selectedColors = [];
 let uploadedUrls = [];
+let lastCalc = { base:0, gstPercent:18, customerTotal:0 };
 
 const subCategories = {
   "Mobiles": ["Smartphones", "Feature Phones", "Mobile Accessories"],
@@ -218,7 +251,7 @@ const subCategories = {
 
 auth.onAuthStateChanged(user => {
   if (!user) location.href = 'login.html';
-  else { currentUser = user; loadOrders(); loadProducts(); renderSizeColor(); }
+  else { currentUser = user; loadOrders(); loadProducts(); renderSizeColor(); calcPrice(); }
 });
 
 function logout(){ auth.signOut().then(() => location.href = 'login.html'); }
@@ -238,20 +271,28 @@ function loadSubCat(){
   if(subCategories[cat]){ subCategories[cat].forEach(s => sub.innerHTML += `<option>${s}</option>`); }
 }
 
+// FIXED PRICE CALCULATION WITH TOTAL AMOUNT
 function calcPrice(){
-  const price = Number(document.getElementById('pPrice').value)||0;
-  const gst = Number(document.getElementById('pGst').value)||0;
-  const customerPrice = price + 20;
-  const gstAmount = (customerPrice * gst) / 100;
+  const base = Number(document.getElementById('pPrice').value)||0;
+  const gstP = Number(document.getElementById('pGst').value)||0;
+  const PLATFORM_FEE = 20;
+  
+  const gstAmount = (base * gstP) / 100;
   const cgst = gstAmount / 2;
   const sgst = gstAmount / 2;
-  document.getElementById('customerPrice').innerText = customerPrice + gstAmount;
+  const customerPays = base + gstAmount + PLATFORM_FEE;
+
+  lastCalc = { base: base, gstPercent: gstP, gstAmount: gstAmount, cgst: cgst, sgst: sgst, customerTotal: customerPays };
+
   document.getElementById('gstBreakup').innerHTML = `
-    <b>Price Breakup:</b><br>
-    Base Price: ₹${customerPrice}<br>
-    CGST @${gst/2}%: ₹${cgst.toFixed(2)}<br>
-    SGST @${gst/2}%: ₹${sgst.toFixed(2)}<br>
-    <b>Total Customer Pays: ₹${(customerPrice + gstAmount).toFixed(2)}</b>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;">
+      <span>Base Price:</span><span>₹${base.toFixed(2)}</span>
+      <span>CGST @${(gstP/2).toFixed(1)}%:</span><span>₹${cgst.toFixed(2)}</span>
+      <span>SGST @${(gstP/2).toFixed(1)}%:</span><span>₹${sgst.toFixed(2)}</span>
+      <span>Platform Fee:</span><span>₹${PLATFORM_FEE.toFixed(2)}</span>
+      <span style="border-top:1px solid #388e3c; margin-top:5px; padding-top:5px; font-weight:bold; font-size:16px;">Total Customer Pays:</span>
+      <span style="border-top:1px solid #388e3c; margin-top:5px; padding-top:5px; font-weight:bold; font-size:16px; color:#d32f2f;">₹${customerPays.toFixed(2)}</span>
+    </div>
   `;
 }
 
@@ -293,25 +334,30 @@ function removeImg(url){ uploadedUrls = uploadedUrls.filter(u => u!= url); docum
 function addProduct(e){
   e.preventDefault();
   if(uploadedUrls.length==0) return alert("Upload atleast 1 image");
+  calcPrice(); // ensure latest calc
   let product = {
-    name: pName.value, brand: pBrand.value, images: uploadedUrls, price: Number(pPrice.value),
-    customerPrice: Number(pPrice.value)+20, oldPrice: Number(pOldPrice.value)||0, stockQty: Number(pStockQty.value),
+    name: pName.value, brand: pBrand.value, images: uploadedUrls, 
+    price: lastCalc.base,
+    customerPrice: lastCalc.customerTotal,
+    oldPrice: Number(pOldPrice.value)||0, stockQty: Number(pStockQty.value),
     category: pCategory.value, subcategory: pSubcategory.value, district: pDistrict.value, description: pDesc.value,
-    gstPercent: Number(pGst.value), // NEW
+    gstPercent: lastCalc.gstPercent,
+    hsn: document.getElementById('pHsn').value || '9999',
     sizes: selectedSizes, colors: selectedColors, sellerId: currentUser.uid, createdAt: firebase.firestore.FieldValue.serverTimestamp()
   };
   db.collection("products").add(product).then(() => {
-    alert('✅ Product Added Successfully!');
+    alert(`✅ Product Added! Customer Price: ₹${lastCalc.customerTotal.toFixed(2)} (incl. GST + Fee)`);
     document.getElementById('addProductForm').reset();
     selectedSizes=[]; selectedColors=[]; uploadedUrls=[];
     document.getElementById('imgPreview').innerHTML='';
+    document.getElementById('gstBreakup').innerHTML='Enter Price and GST to see total breakup';
     renderSizeColor();
     loadProducts();
     document.querySelectorAll('.tab-btn')[3].click();
   }).catch(err => alert("Error: " + err.message));
 }
 
-// UPDATED: ORDERS WITH APPROVE + TRACKING + INVOICE
+// ORDERS WITH APPROVE + TRACKING + INVOICE
 async function loadOrders() {
   try{
     const snap = await db.collection("orders").where("sellerIds", "array-contains", currentUser.uid).orderBy("createdAt", "desc").get();
@@ -361,7 +407,6 @@ async function loadOrders() {
         }
         actionBtn += `<button class="btn-invoice" onclick="downloadInvoice('${d.id}')">Invoice</button>`;
         actionBtn += `<button class="btn-cancel" onclick="cancelOrder('${d.id}')">Cancel</button>`;
-        // REMOVED DELETE BUTTON TO AVOID PERMISSION ERROR
 
         html += `<tr>
           <td>#${d.id.substring(0,6)}</td>
@@ -395,11 +440,11 @@ async function loadProducts() {
       html += `<tr>
         <td><img src="${p.images[0]}" width="50"></td>
         <td>${p.name}</td>
-        <td>₹${p.customerPrice}</td>
+        <td>₹${p.customerPrice} <br><small style="color:green">Base: ₹${p.price} + GST ${p.gstPercent}%</small></td>
         <td>${p.category}</td>
         <td>${p.district}</td>
         <td>${p.stockQty}</td>
-        <td><button class="btn-edit" onclick="editProduct('${d.id}')">Edit</button><button class="btn-delete" onclick="deleteProduct('${d.id}')">Delete</button></td> <!-- ADDED EDIT -->
+        <td><button class="btn-edit" onclick="editProduct('${d.id}')">Edit</button><button class="btn-delete" onclick="deleteProduct('${d.id}')">Delete</button></td>
       </tr>`;
     }});
     document.getElementById('totalProducts').innerText=count;
@@ -408,7 +453,7 @@ async function loadProducts() {
 }
 
 function deleteProduct(id){ if(confirm('Delete this product?')){ db.collection("products").doc(id).delete().then(loadProducts); }}
-function editProduct(id){ alert('Update #2: Edit Product popup will come here. Click OK for now.'); } // PLACEHOLDER
+function editProduct(id){ alert('Next Update: Edit popup coming. Tell me to build it now.'); }
 
 function cancelOrder(id){
   let reason = prompt("Enter cancellation reason:");
@@ -417,34 +462,95 @@ function cancelOrder(id){
    .then(()=>{ alert('Order Cancelled'); loadOrders(); }).catch(e=>alert(e.message));
   }
 }
-
 function approveOrder(id){
   db.collection("orders").doc(id).update({ orderStatus: 'approved', trackingStatus: 'Approved' })
  .then(()=>{ alert('Order Approved'); loadOrders(); });
 }
-
 function updateTracking(id, status){
   db.collection("orders").doc(id).update({ trackingStatus: status, orderStatus: status==='Delivered'?'delivered': status==='Shipped'?'shipped':'approved' })
  .then(()=>{ alert('Status Updated: ' + status); });
 }
 
+// PROFESSIONAL MEESHO-STYLE INVOICE WITH CGST/SGST
 function downloadInvoice(orderId){
   db.collection("orders").doc(orderId).get().then(doc=>{
     const o = doc.data();
-    const gst = o.items.reduce((sum,item) => sum + (item.price * item.qty * (item.gstPercent || 18)/100), 0);
+    const { jsPDF } = window.jspdf;
     const pdf = new jsPDF();
-    pdf.setFontSize(18); pdf.text("Shopline Kerala - Tax Invoice", 105, 20, {align: "center"});
-    pdf.setFontSize(11); pdf.text(`Invoice No: INV-${orderId.substring(0,6)}`, 14, 35);
-    pdf.text(`Customer: ${o.customer.name}`, 14, 45); pdf.text(`Phone: ${o.customer.phone}`, 14, 52);
-    pdf.text(`Address: ${o.customer.street}, ${o.customer.district}`, 14, 59);
-    let y = 75; pdf.text("Item", 14, y); pdf.text("Qty", 100, y); pdf.text("Price", 130, y); y += 8;
-    o.items.forEach(item=>{ pdf.text(item.name.substring(0,20), 14, y); pdf.text(item.qty.toString(), 100, y); pdf.text('₹'+item.price, 130, y); y += 7; });
-    y += 5; pdf.text("---------------------------------", 14, y); y += 7;
-    pdf.text(`Subtotal: ₹${(o.finalTotal - gst).toFixed(2)}`, 130, y); y += 7;
-    pdf.text(`CGST: ₹${(gst/2).toFixed(2)}`, 130, y); y += 7;
-    pdf.text(`SGST: ₹${(gst/2).toFixed(2)}`, 130, y); y += 7;
-    pdf.text(`Total: ₹${o.finalTotal}`, 130, y);
-    pdf.save(`Invoice-${orderId.substring(0,6)}.pdf`);
+    let y = 12;
+
+    // Top Header
+    pdf.setFillColor(40, 116, 240); pdf.rect(0,0,210,16,'F');
+    pdf.setTextColor(255,255,255); pdf.setFontSize(14); pdf.setFont("helvetica","bold");
+    pdf.text("Shopline Kerala - Tax Invoice", 105, 10, {align:"center"});
+    pdf.setTextColor(0,0,0);
+
+    y=22;
+    pdf.setFontSize(10); pdf.setFont("helvetica","bold");
+    pdf.text("Sold By (Shipper):", 14, y); pdf.text("Billing Address (Customer):", 110, y); y+=5;
+    pdf.setFont("helvetica","normal"); pdf.setFontSize(8.5);
+    pdf.text("Shopline Kerala Pvt Ltd", 14, y); pdf.text(o.customer.name || 'Customer', 110, y); y+=4;
+    pdf.text("KINFRA Park, Calicut, Kerala - 673001", 14, y); 
+    pdf.text((o.customer.street || '') + ', ' + (o.customer.district || ''), 110, y, {maxWidth:85}); y+=4;
+    pdf.text("GSTIN: 32ABCDE1234F1Z5", 14, y); pdf.text("Phone: " + (o.customer.phone || ''), 110, y); y+=4;
+    pdf.text("Email: support@shoplinekerala.com", 14, y); y+=6;
+
+    pdf.setFont("helvetica","bold"); pdf.setFontSize(9);
+    pdf.text(`Order ID: #${orderId.substring(0,12).toUpperCase()}`, 14, y);
+    pdf.text(`Invoice No: INV-${orderId.substring(0,8).toUpperCase()}`, 110, y); y+=5;
+    pdf.setFont("helvetica","normal");
+    let orderDate = o.createdAt ? new Date(o.createdAt.seconds*1000).toLocaleDateString('en-IN') : new Date().toLocaleDateString('en-IN');
+    pdf.text(`Order Date: ${orderDate}`, 14, y);
+    pdf.text(`Payment: ${o.paymentMode || 'Prepaid'} | ${o.status || 'Paid'}`, 110, y); y+=7;
+
+    // Line
+    pdf.setDrawColor(200); pdf.line(14, y, 196, y); y+=6;
+
+    // Table Header
+    pdf.setFillColor(245,245,245); pdf.rect(14, y-4, 182, 8, 'F');
+    pdf.setFont("helvetica","bold"); pdf.setFontSize(8);
+    pdf.text("S.No", 15, y); pdf.text("Product Description", 25, y); pdf.text("HSN", 85, y);
+    pdf.text("Qty", 100, y); pdf.text("Taxable", 112, y); pdf.text("CGST", 132, y); pdf.text("SGST", 152, y); pdf.text("Total", 175, y); y+=5;
+
+    pdf.setFont("helvetica","normal");
+    let subtotalTaxable=0, totalCgst=0, totalSgst=0, grandTotal=0;
+    let sNo=1;
+    o.items.forEach(item=>{
+      const qty = item.qty || 1;
+      const basePrice = item.price || 0; // base price per unit
+      const taxable = basePrice * qty;
+      const gstP = item.gstPercent || o.gstPercent || 18;
+      const gstAmt = taxable * gstP / 100;
+      const cgst = gstAmt/2; const sgst = gstAmt/2;
+      const totalItem = taxable + gstAmt;
+
+      subtotalTaxable+=taxable; totalCgst+=cgst; totalSgst+=sgst; grandTotal+=totalItem;
+
+      if(y > 265){ pdf.addPage(); y=15; }
+      pdf.text(String(sNo), 15, y);
+      pdf.text((item.name || 'Product').substring(0,28), 25, y, {maxWidth:58});
+      pdf.text(item.hsn || item.HSN || '9999', 85, y);
+      pdf.text(String(qty), 100, y);
+      pdf.text(`Rs.${taxable.toFixed(0)}`, 112, y);
+      pdf.text(`Rs.${cgst.toFixed(0)} ${gstP/2}%`, 132, y);
+      pdf.text(`Rs.${sgst.toFixed(0)} ${gstP/2}%`, 152, y);
+      pdf.text(`Rs.${totalItem.toFixed(0)}`, 175, y);
+      y+=6; sNo++;
+    });
+
+    y+=2; pdf.line(14, y, 196, y); y+=7;
+    pdf.setFont("helvetica","bold");
+    pdf.text(`Taxable Amount: Rs.${subtotalTaxable.toFixed(2)}`, 120, y, {align:"left"}); y+=5;
+    pdf.text(`Total CGST: Rs.${totalCgst.toFixed(2)}`, 120, y); y+=5;
+    pdf.text(`Total SGST: Rs.${totalSgst.toFixed(2)}`, 120, y); y+=6;
+    pdf.setFontSize(11);
+    pdf.text(`Grand Total (Incl. GST): Rs.${grandTotal.toFixed(2)}`, 120, y); y+=10;
+
+    pdf.setFontSize(8); pdf.setFont("helvetica","normal");
+    pdf.text("Note: This is computer generated invoice. Platform fee Rs.20 included in product price breakup.", 14, y); y+=4;
+    pdf.text("Thank you for shopping with Shopline Kerala! | For support: support@shoplinekerala.com", 14, y);
+
+    pdf.save(`Shopline-Tax-Invoice-${orderId.substring(0,8).toUpperCase()}.pdf`);
   });
 }
 
