@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Seller Dashboard - Shopline Kerala</title>
   <script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> <!-- KEPT -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <link rel="stylesheet" href="../css/style.css">
   <style>
 .dashboard{max-width:1200px; margin:20px auto; padding:20px}
@@ -13,7 +13,7 @@
 .tab-btn.active{border-bottom:3px solid #2874f0; color:#2874f0}
 .tab-content{display:none}
 .tab-content.active{display:block}
-.stats{display:grid; grid-template-columns:repeat(6,1fr); gap:15px; margin-bottom:30px} /* CHANGED: 6 cols now */
+.stats{display:grid; grid-template-columns:repeat(6,1fr); gap:15px; margin-bottom:30px}
 .stat-card{background:#2874f0; color:#fff; padding:20px; border-radius:8px; text-align:center}
 .orders-table,.products-table{width:100%; background:#fff; border-radius:8px; overflow:hidden; margin-top:15px; font-size:14px}
 .orders-table th,.products-table th{background:#f5f5f5; padding:12px; text-align:left}
@@ -29,11 +29,10 @@
 .btn-cancel{background:#ff9800; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer}
 .btn-approve{background:#388e3c; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer; margin-right:5px}
 .btn-reject{background:#d32f2f; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer}
-.btn-invoice{background:#9c27b0; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer; margin-right:5px} /* KEPT */
-.btn-stock{background:#2874f0; color:#fff; padding:4px 8px; border:none; border-radius:4px; cursor:pointer; font-size:12px} /* KEPT */
+.btn-invoice{background:#9c27b0; color:#fff; padding:6px 10px; border:none; border-radius:4px; cursor:pointer; margin-right:5px}
+.btn-stock{background:#2874f0; color:#fff; padding:4px 8px; border:none; border-radius:4px; cursor:pointer; font-size:12px}
 .btn-add{background:#2874f0; color:#fff; padding:8px 12px; border:none; border-radius:4px; cursor:pointer}
 .btn-upload{padding:10px 20px; background:#2874f0; color:#fff; border:none; border-radius:4px; cursor:pointer; font-weight:bold; width:100%}
-
 .img-preview{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap}
 .img-box{position:relative}
 .img-box img{width:100px; height:100px; object-fit:cover; border:1px solid #ddd; border-radius:4px}
@@ -44,14 +43,19 @@
 .note{background:#fff3cd; padding:10px; border-left:4px solid #ffc107; margin:15px 0; font-size:13px}
 .price-box{background:#e8f5e9; padding:15px; border-radius:8px; margin-top:10px}
 .section-title{margin-top:20px; margin-bottom:10px; color:#2874f0; border-bottom:1px solid #ddd; padding-bottom:5px}
-.badge{background:#e0e0e0; padding:4px 8px; border-radius:4px; font-size:12px} /* KEPT */
+.badge{background:#e0e0e0; padding:4px 8px; border-radius:4px; font-size:12px}
 .badge-new{background:#fff3cd; color:#856404}
 .badge-approved{background:#d4edda; color:#155724}
 .badge-shipped{background:#cce5ff; color:#004085}
 .badge-delivered{background:#d4edda; color:#155724; font-weight:bold}
 .badge-cancel{background:#ffebee; color:#d32f2f}
 .badge-return{background:#e3f2fd; color:#1976d2}
- @media(max-width:768px){.form-grid,.stats{grid-template-columns:1fr 1fr}}
+.filter-bar{display:flex; gap:10px; margin:15px 0; flex-wrap:wrap; background:#f5f5f5; padding:12px; border-radius:8px}
+.filter-bar select{padding:8px; border-radius:4px; border:1px solid #ddd; flex:1; min-width:150px}
+.category-pills{display:flex; gap:8px; flex-wrap:wrap; margin:10px 0}
+.pill{padding:6px 12px; background:#fff; border:1px solid #2874f0; border-radius:20px; cursor:pointer; font-size:13px}
+.pill.active{background:#2874f0; color:#fff}
+@media(max-width:768px){.form-grid,.stats{grid-template-columns:1fr 1fr}.filter-bar{flex-direction:column}}
   </style>
 </head>
 <body>
@@ -75,7 +79,6 @@
       <button class="tab-btn" onclick="openTab(event,'add')">➕ Add Product</button>
     </div>
 
-    <!-- ORDERS TAB -->
     <div id="orders" class="tab-content active">
       <h2>Recent Orders</h2>
       <div class="stats">
@@ -84,15 +87,14 @@
         <div class="stat-card" style="background:#d32f2f"><h3 id="cancelledCount">0</h3><p>Cancelled</p></div>
         <div class="stat-card" style="background:#1976d2"><h3 id="returnCount">0</h3><p>Returns</p></div>
         <div class="stat-card" style="background:#388e3c"><h3 id="totalRevenue">₹0</h3><p>Revenue</p></div>
-        <div class="stat-card" style="background:#9c27b0"><h3 id="totalProducts">0</h3><p>My Products</p></div> <!-- KEPT -->
+        <div class="stat-card" style="background:#9c27b0"><h3 id="totalProducts">0</h3><p>My Products</p></div>
       </div>
       <table class="orders-table">
-        <thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead> <!-- ADDED Status Col -->
+        <thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead>
         <tbody id="ordersList"></tbody>
       </table>
     </div>
 
-    <!-- CANCELLED ORDERS TAB -->
     <div id="cancelled" class="tab-content">
       <h2>Cancelled Orders</h2>
       <table class="orders-table">
@@ -101,7 +103,6 @@
       </table>
     </div>
 
-    <!-- RETURN ORDERS TAB -->
     <div id="returns" class="tab-content">
       <h2>Return Orders</h2>
       <table class="orders-table">
@@ -110,20 +111,31 @@
       </table>
     </div>
 
-    <!-- PRODUCTS TAB - SAME AS YOURS -->
     <div id="products" class="tab-content">
       <h2>My Products</h2>
+      <div class="category-pills" id="categoryPills">
+        <div class="pill active" onclick="filterProductsByCategory('')">All</div>
+      </div>
+      <div class="filter-bar">
+        <select id="filterCategory" onchange="applyProductFilter()">
+          <option value="">All Category</option>
+        </select>
+        <select id="filterSubcategory" onchange="applyProductFilter()">
+          <option value="">All Subcategory</option>
+        </select>
+        <select id="filterSub" onchange="applyProductFilter()">
+          <option value="">All Type</option>
+        </select>
+      </div>
       <table class="products-table">
         <thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Category</th><th>District</th><th>Stock</th><th>Action</th></tr></thead>
         <tbody id="productsList"></tbody>
       </table>
     </div>
 
-    <!-- ADD PRODUCT TAB - SAME AS YOURS -->
     <div id="add" class="tab-content">
       <h2>Add New Product</h2>
       <div class="note"><b>Note:</b> Delivery payment will be credited to you in 2-3 days after successful delivery and return period is over.</div>
-
       <form id="addProductForm" onsubmit="addProduct(event)">
         <h3 class="section-title">1. Basic Details</h3>
         <div class="form-grid">
@@ -139,7 +151,7 @@
             </select>
           </div>
           <div class="form-group"><label>Sub Category *</label><select id="pSubcategory" onchange="loadSubCat()" required><option value="">Select Category First</option></select></div>
-          <div class="form-group"><label>Sub-Sub Category</label><select id="pSubCategory"><option value="">Select Subcategory First</option></select></div> <!-- KEPT -->
+          <div class="form-group"><label>Sub-Sub Category</label><select id="pSubCategory"><option value="">Select Subcategory First</option></select></div>
           <div class="form-group"><label>District *</label>
             <select id="pDistrict" required>
               <option value="">Select District</option>
@@ -151,53 +163,23 @@
             </select>
           </div>
         </div>
-
         <h3 class="section-title">2. Price, Stock & GST</h3>
         <div class="price-box">
           <div class="form-grid">
             <div class="form-group"><label>Your Selling Price ₹ *</label><input id="pPrice" type="number" oninput="calcPrice()" required></div>
             <div class="form-group"><label>Old Price ₹</label><input id="pOldPrice" type="number"></div>
             <div class="form-group"><label>Stock Quantity *</label><input id="pStockQty" type="number" value="10" required></div>
-            <div class="form-group"><label>GST %</label> <!-- KEPT -->
-              <select id="pGst">
-                <option value="0">0%</option>
-                <option value="5">5%</option>
-                <option value="12">12%</option>
-                <option value="18">18%</option>
-                <option value="28">28%</option>
-              </select>
+            <div class="form-group"><label>GST %</label>
+              <select id="pGst"><option value="0">0%</option><option value="5">5%</option><option value="12">12%</option><option value="18">18%</option><option value="28">28%</option></select>
             </div>
           </div>
           <p>Platform Fee: ₹20 | <b>Customer Pays: ₹<span id="customerPrice">0</span></b></p>
         </div>
-
         <h3 class="section-title">3. Variants - Size & Color</h3>
-        <div class="form-group">
-          <label>Sizes</label>
-          <div class="size-grid" id="sizeGrid"></div>
-          <div style="display:flex; gap:8px; margin-top:8px">
-            <input id="extraSize" placeholder="Add custom size e.g. 38, 40" style="flex:1">
-            <button type="button" class="btn-add" onclick="addExtraSize()">+ Add Size</button>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Colors</label>
-          <div class="color-grid" id="colorGrid"></div>
-          <div style="display:flex; gap:8px; margin-top:10px; align-items:center; flex-wrap:wrap">
-            <input type="color" id="extraColor" value="#ff0000" style="width:50px; height:40px; border:2px solid #ddd; border-radius:4px; cursor:pointer">
-            <input id="colorName" placeholder="Color Name e.g. Red, Navy Blue" style="flex:1">
-            <button type="button" class="btn-add" onclick="addExtraColor()">+ Add Color</button>
-          </div>
-        </div>
-
+        <div class="form-group"><label>Sizes</label><div class="size-grid" id="sizeGrid"></div><div style="display:flex; gap:8px; margin-top:8px"><input id="extraSize" placeholder="Add custom size e.g. 38, 40" style="flex:1"><button type="button" class="btn-add" onclick="addExtraSize()">+ Add Size</button></div></div>
+        <div class="form-group"><label>Colors</label><div class="color-grid" id="colorGrid"></div><div style="display:flex; gap:8px; margin-top:10px; align-items:center; flex-wrap:wrap"><input type="color" id="extraColor" value="#ff0000" style="width:50px; height:40px; border:2px solid #ddd; border-radius:4px; cursor:pointer"><input id="colorName" placeholder="Color Name e.g. Red, Navy Blue" style="flex:1"><button type="button" class="btn-add" onclick="addExtraColor()">+ Add Color</button></div></div>
         <h3 class="section-title">4. Images & Description</h3>
-        <div class="form-group">
-          <label>Product Images * Max 4</label>
-          <button type="button" class="btn-upload" onclick="openUpload()">📷 Upload From Gallery</button>
-          <input type="hidden" id="cloudinaryUrls">
-          <div class="img-preview" id="imgPreview"></div>
-        </div>
+        <div class="form-group"><label>Product Images * Max 4</label><button type="button" class="btn-upload" onclick="openUpload()">📷 Upload From Gallery</button><input type="hidden" id="cloudinaryUrls"><div class="img-preview" id="imgPreview"></div></div>
         <div class="form-group"><label>Description</label><textarea id="pDesc" rows="4"></textarea></div>
         <button type="submit" class="btn-save">Save Product</button>
       </form>
@@ -218,6 +200,7 @@ let currentUser = null;
 let selectedSizes = [];
 let selectedColors = [];
 let uploadedUrls = [];
+let ALL_SELLER_PRODUCTS = [];
 
 const subCategories = {
   "Mobiles": ["Smartphones", "Feature Phones", "Mobile Accessories", "Tablets", "Power Banks"],
@@ -234,7 +217,7 @@ const subCategories = {
   "Jewelry": ["Gold Jewelry", "Silver Jewelry", "Bangles", "Earrings"]
 };
 
-const subSubCategories = { // KEPT
+const subSubCategories = {
   "Men's Wear": ["T-Shirts", "Shirts", "Jeans", "Pants", "Kurta"],
   "Women's Wear": ["Sarees", "Kurtis", "Dresses", "Tops", "Leggings"],
   "Smartphones": ["Android", "iPhone"],
@@ -260,13 +243,13 @@ function loadSubCat(){
   const cat = document.getElementById('pCategory').value;
   const sub = document.getElementById('pSubcategory');
   sub.innerHTML='<option value="">Select Subcategory</option>';
+  document.getElementById('pSubCategory').innerHTML='<option value="">Select Subcategory First</option>';
   if(subCategories[cat]){ subCategories[cat].forEach(s => sub.innerHTML += `<option>${s}</option>`); }
-  loadSubCat(); // FIXED
 }
 
-function loadSubCat(){ // KEPT
+function loadSubCat(){
   const sub = document.getElementById('pSubcategory').value;
-  const subsub = document.getElementById('pSubCategory'); // FIXED TYPO
+  const subsub = document.getElementById('pSubCategory');
   subsub.innerHTML='<option value="">Select Type</option>';
   if(subSubCategories[sub]){ subSubCategories[sub].forEach(s => subsub.innerHTML += `<option>${s}</option>`); }
 }
@@ -314,11 +297,11 @@ function addProduct(e){
   let product = {
     name: pName.value, brand: pBrand.value, images: uploadedUrls, price: Number(pPrice.value),
     customerPrice: Number(pPrice.value)+20, oldPrice: Number(pOldPrice.value)||0,
-    stock: Number(pStockQty.value), // CHANGED: stockQty -> stock
-    category: pCategory.value, subcategory: pSubcategory.value, sub_subcategory: pSubSubCategory.value, // KEPT
-    district: pDistrict.value, description: pDesc.value, gstPercent: Number(pGst.value), // KEPT
+    stock: Number(pStockQty.value),
+    category: pCategory.value, subcategory: pSubcategory.value, sub_subcategory: pSubCategory.value,
+    district: pDistrict.value, description: pDesc.value, gstPercent: Number(pGst.value),
     sizes: selectedSizes, colors: selectedColors, sellerId: currentUser.uid,
-    rating: 0, reviews: [], createdAt: firebase.firestore.FieldValue.serverTimestamp() // KEPT
+    rating: 0, reviews: [], createdAt: firebase.firestore.FieldValue.serverTimestamp()
   };
   db.collection("products").add(product).then(() => {
     alert('✅ Product Added Successfully!');
@@ -331,185 +314,104 @@ function addProduct(e){
   }).catch(err => alert("Error: " + err.message));
 }
 
-// UPDATED: ORDERS WITH APPROVE + TRACKING + INVOICE
 async function loadOrders() {
   try{
     const snap = await db.collection("orders").where("sellerIds", "array-contains", currentUser.uid).orderBy("createdAt", "desc").get();
     let total=0, active=0, cancelled=0, returns=0, revenue=0;
     let html='', cancelledHtml='', returnHtml='';
-
     snap.forEach(d => {
       const o = d.data();
       total++;
       revenue += o.finalTotal || 0;
       const canReturn = o.canReturnTill && o.canReturnTill.toDate() > new Date();
-      const status = o.orderStatus || 'new'; // NEW
-      const tracking = o.trackingStatus || 'Order Received'; // NEW
-
+      const status = o.orderStatus || 'new';
+      const tracking = o.trackingStatus || 'Order Received';
       let statusBadge = `<span class="badge badge-new">New</span>`;
       if(status==='approved') statusBadge = `<span class="badge badge-approved">Approved</span>`;
       if(status==='shipped') statusBadge = `<span class="badge badge-shipped">Shipped</span>`;
       if(status==='delivered') statusBadge = `<span class="badge badge-delivered">Delivered</span>`;
-
       if(o.status === 'Cancelled'){
         cancelled++;
         cancelledHtml += `<tr><td>#${d.id.substring(0,6)}</td><td>${o.customer.name}</td><td>${o.items.length} items</td><td>₹${o.finalTotal}</td><td><span class="badge-cancel">${o.cancelReason || 'User Cancelled'}</span></td></tr>`;
       }
       else if(o.returnStatus === 'requested'){
         returns++;
-        returnHtml += `<tr>
-          <td>#${d.id.substring(0,6)}</td>
-          <td>${o.customer.name}<br><small>${o.customer.phone}</small></td>
-          <td>${o.items.length} items</td>
-          <td>₹${o.finalTotal}</td>
-          <td>
-            ${canReturn?
-              `<button class="btn-approve" onclick="approveReturn('${d.id}')">Approve</button>
-               <button class="btn-reject" onclick="rejectReturn('${d.id}')">Reject</button>`
-              : '<span class="badge-cancel">Return Window Expired</span>'}
-          </td>
-        </tr>`;
+        returnHtml += `<tr><td>#${d.id.substring(0,6)}</td><td>${o.customer.name}<br><small>${o.customer.phone}</small></td><td>${o.items.length} items</td><td>₹${o.finalTotal}</td><td>${canReturn?`<button class="btn-approve" onclick="approveReturn('${d.id}')">Approve</button><button class="btn-reject" onclick="rejectReturn('${d.id}')">Reject</button>`:'<span class="badge-cancel">Return Window Expired</span>'}</td></tr>`;
       }
       else{
         active++;
-        html += `<tr>
-          <td>#${d.id.substring(0,6)}</td>
-          <td>${o.customer.name}<br><small>${o.customer.phone}</small></td>
-          <td>${o.items.length} items</td>
-          <td>₹${o.finalTotal}</td>
-          <td>${statusBadge}<br> <!-- NEW -->
-            <select onchange="updateTracking('${d.id}', this.value)" style="margin-top:5px"> <!-- NEW -->
-              <option ${tracking==='Order Received'?'selected':''}>Order Received</option>
-              <option ${tracking==='Approved'?'selected':''}>Approved</option>
-              <option ${tracking==='Packed'?'selected':''}>Packed</option>
-              <option ${tracking==='Shipped'?'selected':''}>Shipped</option>
-              <option ${tracking==='Reached Hub'?'selected':''}>Reached Hub</option>
-              <option ${tracking==='Out for Delivery'?'selected':''}>Out for Delivery</option>
-              <option ${tracking==='Delivered'?'selected':''}>Delivered</option>
-            </select>
-          </td>
-          <td>
-            ${status==='new'? `<button class="btn-approve" onclick="approveOrder('${d.id}')">Approve</button>` : ''} <!-- NEW -->
-            <button class="btn-invoice" onclick="generateInvoice('${d.id}')">Invoice</button> <!-- KEPT -->
-            <button class="btn-cancel" onclick="cancelOrder('${d.id}')">Cancel</button>
-            <button class="btn-delete" onclick="deleteOrder('${d.id}')">Delete</button>
-          </td>
-        </tr>`;
+        html += `<tr><td>#${d.id.substring(0,6)}</td><td>${o.customer.name}<br><small>${o.customer.phone}</small></td><td>${o.items.length} items</td><td>₹${o.finalTotal}</td><td>${statusBadge}<br><select onchange="updateTracking('${d.id}', this.value)" style="margin-top:5px"><option ${tracking==='Order Received'?'selected':''}>Order Received</option><option ${tracking==='Approved'?'selected':''}>Approved</option><option ${tracking==='Packed'?'selected':''}>Packed</option><option ${tracking==='Shipped'?'selected':''}>Shipped</option><option ${tracking==='Reached Hub'?'selected':''}>Reached Hub</option><option ${tracking==='Out for Delivery'?'selected':''}>Out for Delivery</option><option ${tracking==='Delivered'?'selected':''}>Delivered</option></select></td><td>${status==='new'? `<button class="btn-approve" onclick="approveOrder('${d.id}')">Approve</button>` : ''}<button class="btn-invoice" onclick="generateInvoice('${d.id}')">Invoice</button><button class="btn-cancel" onclick="cancelOrder('${d.id}')">Cancel</button><button class="btn-delete" onclick="deleteOrder('${d.id}')">Delete</button></td></tr>`;
       }
     });
-
     document.getElementById('totalOrders').innerText=total;
     document.getElementById('newOrders').innerText=active;
     document.getElementById('cancelledCount').innerText=cancelled;
     document.getElementById('returnCount').innerText=returns;
     document.getElementById('totalRevenue').innerText='₹'+revenue.toLocaleString();
-
     document.getElementById('ordersList').innerHTML=html || '<tr><td colspan="6">No active orders</td></tr>';
     document.getElementById('cancelledList').innerHTML=cancelledHtml || '<tr><td colspan="5">No cancelled orders</td></tr>';
     document.getElementById('returnList').innerHTML=returnHtml || '<tr><td colspan="5">No return requests</td></tr>';
   }catch(e){ console.log("Orders error:", e) }
 }
 
-// NEW: Approve Order
-function approveOrder(id){
-  db.collection("orders").doc(id).update({
-    orderStatus: 'approved',
-    trackingStatus: 'Approved'
-  }).then(()=>{ alert('Order Approved'); loadOrders(); });
-}
-
-// NEW: Update Tracking
-function updateTracking(id, status){
-  db.collection("orders").doc(id).update({
-    trackingStatus: status,
-    orderStatus: status==='Delivered'?'delivered': status==='Shipped'?'shipped':'approved'
-  }).then(()=>{ alert('Status Updated: ' + status); });
-}
+function approveOrder(id){ db.collection("orders").doc(id).update({orderStatus: 'approved', trackingStatus: 'Approved'}).then(()=>{ alert('Order Approved'); loadOrders(); }); }
+function updateTracking(id, status){ db.collection("orders").doc(id).update({trackingStatus: status, orderStatus: status==='Delivered'?'delivered': status==='Shipped'?'shipped':'approved'}).then(()=>{ alert('Status Updated: ' + status); }); }
 
 async function loadProducts() {
   try{
     const snap = await db.collection("products").get();
-    let count=0, html='';
-    snap.forEach(d => { const p = d.data(); if(p.sellerId === currentUser.uid){
-      count++;
-      const stock = p.stock!== undefined? p.stock : 0; // CHANGED
-      const stockBadge = stock<=0? '<span style="color:red">Out</span>' : stock;
-      html += `<tr>
-        <td><img src="${p.images[0]}" width="50"></td>
-        <td>${p.name}</td>
-        <td>₹${p.customerPrice}</td>
-        <td>${p.category}</td>
-        <td>${p.district}</td>
-        <td>${stockBadge} <button class="btn-stock" onclick="updateStock('${d.id}', 1)">+1</button> <button class="btn-stock" onclick="updateStock('${d.id}', -1)">-1</button></td> <!-- KEPT -->
-        <td><button class="btn-delete" onclick="deleteProduct('${d.id}')">Delete</button></td>
-      </tr>`;
-    }});
-    document.getElementById('totalProducts').innerText=count;
-    document.getElementById('productsList').innerHTML=html || '<tr><td colspan="7">No products yet. Add one!</td></tr>';
+    ALL_SELLER_PRODUCTS = [];
+    snap.forEach(d => { const p = d.data(); if(p.sellerId === currentUser.uid){ ALL_SELLER_PRODUCTS.push({id: d.id,...p}); }});
+    document.getElementById('totalProducts').innerText=ALL_SELLER_PRODUCTS.length;
+    loadProductFilters();
+    renderProductTable(ALL_SELLER_PRODUCTS);
   }catch(e){ console.log("Products error:", e) }
 }
 
-// KEPT: Update Stock
-function updateStock(id, change){
-  db.collection("products").doc(id).get().then(doc=>{
-    let current = doc.data().stock || 0;
-    let newStock = current + change;
-    if(newStock < 0) newStock = 0;
-    db.collection("products").doc(id).update({stock: newStock}).then(loadProducts);
-  })
+function loadProductFilters(){
+  const categories = [...new Set(ALL_SELLER_PRODUCTS.map(p=>p.category))];
+  document.getElementById('filterCategory').innerHTML = '<option value="">All Category</option>' + categories.map(c=>`<option>${c}</option>`).join('');
+  let pillsHtml = `<div class="pill active" onclick="filterProductsByCategory('')">All</div>`;
+  categories.forEach(c => { pillsHtml += `<div class="pill" onclick="filterProductsByCategory('${c}')">${c}</div>`; });
+  document.getElementById('categoryPills').innerHTML = pillsHtml;
 }
 
+function filterProductsByCategory(cat){
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('filterCategory').value = cat;
+  applyProductFilter();
+}
+
+function applyProductFilter(){
+  const cat = document.getElementById('filterCategory').value;
+  const sub = document.getElementById('filterSubcategory').value;
+  const subsub = document.getElementById('filterSub').value;
+  let filtered = ALL_SELLER_PRODUCTS;
+  if(cat) filtered = filtered.filter(p => p.category === cat);
+  if(sub) filtered = filtered.filter(p => p.subcategory === sub);
+  if(subsub) filtered = filtered.filter(p => p.sub_subcategory === subsub);
+  if(cat && subCategories[cat]){ document.getElementById('filterSubcategory').innerHTML = '<option value="">All Subcategory</option>' + subCategories[cat].map(s=>`<option>${s}</option>`).join(''); }
+  renderProductTable(filtered);
+}
+
+function renderProductTable(products){
+  let html='';
+  products.forEach(p => {
+      const stock = p.stock!== undefined? p.stock : 0;
+      const stockBadge = stock<=0? '<span style="color:red">Out</span>' : stock;
+      html += `<tr><td><img src="${p.images[0]}" width="50" onerror="this.src='../img/no-image.jpg'"></td><td>${p.name}</td><td>₹${p.customerPrice}</td><td>${p.category} > ${p.subcategory || ''}</td><td>${p.district}</td><td>${stockBadge} <button class="btn-stock" onclick="updateStock('${p.id}', 1)">+1</button> <button class="btn-stock" onclick="updateStock('${p.id}', -1)">-1</button></td><td><button class="btn-delete" onclick="deleteProduct('${p.id}')">Delete</button></td></tr>`;
+  });
+  document.getElementById('productsList').innerHTML=html || '<tr><td colspan="7">No products yet. Add one!</td></tr>';
+}
+
+function updateStock(id, change){ db.collection("products").doc(id).get().then(doc=>{ let current = doc.data().stock || 0; let newStock = current + change; if(newStock < 0) newStock = 0; db.collection("products").doc(id).update({stock: newStock}).then(loadProducts); }) }
 function deleteProduct(id){ if(confirm('Delete this product?')){ db.collection("products").doc(id).delete().then(loadProducts); }}
-
-function cancelOrder(id){
-  let reason = prompt("Enter cancellation reason:");
-  if(reason){
-    db.collection("orders").doc(id).update({ status: 'Cancelled', cancelReason: reason }).then(()=>{ alert('Order Cancelled'); loadOrders(); });
-  }
-}
-
-function deleteOrder(id){
-  if(confirm('Delete this order permanently?')){
-    db.collection("orders").doc(id).delete().then(()=>{ alert('Order Deleted'); loadOrders(); });
-  }
-}
-
-function approveReturn(id){
-  if(confirm('Approve return for this order?')){
-    db.collection("orders").doc(id).update({ returnStatus: 'approved' }).then(()=>{ alert('Return Approved'); loadOrders(); });
-  }
-}
-function rejectReturn(id){
-  if(confirm('Reject return request?')){
-    db.collection("orders").doc(id).update({ returnStatus: 'rejected' }).then(()=>{ alert('Return Rejected'); loadOrders(); });
-  }
-}
-
-// KEPT: GENERATE INVOICE PDF
-function generateInvoice(orderId){
-  db.collection("orders").doc(orderId).get().then(doc=>{
-    const o = doc.data();
-    const docPDF = new jsPDF();
-    docPDF.setFontSize(18);
-    docPDF.text("Shopline Kerala - Tax Invoice", 105, 20, {align: "center"});
-    docPDF.setFontSize(12);
-    docPDF.text(`Order ID: #${orderId.substring(0,6)}`, 14, 40);
-    docPDF.text(`Customer: ${o.customer.name}`, 14, 50);
-    docPDF.text(`Phone: ${o.customer.phone}`, 14, 60);
-    docPDF.text(`Address: ${o.customer.street}, ${o.customer.district}`, 14, 70); // FIXED
-    docPDF.text("----------------------------------------", 14, 80);
-    let y = 90;
-    o.items.forEach(item=>{
-      docPDF.text(`${item.name} x ${item.qty}`, 14, y);
-      docPDF.text(`₹${item.price * item.qty}`, 180, y, {align: "right"});
-      y += 10;
-    });
-    docPDF.text("----------------------------------------", 14, y);
-    y += 10;
-    docPDF.text(`Total Amount: ₹${o.finalTotal}`, 14, y);
-    docPDF.save(`Invoice-${orderId.substring(0,6)}.pdf`);
-  })
-}
+function cancelOrder(id){ let reason = prompt("Enter cancellation reason:"); if(reason){ db.collection("orders").doc(id).update({ status: 'Cancelled', cancelReason: reason }).then(()=>{ alert('Order Cancelled'); loadOrders(); }); }}
+function deleteOrder(id){ if(confirm('Delete this order permanently?')){ db.collection("orders").doc(id).delete().then(()=>{ alert('Order Deleted'); loadOrders(); }); }}
+function approveReturn(id){ if(confirm('Approve return for this order?')){ db.collection("orders").doc(id).update({ returnStatus: 'approved' }).then(()=>{ alert('Return Approved'); loadOrders(); }); }}
+function rejectReturn(id){ if(confirm('Reject return request?')){ db.collection("orders").doc(id).update({ returnStatus: 'rejected' }).then(()=>{ alert('Return Rejected'); loadOrders(); }); }}
+function generateInvoice(orderId){ db.collection("orders").doc(orderId).get().then(doc=>{ const o = doc.data(); const docPDF = new jsPDF(); docPDF.setFontSize(18); docPDF.text("Shopline Kerala - Tax Invoice", 105, 20, {align: "center"}); docPDF.setFontSize(12); docPDF.text(`Order ID: #${orderId.substring(0,6)}`, 14, 40); docPDF.text(`Customer: ${o.customer.name}`, 14, 50); docPDF.text(`Phone: ${o.customer.phone}`, 14, 60); docPDF.text(`Address: ${o.customer.street}, ${o.customer.district}`, 14, 70); docPDF.text("----------------------------------------", 14, 80); let y = 90; o.items.forEach(item=>{ docPDF.text(`${item.name} x ${item.qty}`, 14, y); docPDF.text(`₹${item.price * item.qty}`, 180, y, {align: "right"}); y += 10; }); docPDF.text("----------------------------------------", 14, y); y += 10; docPDF.text(`Total Amount: ₹${o.finalTotal}`, 14, y); docPDF.save(`Invoice-${orderId.substring(0,6)}.pdf`); }) }
 </script>
 </body>
 </html>
