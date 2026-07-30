@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Admin Orders - Shopline Kerala</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> <!-- NEW -->
   <style>
     body{font-family:Arial; background:#f5f5f5; padding:20px}
     h1{background:#2874f0; color:#fff; padding:15px; border-radius:4px}
@@ -12,54 +13,52 @@
     .item{padding:8px 0; border-bottom:1px dashed #eee}
     .address{margin-top:10px; background:#f9f9f9; padding:10px; border-radius:4px; font-size:14px}
     .total{font-size:18px; font-weight:bold; color:green; text-align:right}
-    .refresh-btn{background:#fb641b; color:#fff; border:none; padding:10px 20px; border-radius:4px; cursor:pointer; margin-bottom:10px}
+    .refresh-btn{background:#fb641b; color:#fff; border:none; padding:10px 20px; border-radius:4px; cursor:pointer; margin-bottom:10px; margin-right:10px}
+    .admin-btn{background:#2874f0; color:#fff; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; margin:3px}
+    .tracking-select{padding:5px; border:1px solid #ddd; border-radius:4px}
   </style>
 </head>
 <body>
-  <h1>📦 Shopline Kerala - All Orders</h1>
+  <h1>📦 Shopline Kerala - All Orders - ADMIN</h1>
   <button class="refresh-btn" onclick="loadOrders()">🔄 Refresh Orders</button>
   <div id="ordersList">Loading orders...</div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script> <!-- CHANGED to compat for update -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
+<script>
+const { jsPDF } = window.jspdf; // NEW
 const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+firebase.initializeApp(firebaseConfig); // CHANGED to compat
+const db = firebase.firestore(); // CHANGED to compat
 
 async function loadOrders() {
   document.getElementById('ordersList').innerHTML = "Loading orders...";
-  const querySnapshot = await getDocs(collection(db, "orders")); // No orderBy
+  const snap = await db.collection("orders").orderBy("createdAt","desc").get();
   const ordersList = document.getElementById('ordersList');
   
-  if(querySnapshot.empty){
+  if(snap.empty){
     ordersList.innerHTML = "<p>No orders yet</p>";
     return;
   }
   
-  let orders = [];
-  querySnapshot.forEach((doc) => {
-    orders.push({id: doc.id, ...doc.data()});
-  });
-  
-  // Sort manually - newest first. Handles missing createdAt
-  orders.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-  
-  ordersList.innerHTML = '';
-  orders.forEach((o) => {
+  let html = '';
+  snap.forEach((doc) => {
+    const o = doc.data();
     const date = o.createdAt ? o.createdAt.toDate().toLocaleString("en-IN") : "Just Now";
+    const tracking = o.trackingStatus || 'Order Received';
+    const status = o.orderStatus || 'new';
     
     let itemsHTML = '';
     o.items.forEach(item => {
       itemsHTML += `<div class="item"><b>${item.name}</b> - Qty:${item.qty} - Size:${item.size} - Color:${item.color} - <b>₹${item.price}</b></div>`;
     });
     
-    ordersList.innerHTML += `
+    html += `
       <div class="order-box">
         <div class="order-header">
-          <div><b>Order ID:</b> ${o.id}<br><b>Date:</b> ${date}</div>
-          <div><span class="status">${o.status || 'New Order'}</span><br><b>Total:</b> ₹${o.finalTotal}</div>
+          <div><b>Order ID:</b> ${doc.id}<br><b>Date:</b> ${date}</div>
+          <div><span class="status">${status}</span><br><b>Total:</b> ₹${o.finalTotal}</div>
         </div>
         <div class="address">
           <b>Customer:</b> ${o.customer.name} | ${o.customer.phone}<br>
@@ -68,12 +67,82 @@ async function loadOrders() {
         </div>
         <h4 style="margin-top:10px">Items:</h4>
         ${itemsHTML}
+        
+        <!-- NEW: TRACKING FOR ADMIN -->
+        <p><b>Tracking:</b> 
+          <select class="tracking-select" onchange="adminUpdateTracking('${doc.id}', this.value)">
+            <option ${tracking==='Order Received'?'selected':''}>Order Received</option>
+            <option ${tracking==='Approved'?'selected':''}>Approved</option>
+            <option ${tracking==='Packed'?'selected':''}>Packed</option>
+            <option ${tracking==='Shipped'?'selected':''}>Shipped</option>
+            <option ${tracking==='Reached Hub'?'selected':''}>Reached Hub</option>
+            <option ${tracking==='Out for Delivery'?'selected':''}>Out for Delivery</option>
+            <option ${tracking==='Delivered'?'selected':''}>Delivered</option>
+          </select>
+        </p>
+
         <p class="total">Product: ₹${o.productTotal} + Shipping: ₹${o.shippingCharge} = ₹${o.finalTotal}</p>
+
+        <!-- NEW: ADMIN ACTIONS -->
+        <div>
+          <button class="admin-btn" onclick="adminApprove('${doc.id}')">Approve</button>
+          <button class="admin-btn" style="background:#ff9800" onclick="adminCancel('${doc.id}')">Cancel</button>
+          <button class="admin-btn" style="background:#9c27b0" onclick="generateInvoice('${doc.id}')">Download Invoice</button>
+        </div>
       </div>
     `;
   });
+  ordersList.innerHTML = html;
 }
 loadOrders();
+
+// NEW: ADMIN FUNCTIONS
+function adminUpdateTracking(id, status){
+  db.collection("orders").doc(id).update({
+    trackingStatus: status,
+    orderStatus: status==='Delivered'?'delivered': status==='Shipped'?'shipped':'approved'
+  }).then(()=> alert('Tracking Updated to: ' + status));
+}
+
+function adminApprove(id){
+  db.collection("orders").doc(id).update({
+    orderStatus: 'approved',
+    trackingStatus: 'Approved'
+  }).then(()=>{ alert('Order Approved'); loadOrders(); });
+}
+
+function adminCancel(id){
+  let reason = prompt("Enter cancellation reason:");
+  if(reason){
+    db.collection("orders").doc(id).update({ status: 'Cancelled', cancelReason: reason }).then(()=>{ alert('Order Cancelled'); loadOrders(); });
+  }
+}
+
+// NEW: INVOICE
+function generateInvoice(orderId){
+  db.collection("orders").doc(orderId).get().then(doc=>{
+    const o = doc.data();
+    const docPDF = new jsPDF();
+    docPDF.setFontSize(18);
+    docPDF.text("Shopline Kerala - Tax Invoice", 105, 20, {align: "center"});
+    docPDF.setFontSize(12);
+    docPDF.text(`Order ID: #${orderId.substring(0,6)}`, 14, 40);
+    docPDF.text(`Customer: ${o.customer.name}`, 14, 50);
+    docPDF.text(`Phone: ${o.customer.phone}`, 14, 60);
+    docPDF.text(`Address: ${o.customer.street}, ${o.customer.district}`, 14, 70);
+    docPDF.text("----------------------------------------", 14, 80);
+    let y = 90;
+    o.items.forEach(item=>{
+      docPDF.text(`${item.name} x ${item.qty}`, 14, y);
+      docPDF.text(`₹${item.price * item.qty}`, 180, y, {align: "right"});
+      y += 10;
+    });
+    docPDF.text("----------------------------------------", 14, y);
+    y += 10;
+    docPDF.text(`Total Amount: ₹${o.finalTotal}`, 14, y);
+    docPDF.save(`Admin-Invoice-${orderId.substring(0,6)}.pdf`);
+  })
+}
 </script>
 </body>
 </html>
