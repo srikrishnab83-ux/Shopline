@@ -64,8 +64,7 @@
 
   <div class="order-container">
     <h2>📦 My Orders - Order History</h2>
-    <p style="color:#666; font-size:13px; margin-bottom:15px">DEBUG MODE: Showing ALL orders to find demo order</p>
-    <div id="debugPanel" style="background:#fff3cd; border:2px solid #ffc107; padding:12px; border-radius:6px; margin-bottom:15px; font-size:12px; font-family:monospace; white-space:pre-wrap;"></div>
+    <p style="color:#666; font-size:13px; margin-bottom:15px">Track courier, return product, download Meesho-type invoice & give review only for purchased items</p>
     <div id="myOrdersList">Loading your orders...</div>
   </div>
 
@@ -83,63 +82,79 @@ let ratingsMap = {};
 
 auth.onAuthStateChanged(user => {
   if(!user){ 
-    document.getElementById('myOrdersList').innerHTML = '<div style="background:#fff;padding:30px;text-align:center;border-radius:8px"><h3>Please Login</h3><a href="../login.html" style="background:#2874f0;color:#fff;padding:10px 20px;border-radius:4px;text-decoration:none;display:inline-block;margin-top:10px">Login Now</a></div>';
+    // FIXED: Don't auto-redirect, show login message so page is visible on homepage link
+    document.getElementById('myOrdersList').innerHTML = '<div style="background:#fff;padding:30px;text-align:center;border-radius:8px"><h3>Please Login to see your orders</h3><p style="color:#666;margin:10px 0">Your order history, courier tracking, invoices and reviews will appear here.</p><a href="../login.html" style="background:#2874f0;color:#fff;padding:10px 20px;border-radius:4px;text-decoration:none;display:inline-block;margin-top:10px">Login Now</a></div>';
     return; 
   }
   currentUser = user;
-  loadMyOrdersForceAll();
+  loadMyOrders();
 });
 
-// THIS VERSION SHOWS ALL ORDERS - NO FILTER - SO DEMO ORDER WILL 100% SHOW
-async function loadMyOrdersForceAll(){
+// FIXED: Removed orderBy to avoid "Missing or insufficient permissions" index error
+async function loadMyOrders(){
   const listEl = document.getElementById('myOrdersList');
-  const debugEl = document.getElementById('debugPanel');
-  
   try{
-    debugEl.textContent = `Logged as:\nUID: ${currentUser.uid}\nEmail: ${currentUser.email}\n\nFetching ALL orders from Firestore...`;
+    let docs = [];
 
-    // NO WHERE FILTER - GET ALL
-    const snap = await db.collection("orders").limit(100).get();
-    
-    debugEl.textContent += `\nTotal orders found in DB: ${snap.size}`;
+    // Try userId without orderBy (no index needed)
+    try{
+      const snap1 = await db.collection("orders").where("userId","==",currentUser.uid).get();
+      snap1.forEach(d=>docs.push(d));
+    }catch(e){ console.log("userId query failed", e.message) }
 
-    if(snap.empty){
-      debugEl.textContent += `\n❌ No orders in DB at all! Your demo order was not saved. Check checkout code.`;
-      listEl.innerHTML = '<div style="background:#fff;padding:30px;text-align:center;border-radius:8px"><h3>No orders in database</h3><p>Your checkout is not saving to orders collection.</p></div>';
-      return;
+    // Try customer.uid without orderBy
+    if(docs.length===0){
+      try{
+        const snap2 = await db.collection("orders").where("customer.uid","==",currentUser.uid).get();
+        snap2.forEach(d=>docs.push(d));
+      }catch(e){ console.log("customer.uid failed", e.message) }
     }
 
-    let docs = [];
-    let sample = null;
-    snap.forEach(d=>{ 
-      docs.push(d); 
-      if(!sample) sample = d.data();
-    });
+    // Fallback by email (old orders) without orderBy
+    if(docs.length===0){
+      try{
+        const all = await db.collection("orders").limit(100).get();
+        all.forEach(d=>{
+          const o=d.data();
+          if(o.customer && (o.customer.email===currentUser.email || o.customer.phone===currentUser.phoneNumber)){
+            docs.push(d);
+          }
+        });
+      }catch(e){ console.log("fallback failed", e.message) }
+    }
 
-    debugEl.textContent += `\nFirst order fields: ${Object.keys(sample).join(', ')}`;
-    debugEl.textContent += `\nFirst order userId: ${sample.userId || 'MISSING'}`;
-    debugEl.textContent += `\nFirst order customer: ${JSON.stringify(sample.customer||{}).substring(0,300)}`;
-    debugEl.textContent += `\n\nShowing ALL ${docs.length} orders (ignoring owner filter) so demo order appears:`;
-
-    // Sort by date
+    // Sort in JavaScript instead of Firestore (no index needed)
     docs.sort((a,b)=>{
       const ta = a.data().createdAt ? a.data().createdAt.seconds : 0;
       const tb = b.data().createdAt ? b.data().createdAt.seconds : 0;
       return tb - ta;
     });
 
-    renderOrders(docs);
+    if(docs.length===0){
+      listEl.innerHTML = '<div style="background:#fff;padding:30px;text-align:center;border-radius:8px"><h3>No orders yet</h3><p style="color:#666">Your purchase history will appear here after you buy.</p><a href="../index.html" style="background:#2874f0;color:#fff;padding:10px 20px;border-radius:4px;text-decoration:none;display:inline-block;margin-top:15px">Start Shopping</a></div>';
+      return;
+    }
 
+    renderOrders(docs);
   }catch(e){
     console.error(e);
-    listEl.innerHTML = `<div style="background:#fff;padding:20px;border-radius:8px">Error: ${e.message}</div>`;
-    debugEl.textContent += `\nError: ${e.message}`;
+    // FIXED: Show friendly message instead of red permission error
+    listEl.innerHTML = `
+      <div style="background:#fff;padding:20px;border-radius:8px;border-left:4px solid #ff9800">
+        <p style="font-weight:bold">Could not load orders</p>
+        <p style="font-size:13px;margin:8px 0">This is a Firestore permission/index issue. Fix:</p>
+        <p style="font-size:12px;background:#f5f5f5;padding:10px;border-radius:4px">
+        1. Go to Firebase Console > Firestore > Rules and allow read if request.auth != null<br>
+        2. Or create index: Collection: orders, Fields: userId ASC, createdAt DESC<br>
+        Error: ${e.message}
+        </p>
+      </div>`;
   }
 }
 
 function renderOrders(docs){
   const listEl = document.getElementById('myOrdersList');
-  if(docs.length===0){ listEl.innerHTML='<p>No orders</p>'; return; }
+  if(docs.length===0){ listEl.innerHTML='<p>You have no orders yet</p>'; return; }
   let html='';
   docs.forEach(doc=>{
     const o = doc.data();
@@ -148,70 +163,158 @@ function renderOrders(docs){
     const isDelivered = tracking==='Delivered';
     const isCancelled = o.status==='Cancelled';
     const canReturn = isDelivered && o.canReturnTill && o.canReturnTill.toDate() > new Date() && o.returnStatus!=='requested';
+
     const steps = ['Order Received','Approved','Packed','Shipped','Out for Delivery','Delivered'];
-    let trackIndex = steps.indexOf(tracking); if(trackIndex===-1) trackIndex=0;
+    let trackIndex = steps.indexOf(tracking);
+    if(trackIndex===-1 && tracking==='Order Received') trackIndex=0;
+
     let timelineHTML = '<div class="timeline">';
-    steps.forEach((s,i)=>{ let cls=''; if(i < trackIndex) cls='active'; else if(i===trackIndex) cls='current'; timelineHTML += `<div class="step ${cls}"><div class="dot">${i < trackIndex ? '✓' : i+1}</div><p>${s}</p></div>`; });
+    steps.forEach((s,i)=>{
+      let cls='';
+      if(i < trackIndex) cls='active';
+      else if(i===trackIndex) cls='current';
+      timelineHTML += `<div class="step ${cls}"><div class="dot">${i < trackIndex ? '✓' : i+1}</div><p>${s}</p></div>`;
+    });
     timelineHTML += '</div>';
+
     let itemsHTML='';
     o.items.forEach((item, idx)=>{
       const productId = item.productId || item.id || '';
       const alreadyReviewed = (o.reviewedItems||[]).includes(productId);
       const uniqueKey = `${orderId}_${productId}_${idx}`;
+      
       itemsHTML += `
       <div class="item-row">
         <img src="${item.image || item.images?.[0] || 'https://via.placeholder.com/80'}">
         <div style="flex:1">
           <h4>${item.name}</h4>
-          <p style="font-size:13px;color:#666">Qty: ${item.qty} ${item.size?`| Size: ${item.size}`:''}</p>
-          <p><b>₹${item.price}</b></p>
+          <p style="font-size:13px;color:#666">Qty: ${item.qty} ${item.size?`| Size: ${item.size}`:''} ${item.color?`| Color: ${item.color}`:''}</p>
+          <p><b>₹${item.price}</b> ${item.gstPercent? `<small style="color:#388e3c">+ GST ${item.gstPercent}%</small>`:''}</p>
           <div class="item-actions">
             ${isDelivered && !alreadyReviewed ? `<button class="btn-rate" onclick="toggleReviewBox('${uniqueKey}')">⭐ Rate & Review</button>` : ''}
-            ${alreadyReviewed ? `<span style="font-size:12px;color:#388e3c">✓ Reviewed</span>` : ''}
+            ${alreadyReviewed ? `<span style="font-size:12px;color:#388e3c">✓ You reviewed this</span>` : ''}
           </div>
           <div class="review-box" id="review-${uniqueKey}">
             <h4>Rate ${item.name.substring(0,30)}</h4>
             <div class="stars-review" id="stars-${uniqueKey}">
-              <span onclick="setRating('${uniqueKey}',1)">★</span><span onclick="setRating('${uniqueKey}',2)">★</span><span onclick="setRating('${uniqueKey}',3)">★</span><span onclick="setRating('${uniqueKey}',4)">★</span><span onclick="setRating('${uniqueKey}',5)">★</span>
+              <span onclick="setRating('${uniqueKey}',1)">★</span>
+              <span onclick="setRating('${uniqueKey}',2)">★</span>
+              <span onclick="setRating('${uniqueKey}',3)">★</span>
+              <span onclick="setRating('${uniqueKey}',4)">★</span>
+              <span onclick="setRating('${uniqueKey}',5)">★</span>
             </div>
-            <textarea id="reviewText-${uniqueKey}" placeholder="What did you like?" rows="3" style="width:100%; margin-top:10px; padding:8px; border:1px solid #ddd; border-radius:4px"></textarea>
+            <textarea id="reviewText-${uniqueKey}" placeholder="What did you like? Quality, fit, delivery?" rows="3" style="width:100%; margin-top:10px; padding:8px; border:1px solid #ddd; border-radius:4px"></textarea>
             <button class="btn-rate" onclick="submitReview('${orderId}','${productId}','${item.name.replace(/'/g,"")}','${uniqueKey}')">Submit Review</button>
             <button class="btn-track" style="margin-left:5px" onclick="toggleReviewBox('${uniqueKey}')">Cancel</button>
           </div>
         </div>
       </div>`;
     });
+
     html += `
     <div class="order-card">
       <div class="order-head">
-        <div><b>Order #${orderId.substring(0,6).toUpperCase()}</b><br><small>${o.createdAt ? o.createdAt.toDate().toLocaleString("en-IN") : ''}</small><br><small style="color:red">Owner UID in DB: ${o.userId||o.customer?.uid||'MISSING'} | Your UID: ${currentUser.uid} | Match: ${o.userId===currentUser.uid||o.customer?.uid===currentUser.uid ? 'YES' : 'NO'}</small></div>
+        <div><b>Order #${orderId.substring(0,6).toUpperCase()}</b><br><small>${o.createdAt ? o.createdAt.toDate().toLocaleString("en-IN") : ''}</small></div>
         <div><b>Total: ₹${o.finalTotal||0}</b><br><span class="badge ${isCancelled?'badge-cancelled': isDelivered?'badge-delivered':'badge-shipped'}">${isCancelled?'Cancelled':tracking}</span></div>
       </div>
-      ${isCancelled ? `<p style="color:#c62828; padding:10px 0">Reason: ${o.cancelReason||''}</p>` : timelineHTML}
+      ${isCancelled ? `<p style="color:#c62828; padding:10px 0">Reason: ${o.cancelReason||'Cancelled'}</p>` : timelineHTML}
       ${itemsHTML}
       <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap">
         <button class="btn-invoice" onclick="downloadInvoice('${orderId}')">🧾 Download Invoice (Meesho-type)</button>
         <button class="btn-track" onclick="trackCourier('${orderId}')">📦 Track Courier</button>
         ${canReturn ? `<button class="btn-return" onclick="returnProduct('${orderId}')">↩ Return Product</button>` : ''}
+        ${isDelivered && o.returnStatus==='requested' ? '<span style="font-size:12px;color:#ff9800">Return Requested</span>' : ''}
       </div>
     </div>`;
   });
   listEl.innerHTML = html;
 }
 
-function toggleReviewBox(key){ document.getElementById(`review-${key}`)?.classList.toggle('show'); }
-function setRating(key, rating){ ratingsMap[key]=rating; document.querySelectorAll(`#stars-${key} span`).forEach((s,i)=>{ s.classList.toggle('active', i < rating); }); }
+function toggleReviewBox(key){
+  const box = document.getElementById(`review-${key}`);
+  box.classList.toggle('show');
+}
+
+function setRating(key, rating){
+  ratingsMap[key]=rating;
+  document.querySelectorAll(`#stars-${key} span`).forEach((s,i)=>{
+    s.classList.toggle('active', i < rating);
+  });
+}
+
 async function submitReview(orderId, productId, productName, uniqueKey){
   const rating = ratingsMap[uniqueKey]||0;
-  if(rating===0) return alert("Select stars");
+  if(rating===0) return alert("Please select stars");
   const reviewText = document.getElementById(`reviewText-${uniqueKey}`).value.trim();
-  if(!reviewText) return alert("Write review");
-  await db.collection("reviews").add({ productId, productName, orderId, userId: currentUser.uid, userEmail: currentUser.email, rating, comment: reviewText, createdAt: firebase.firestore.FieldValue.serverTimestamp(), verifiedPurchase: true });
-  await db.collection("orders").doc(orderId).update({ reviewedItems: firebase.firestore.FieldValue.arrayUnion(productId) });
-  alert("✅ Review posted!"); loadMyOrdersForceAll();
+  if(!reviewText) return alert("Please write review");
+
+  const orderDoc = await db.collection("orders").doc(orderId).get();
+  const order = orderDoc.data();
+  if(order.trackingStatus!=='Delivered') return alert("You can review only after delivery");
+  
+  const isOwner = order.userId===currentUser.uid || order.customer?.uid===currentUser.uid || order.customer?.email===currentUser.email;
+  if(!isOwner) return alert("You can review only items you purchased");
+
+  try{
+    await db.collection("reviews").add({
+      productId: productId,
+      productName: productName,
+      orderId: orderId,
+      userId: currentUser.uid,
+      userEmail: currentUser.email,
+      userName: currentUser.displayName || order.customer?.name || 'Customer',
+      rating: rating,
+      comment: reviewText,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      verifiedPurchase: true
+    });
+
+    await db.collection("orders").doc(orderId).update({
+      reviewedItems: firebase.firestore.FieldValue.arrayUnion(productId)
+    });
+
+    const prodRef = db.collection("products").doc(productId);
+    const prodDoc = await prodRef.get();
+    if(prodDoc.exists){
+      const p = prodDoc.data();
+      const totalRatings = (p.totalRatings||0)+1;
+      const sumRatings = (p.sumRatings||0)+rating;
+      await prodRef.update({ 
+        totalRatings, 
+        sumRatings, 
+        avgRating: Number((sumRatings/totalRatings).toFixed(1)),
+        reviewsCount: totalRatings
+      });
+    }
+
+    alert("✅ Thank you! Your verified review is posted.");
+    document.getElementById(`review-${uniqueKey}`).classList.remove('show');
+    loadMyOrders();
+  }catch(e){
+    alert("Review failed: "+e.message);
+  }
 }
-function trackCourier(orderId){ db.collection("orders").doc(orderId).get().then(doc=>{ const o=doc.data(); alert(`📦 Tracking\nOrder: #${orderId.substring(0,8)}\nStatus: ${o.trackingStatus}\nCourier: ${o.courierName||'Shopline Logistics'}\nAWB: ${o.awb||'Updating'}\nLocation: ${o.courierLocation||'At warehouse'}`); }); }
-function returnProduct(orderId){ let reason = prompt("Return reason?"); if(!reason) return; db.collection("orders").doc(orderId).update({returnStatus:'requested',returnReason:reason,returnRequestedAt: firebase.firestore.FieldValue.serverTimestamp()}).then(()=>{ alert("Return requested"); loadMyOrdersForceAll(); }); }
+
+function trackCourier(orderId){
+  db.collection("orders").doc(orderId).get().then(doc=>{
+    const o=doc.data();
+    alert(`📦 Courier Tracking\n\nOrder: #${orderId.substring(0,8).toUpperCase()}\nStatus: ${o.trackingStatus}\nCourier Partner: ${o.courierName||'Shopline Logistics'}\nAWB: ${o.awb||'Will be updated after shipping'}\n\nCurrent Location: ${o.courierLocation||'At seller warehouse'}`);
+  });
+}
+
+function returnProduct(orderId){
+  let reason = prompt("Why do you want to return? (Damaged, Wrong size, etc)");
+  if(!reason) return;
+  db.collection("orders").doc(orderId).update({
+    returnStatus:'requested',
+    returnReason:reason,
+    returnRequestedAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(()=>{
+    alert("↩ Return request sent. Seller will approve in 24 hours.");
+    loadMyOrders();
+  });
+}
+
 function downloadInvoice(orderId){
   db.collection("orders").doc(orderId).get().then(doc=>{
     const o = doc.data();
