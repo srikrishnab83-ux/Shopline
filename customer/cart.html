@@ -1,9 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><!-- PLAYABLE_TOUCH_PATCH_V1 --><script>
+(function() {
+  if (window.__playableTouchPatchInstalled) return;
+  window.__playableTouchPatchInstalled = true;
+  var origAdd = EventTarget.prototype.addEventListener;
+  var blockedTypes = { touchstart: 1, touchmove: 1, wheel: 1 };
+  EventTarget.prototype.addEventListener = function(type, listener, options) {
+    if (blockedTypes[type]) {
+      if (options === undefined || options === null) {
+        options = { passive: true };
+      } else if (typeof options === 'boolean') {
+        options = { capture: options, passive: true };
+      } else {
+        options = Object.assign({}, options, { passive: true });
+      }
+    }
+    return origAdd.call(this, type, listener, options);
+  };
+})();
+</script><script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your Cart - Shopline Kerala</title>
+  <title>Your Cart - Shopline Kerala - Marketplace Fixed - Admin Only Orders + Seller Tracking</title>
   <link rel="stylesheet" href="../css/style.css">
   <style>
 .container-cart{max-width:1100px; margin:20px auto; display:flex; gap:20px; padding:0 20px}
@@ -15,7 +34,7 @@
 .qty-btn{width:30px; height:30px; border:1px solid #ddd; background:#fff; cursor:pointer; font-size:18px}
 .qty-input{width:40px; text-align:center; border:1px solid #ddd; height:28px}
 .remove-btn{color:#2874f0; border:none; background:none; cursor:pointer; font-weight:bold}
-.checkout-btn{width:100%; padding:12px; background:#fb641b; color:#fff; border:none; font-size:16px; cursor:pointer; border-radius:4px; margin-top:10px}
+.checkout-btn{width:100%; padding:12px; background:#fb641b; color:#fff; border:none; font-size:16px; cursor:pointer; border-radius:4px; margin-top:10px; font-weight:bold}
 .form-group{margin:10px 0}
 .form-group label{font-size:13px; font-weight:bold}
 .form-group input,.form-group textarea{padding:10px; margin-top:5px; border:1px solid #ccc; border-radius:4px; width:95%}
@@ -23,6 +42,7 @@
 .free-tag{color:green; font-weight:bold}
 .policy-box{font-size:13px; color:#555; margin-top:15px; line-height:1.6}
 .back-btn{display:inline-block; margin-bottom:15px; text-decoration:none; color:#2874f0; font-weight:bold; font-size:14px}
+.seller-tracking-badge{background:#e8f5e9; border:1px solid #4caf50; padding:6px 10px; border-radius:20px; font-size:11px; color:#2e7d32; display:inline-block; margin-top:5px}
   @media (max-width: 768px){
    .container-cart{flex-direction: column; padding: 0 10px}
    .cart-items,.price-box{flex: 1; width: 100%}
@@ -35,7 +55,7 @@
   </style>
 </head>
 <body>
-  <div class="top-bar"><p>Delivering across all 14 districts of Kerala | COD Available</p></div>
+  <div class="top-bar"><p>Marketplace Mode: Delivering across all 14 districts of Kerala | All Orders Managed by Main Admin | COD Available</p></div>
   <header class="navbar">
     <div class="container">
       <div class="logo" onclick="location.href='../index.html'" style="cursor:pointer;">Shopline<span>Kerala</span></div>
@@ -47,6 +67,9 @@
     <div class="cart-items">
       <a href="#" onclick="exitAndClearCart()" class="back-btn">← Exit & Clear Cart</a>
       <h2>Shopping Cart (<span id="cartCount">0</span> items)</h2>
+      <div style="background:#fff3cd; padding:10px; border-radius:6px; font-size:12px; margin-bottom:10px; border-left:4px solid #ffc107">
+        <b>Marketplace Info:</b> Products from multiple sellers, but order managed by Main Admin only. Admin will track whose product sold and pay sellers accordingly.
+      </div>
       <div id="cartList">Loading...</div>
 
       <h3 style="margin-top:20px">Customer Details <span class="req">*</span></h3>
@@ -66,27 +89,33 @@
       <div class="policy-box">
         <p><b>🚚 Delivery Time:</b> 2-3 Days for Courier. 5-7 Days for Postal.</p>
         <p><b>💰 COD Available:</b> Cash on Delivery available for all products.</p>
-        <p><b>↩️ Return Policy:</b> 3 Days Easy Return. No questions asked.</p>
+        <p><b>↩️ Return Policy:</b> 3 Days Easy Return. No questions asked. Return Penalty ₹40 paid by product owner seller.</p>
         <p><b>🎁 FREE Shipping:</b> On orders above ₹999</p>
+        <p><b>🏪 Marketplace:</b> Products from multiple contributors, all orders managed by Main Admin - Shopline Kerala</p>
       </div>
     </div>
 
     <div class="price-box">
       <h3>PRICE DETAILS</h3>
       <p>Price (<span id="itemCount">0</span> items) <span id="totalPrice" style="float:right">₹0</span></p>
+      <div id="sellerTrackingInfo" style="margin:10px 0; padding:10px; background:#e3f2fd; border-radius:6px; font-size:11px; display:none">
+        <b>Seller Tracking (For Admin Payment):</b>
+        <div id="sellerTrackingList"></div>
+      </div>
       <h4 style="margin-top:15px">Choose Shipping</h4>
       <label style="display:block; border:1px solid #ddd; padding:10px; margin:8px 0; border-radius:4px"><input type="radio" name="shipping" value="60" checked onchange="updateTotal()"> Courier - ₹60 - 2-3 Days</label>
       <label style="display:block; border:1px solid #ddd; padding:10px; margin:8px 0; border-radius:4px"><input type="radio" name="shipping" value="40" onchange="updateTotal()"> India Post - ₹40 - 5-7 Days</label>
       <p>Shipping Charges <span id="shipCharge" style="float:right">₹60</span></p>
       <hr>
       <h3>Total Amount <span id="finalTotal" style="float:right">₹0</span></h3>
-      <button class="checkout-btn" onclick="checkout()">Place Order</button>
+      <button class="checkout-btn" onclick="checkout()">Place Order - To Main Admin</button>
+      <p style="font-size:11px; color:#666; margin-top:8px; text-align:center">Order goes to Main Admin only. Admin tracks whose product sold and pays sellers.</p>
     </div>
   </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"; // ADDED Timestamp
+import { getFirestore, collection, addDoc, serverTimestamp, Timestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
@@ -97,33 +126,69 @@ const auth = getAuth(app);
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let productTotal = 0;
 let currentUserId = null;
+let currentUserEmail = null;
+
+// MAIN ADMIN - All orders go to this admin only
+const ADMIN_UID = "c3yryIVuoCWpHHEUNAYZAV9pwVq1";
+const ADMIN_EMAIL = "srikrishnab83@gmail.com";
 
 onAuthStateChanged(auth, (user) => {
   if(user){
     currentUserId = user.uid;
+    currentUserEmail = user.email;
   } else {
     alert("Please login to place order");
     window.location.href = '../index.html';
   }
 });
 
-function loadCart() {
+async function getSellerInfo(sellerId) {
+  try {
+    const docSnap = await getDoc(doc(db, "sellers", sellerId));
+    if(docSnap.exists()){
+      return docSnap.data();
+    }
+  } catch(e){}
+  return { sellerName: sellerId.substring(0,6), sellerWhatsapp: "N/A", sellerContact: "N/A" };
+}
+
+async function loadCart() {
   const cartList = document.getElementById('cartList');
+  const sellerTrackingInfo = document.getElementById('sellerTrackingInfo');
+  const sellerTrackingList = document.getElementById('sellerTrackingList');
+  
   if(cart.length === 0){
     cartList.innerHTML = '<p>Your cart is empty. <a href="../index.html">Shop Now</a></p>';
     document.getElementById('cartCount').innerText = 0;
+    sellerTrackingInfo.style.display = 'none';
     updateTotal();
     return;
   }
   cartList.innerHTML = '';
   productTotal = 0;
   let totalQty = 0;
+  let sellerMap = {}; // Track which seller's products
 
-  cart.forEach((item, i) => {
+  for (let i = 0; i < cart.length; i++) {
+    let item = cart[i];
     item.qty = item.qty || 1;
     const itemTotal = Number(item.price) * item.qty;
     productTotal += itemTotal;
     totalQty += item.qty;
+
+    // Ensure sellerId exists
+    const sellerId = item.sellerId || item.originalSellerId || "unknown";
+    if(!sellerMap[sellerId]) sellerMap[sellerId] = { count: 0, total: 0, name: item.sellerName || sellerId.substring(0,8) };
+    sellerMap[sellerId].count += item.qty;
+    sellerMap[sellerId].total += itemTotal;
+
+    // Try to get seller name if available
+    if(item.sellerId && !item.sellerName) {
+      getSellerInfo(item.sellerId).then(sinfo => {
+        sellerMap[item.sellerId].name = sinfo.sellerName || sinfo.name || item.sellerId.substring(0,8);
+        updateSellerTrackingDisplay(sellerMap);
+      });
+    }
 
     cartList.innerHTML += `
       <div class="cart-item">
@@ -131,7 +196,8 @@ function loadCart() {
         <div style="flex:1">
           <h4>${item.name}</h4>
           <p>Size: <b>${item.size || 'N/A'}</b> | Color: <b>${item.color || 'N/A'}</b></p>
-          <p><b>₹${Number(item.price).toLocaleString()}</b></p>
+          <p><b>₹${Number(item.price).toLocaleString()}</b> x ${item.qty} = ₹${itemTotal.toLocaleString()}</p>
+          <div class="seller-tracking-badge">Product Belongs To: ${item.sellerName || sellerId.substring(0,8)} (Seller ID: ${sellerId.substring(0,8)}) - For Admin Payment Tracking</div>
           <div class="qty-box">
             <button class="qty-btn" onclick="updateQty(${i}, -1)">-</button>
             <input class="qty-input" value="${item.qty}" readonly>
@@ -141,11 +207,28 @@ function loadCart() {
         </div>
       </div>
     `;
-  });
+  }
 
   document.getElementById('cartCount').innerText = totalQty;
   document.getElementById('itemCount').innerText = totalQty;
   updateTotal();
+  updateSellerTrackingDisplay(sellerMap);
+}
+
+function updateSellerTrackingDisplay(sellerMap) {
+  const sellerTrackingInfo = document.getElementById('sellerTrackingInfo');
+  const sellerTrackingList = document.getElementById('sellerTrackingList');
+  
+  if(Object.keys(sellerMap).length > 0) {
+    sellerTrackingInfo.style.display = 'block';
+    let html = '';
+    for(let sid in sellerMap) {
+      const s = sellerMap[sid];
+      html += `<div>• ${s.name} (ID: ${sid.substring(0,8)}): ${s.count} items, ₹${s.total.toLocaleString()} - Payment due to this seller after sale</div>`;
+    }
+    html += `<div style="margin-top:8px; font-weight:bold; color:#d32f2f">All orders go to Main Admin (${ADMIN_EMAIL}) only. Admin will pay above sellers based on whose product sold.</div>`;
+    sellerTrackingList.innerHTML = html;
+  }
 }
 
 window.updateQty = function(index, change){
@@ -174,13 +257,13 @@ window.removeItem = function(index){
 }
 
 window.checkout = async function(){
-  const name = document.getElementById('custName').value;
-  const phone = document.getElementById('custPhone').value;
-  const street = document.getElementById('custStreet').value;
-  const district = document.getElementById('custDistrict').value;
-  const state = document.getElementById('custState').value;
-  const pincode = document.getElementById('custPincode').value;
-  const landmark = document.getElementById('custLandmark').value;
+  const name = document.getElementById('custName').value.trim();
+  const phone = document.getElementById('custPhone').value.trim();
+  const street = document.getElementById('custStreet').value.trim();
+  const district = document.getElementById('custDistrict').value.trim();
+  const state = document.getElementById('custState').value.trim();
+  const pincode = document.getElementById('custPincode').value.trim();
+  const landmark = document.getElementById('custLandmark').value.trim();
 
   if(!name ||!phone ||!street ||!district ||!pincode) return alert('Please fill all * required fields');
   if(phone.length!== 10) return alert('Enter 10 digit mobile number');
@@ -188,30 +271,121 @@ window.checkout = async function(){
   if(cart.length === 0) return alert('Cart is empty');
   if(!currentUserId) return alert('Please login to place order');
 
-  let shippingCharge = productTotal > 999? 0 : parseInt(document.querySelector('input[name="shipping"]:checked').value);
-  let sellerIds = [...new Set(cart.map(item => item.sellerId).filter(id => id))];
+  // Disable button to prevent double order
+  const btn = document.querySelector('.checkout-btn');
+  btn.innerText = 'Placing Order...';
+  btn.disabled = true;
 
-  // NEW: 3 Day Return Window
-  let returnDate = new Date();
-  returnDate.setDate(returnDate.getDate() + 3);
+  try {
+    let shippingCharge = productTotal > 999? 0 : parseInt(document.querySelector('input[name="shipping"]:checked').value);
+    
+    // CONTRIBUTOR MARKETPLACE LOGIC
+    // 1. Collect original sellerIds (whose product sold) - for tracking & payment
+    let originalSellerIds = [...new Set(cart.map(item => item.sellerId || item.originalSellerId).filter(id => id && id !== "unknown"))];
+    
+    // 2. Collect seller details for tracking
+    let sellerDetails = [];
+    for(let sid of originalSellerIds) {
+      try {
+        const sinfo = await getSellerInfo(sid);
+        sellerDetails.push({
+          sellerId: sid,
+          sellerName: sinfo.sellerName || sinfo.name || sid.substring(0,8),
+          sellerWhatsapp: sinfo.sellerWhatsapp || sinfo.whatsapp || "N/A",
+          sellerContact: sinfo.sellerContact || sinfo.contact || "N/A",
+          sellerUpiId: sinfo.sellerUpiId || sinfo.upiId || "N/A"
+        });
+      } catch(e) {
+        sellerDetails.push({ sellerId: sid, sellerName: sid.substring(0,8), sellerWhatsapp: "N/A" });
+      }
+    }
 
-  await addDoc(collection(db, "orders"), {
-    userId: currentUserId, // FIXED: was customerId. Now order.html will work
-    customer: {name, phone, street, district, state, pincode, landmark},
-    items: cart,
-    sellerIds: sellerIds,
-    productTotal, shippingCharge, finalTotal: productTotal + shippingCharge,
-    status: "New Order", 
-    orderStatus: "new", // NEW: for dashboard
-    trackingStatus: "Order Received", // NEW: for timeline
-    returnStatus: "none",
-    canReturnTill: Timestamp.fromDate(returnDate), // NEW: 3 days return
-    createdAt: serverTimestamp()
-  });
+    // 3. All orders go to MAIN ADMIN ONLY - Contributor mode
+    let sellerIds = [ADMIN_UID]; // Only admin gets order - NOT contributors
 
-  alert(`Order Placed Successfully! Total: ₹${productTotal + shippingCharge}`);
-  localStorage.removeItem('cart');
-  window.location.href = '../customer/order.html'; // CHANGED: Go to Orders page directly
+    // 4. Enhance cart items with tracking fields - ensure each item has seller tracking
+    let enhancedItems = cart.map(item => ({
+      ...item,
+      sellerId: item.sellerId || item.originalSellerId || "unknown",
+      originalSellerId: item.sellerId || item.originalSellerId || "unknown",
+      sellerName: item.sellerName || sellerDetails.find(s => s.sellerId === (item.sellerId || ""))?.sellerName || (item.sellerId || "").substring(0,8),
+      productId: item.id || item.productId || "",
+      // Keep price, name, qty, image, size, color as is
+    }));
+
+    // 5. 3 Day Return Window
+    let returnDate = new Date();
+    returnDate.setDate(returnDate.getDate() + 3);
+
+    // 6. Create order with BOTH fields - sellerIds (only admin) + originalSellerIds (for tracking whose product sold)
+    let orderData = {
+      // Customer info
+      userId: currentUserId,
+      customerId: currentUserId,
+      customerEmail: currentUserEmail || "",
+      customer: {name, phone, street, district, state, pincode, landmark},
+      
+      // Items with seller tracking
+      items: enhancedItems,
+      
+      // IMPORTANT: Contributor Marketplace Fields
+      sellerIds: sellerIds, // Only admin UID - so only admin sees order in dashboard
+      originalSellerIds: originalSellerIds, // Whose products sold - for payment tracking & top sellers
+      sellerDetails: sellerDetails, // Detailed seller info for admin to pay
+      
+      // Pricing
+      productTotal, 
+      shippingCharge, 
+      finalTotal: productTotal + shippingCharge,
+      
+      // Status
+      status: "New Order", 
+      orderStatus: "new",
+      trackingStatus: "Order Received",
+      returnStatus: "none",
+      canReturnTill: Timestamp.fromDate(returnDate),
+      
+      // Admin tracking
+      marketplaceType: "contributor_marketplace",
+      adminId: ADMIN_UID,
+      adminEmail: ADMIN_EMAIL,
+      
+      // Timestamps
+      createdAt: serverTimestamp(),
+      createdAtReadable: new Date().toISOString()
+    };
+
+    console.log("Placing order with contributor tracking:", orderData);
+    
+    const docRef = await addDoc(collection(db, "orders"), orderData);
+
+    // Also create notification for admin
+    try {
+      await addDoc(collection(db, "notifications"), {
+        recipientId: ADMIN_UID,
+        recipientType: "admin",
+        sellerId: ADMIN_UID,
+        orderId: docRef.id,
+        message: `New Order #${docRef.id.substring(0,6)} from ${name} - Products from sellers: ${originalSellerIds.map(id => id.substring(0,6)).join(", ")} - Amount ₹${productTotal + shippingCharge}`,
+        type: "new_order",
+        read: false,
+        createdAt: serverTimestamp(),
+        originalSellerIds: originalSellerIds,
+        sellerDetails: sellerDetails
+      });
+    } catch(e) { console.log("Notification error", e); }
+
+    alert(`Order Placed Successfully!\nOrder ID: #${docRef.id.substring(0,6)}\nTotal: ₹${productTotal + shippingCharge}\n\nMarketplace Info: Your order goes to Main Admin (Shopline Kerala). Admin tracks whose products sold and pays contributors.\nProducts from sellers: ${sellerDetails.map(s => s.sellerName).join(", ")}`);
+    
+    localStorage.removeItem('cart');
+    window.location.href = '../customer/order.html';
+    
+  } catch(error) {
+    console.error("Order error:", error);
+    alert("Order failed: " + error.message);
+    btn.innerText = 'Place Order - To Main Admin';
+    btn.disabled = false;
+  }
 }
 
 window.exitAndClearCart = function(){
