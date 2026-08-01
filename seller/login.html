@@ -3,388 +3,318 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - Shopline Kerala - Buyer Only Public</title>
+  <title>My Orders - Shopline Kerala - Fixed Login 404</title>
   <link rel="stylesheet" href="../css/style.css">
   <style>
-body{background:#f5f7fb; margin:0; font-family:Arial, sans-serif}
-.login-wrapper{min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px}
-.login-card{background:#fff; width:100%; max-width:400px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.08); padding:30px 25px; text-align:center}
-.logo-title{color:#2874f0; font-size:22px; font-weight:bold; margin-bottom:20px}
-.tabs{display:flex; gap:0; margin-bottom:20px; border-bottom:1px solid #eee; position:relative}
-.tab{flex:1; padding:12px; cursor:pointer; font-size:14px; font-weight:bold; color:#666; border-bottom:3px solid transparent; background:none; border-left:none; border-right:none; border-top:none}
-.tab.active{color:#2874f0; border-bottom:3px solid #2874f0}
-.tab.seller-tab{display:none !important} /* Hidden for public by default */
-.tab.seller-tab.show{display:block !important; flex:1}
-.form-group{text-align:left; margin-bottom:15px}
-.form-group label{font-size:13px; font-weight:bold; display:block; margin-bottom:6px; color:#333}
-.form-group input{width:100%; padding:12px; border:1px solid #ddd; border-radius:6px; font-size:14px; box-sizing:border-box}
-.form-group input:focus{border-color:#2874f0; outline:none}
-.btn-login{width:100%; padding:12px; background:#fb641b; color:#fff; border:none; border-radius:6px; font-size:15px; font-weight:bold; cursor:pointer; margin-top:10px}
-.btn-login:hover{background:#e55a17}
-.toggle-link{margin-top:15px; font-size:13px; color:#2874f0; cursor:pointer; display:inline-block; text-decoration:none}
-.toggle-link:hover{text-decoration:underline}
-.divider{margin:15px 0; border-top:1px solid #eee; position:relative}
-.divider span{position:absolute; top:-8px; left:50%; transform:translateX(-50%); background:#fff; padding:0 10px; font-size:11px; color:#999}
-.form-switch{display:none}
-.form-switch.active{display:block}
-.admin-hint{font-size:10px; color:#999; margin-top:20px}
-.error-msg{background:#ffebee; color:#d32f2f; padding:10px; border-radius:6px; font-size:12px; margin-bottom:15px; display:none; text-align:left}
-.success-msg{background:#e8f5e9; color:#2e7d32; padding:10px; border-radius:6px; font-size:12px; margin-bottom:15px; display:none; text-align:left}
+.container{max-width:900px; margin:20px auto; padding:0 15px}
+.order-card{background:#fff; border-radius:8px; padding:15px; margin-bottom:15px; box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+.order-header{display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:10px}
+.order-timeline{display:flex; justify-content:space-between; margin:15px 0; position:relative}
+.order-timeline::before{content:''; position:absolute; top:15px; left:5%; width:90%; height:2px; background:#eee; z-index:0}
+.timeline-step{flex:1; text-align:center; position:relative; z-index:1}
+.timeline-step .circle{width:30px; height:30px; border-radius:50%; background:#eee; display:flex; align-items:center; justify-content:center; margin:0 auto 5px; font-size:12px; border:2px solid #ddd}
+.timeline-step.active .circle{background:#2874f0; color:#fff; border-color:#2874f0}
+.timeline-step.completed .circle{background:#388e3c; color:#fff; border-color:#388e3c}
+.timeline-step p{font-size:11px; margin:0}
+.item-row{display:flex; gap:10px; margin:10px 0; align-items:center}
+.item-row img{width:60px; height:60px; object-fit:cover; border-radius:4px; border:1px solid #eee}
+.btn-invoice{background:#7b1fa2; color:#fff; border:none; padding:8px 14px; border-radius:4px; cursor:pointer; font-size:12px; margin-right:8px}
+.btn-track{background:#fff; color:#2874f0; border:1px solid #2874f0; padding:8px 14px; border-radius:4px; cursor:pointer; font-size:12px}
+.btn-review{background:#ff9800; color:#fff; border:none; padding:8px 14px; border-radius:4px; cursor:pointer; font-size:12px; margin-top:8px}
+.badge-status{padding:4px 10px; border-radius:12px; font-size:11px; font-weight:bold}
+.badge-received{background:#e3f2fd; color:#1565c0}
+.badge-shipped{background:#fff3e0; color:#e65100}
+.badge-delivered{background:#e8f5e9; color:#2e7d32}
+.badge-no-return{background:#ffebee; color:#d32f2f; padding:3px 8px; border-radius:10px; font-size:10px; border:1px solid #ffcdd2}
+.badge-return-ok{background:#e8f5e9; color:#2e7d32; padding:3px 8px; border-radius:10px; font-size:10px; border:1px solid #c8e6c9}
+.login-box{background:#fff; padding:30px; border-radius:8px; text-align:center; margin-top:30px}
+.btn-login{background:#2874f0; color:#fff; border:none; padding:10px 20px; border-radius:4px; cursor:pointer; font-size:14px; font-weight:bold; margin-top:15px; display:inline-block; text-decoration:none; margin-right:8px}
+.btn-login-secondary{background:#fff; color:#2874f0; border:1px solid #2874f0; padding:10px 20px; border-radius:4px; cursor:pointer; font-size:14px; font-weight:bold; margin-top:15px; display:inline-block; text-decoration:none}
   </style>
 </head>
 <body>
-  <div class="login-wrapper">
-    <div class="login-card">
-      <div class="logo-title">Shopline Kerala</div>
-      
-      <div class="tabs" id="mainTabs">
-        <button class="tab active" id="buyTab" onclick="switchMainTab('buy')">I want to Buy</button>
-        <button class="tab seller-tab" id="sellTab" onclick="switchMainTab('sell')">I want to Sell</button>
+  <div class="top-bar"><p>Delivering across all 14 districts of Kerala | My Orders</p></div>
+  <header class="navbar">
+    <div class="container" style="display:flex; justify-content:space-between; align-items:center; max-width:100%">
+      <div class="logo" onclick="goHome()" style="cursor:pointer">Shopline<span>Kerala</span></div>
+      <a href="#" onclick="goHome()" style="color:#fff; text-decoration:none">← Home</a>
+    </div>
+  </header>
+
+  <div class="container">
+    <h2 style="margin:20px 0">📦 My Orders - Order History</h2>
+    <p style="font-size:12px; color:#666; margin-bottom:15px">Track courier, return product, download invoice & give review only for purchased items</p>
+    
+    <div id="ordersList">Loading orders...</div>
+    <div id="loginPrompt" style="display:none" class="login-box">
+      <h3>Please Login to see your orders</h3>
+      <p style="color:#666; font-size:13px; margin-top:8px">Your order history, courier tracking, invoices and reviews will appear here.</p>
+      <div style="margin-top:15px">
+        <a href="#" id="loginBtnPrimary" class="btn-login" onclick="handleSmartLogin(event)">Login Now</a>
+        <a href="#" onclick="goHome()" class="btn-login-secondary">Go to Home</a>
       </div>
-
-      <div id="errorMsg" class="error-msg"></div>
-      <div id="successMsg" class="success-msg"></div>
-
-      <!-- BUYER LOGIN FORM -->
-      <div id="buyLoginForm" class="form-switch active">
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="buyLoginEmail" placeholder="Enter your email" oninput="checkAdminEmail(this.value)">
-        </div>
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" id="buyLoginPassword" placeholder="Min 6 characters">
-        </div>
-        <button class="btn-login" onclick="loginBuyer()">Login as Buyer</button>
-        <div style="margin-top:12px">
-          <a class="toggle-link" onclick="showBuySignup()">New customer? Create Account</a>
-        </div>
-        <div class="divider"><span>OR</span></div>
-        <a class="toggle-link" href="../index.html">← Continue as Guest</a>
-      </div>
-
-      <!-- BUYER SIGNUP FORM -->
-      <div id="buySignupForm" class="form-switch">
-        <div class="form-group">
-          <label>Full Name</label>
-          <input type="text" id="buySignupName" placeholder="Enter full name">
-        </div>
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="buySignupEmail" placeholder="Enter email" oninput="checkAdminEmail(this.value)">
-        </div>
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" id="buySignupPassword" placeholder="Min 6 characters">
-        </div>
-        <div class="form-group">
-          <label>Confirm Password</label>
-          <input type="password" id="buySignupConfirm" placeholder="Confirm password">
-        </div>
-        <button class="btn-login" onclick="signupBuyer()">Create Account</button>
-        <div style="margin-top:12px">
-          <a class="toggle-link" onclick="showBuyLogin()">Already have account? Login</a>
-        </div>
-      </div>
-
-      <!-- SELLER LOGIN FORM - Hidden for public, only admin sees -->
-      <div id="sellLoginForm" class="form-switch">
-        <div style="background:#fff3cd; padding:10px; border-radius:6px; font-size:11px; margin-bottom:15px; border-left:4px solid #ffc107; text-align:left">
-          <b>🔐 Seller Access - Admin Only</b><br>
-          This is for sellers/contributors. Currently hidden for public. Only main admin can see this.
-        </div>
-        <div class="form-group">
-          <label>Seller Email</label>
-          <input type="email" id="sellLoginEmail" placeholder="Seller email" value="srikrishnab83@gmail.com">
-        </div>
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" id="sellLoginPassword" placeholder="Min 6 characters">
-        </div>
-        <button class="btn-login" style="background:#2874f0" onclick="loginSeller()">Login as Seller</button>
-        <div style="margin-top:12px">
-          <a class="toggle-link" onclick="showSellSignup()">New seller? Create Seller Account</a>
-        </div>
-        <div style="margin-top:10px">
-          <a class="toggle-link" onclick="switchMainTab('buy')">← Back to Buyer Login</a>
-        </div>
-      </div>
-
-      <!-- SELLER SIGNUP FORM -->
-      <div id="sellSignupForm" class="form-switch">
-        <div class="form-group">
-          <label>Full Name</label>
-          <input type="text" id="sellSignupName" placeholder="Seller full name">
-        </div>
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="sellSignupEmail" placeholder="Seller email">
-        </div>
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" id="sellSignupPassword" placeholder="Min 6 characters">
-        </div>
-        <div class="form-group">
-          <label>Confirm Password</label>
-          <input type="password" id="sellSignupConfirm" placeholder="Confirm password">
-        </div>
-        <button class="btn-login" style="background:#2874f0" onclick="signupSeller()">Create Seller Account</button>
-        <div style="margin-top:12px">
-          <a class="toggle-link" onclick="showSellLogin()">Already seller? Login</a>
-        </div>
-      </div>
-
-      <div class="admin-hint" id="adminHint">Buyer login only. Seller login hidden for public.</div>
+      <p style="font-size:11px; color:#999; margin-top:15px; background:#fff3cd; padding:8px; border-radius:4px">
+        ⚠️ If you see 404, GitHub Pages path issue. Click "Go to Home" → Login from home page → Then come back here. This fixed version will auto-find correct login path.
+      </p>
+      <div id="debugPath" style="font-size:10px; color:#999; margin-top:10px; text-align:left; background:#f5f5f5; padding:8px; border-radius:4px"></div>
     </div>
   </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, query, where, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
-const ADMIN_EMAILS = ["srikrishnab83@gmail.com"];
-const ADMIN_UIDS = ["c3yryIVuoCWpHHEUNAYZAV9pwVq1"];
+let currentUser = null;
 
-let currentMainTab = 'buy';
-
-// Check URL for admin access ?admin=1 or ?seller=1 or ?mode=seller
-const urlParams = new URLSearchParams(window.location.search);
-if(urlParams.get('admin') === '1' || urlParams.get('seller') === '1' || urlParams.get('mode') === 'seller') {
-  document.getElementById('sellTab').classList.add('show');
-  document.getElementById('adminHint').innerText = '🔓 Admin mode: Seller tab visible via ?admin=1';
+// SMART PATH DETECTION FOR GITHUB PAGES
+function getPossibleLoginPaths() {
+  const origin = window.location.origin;
+  const pathname = window.location.pathname;
+  const currentDir = pathname.substring(0, pathname.lastIndexOf('/'));
+  
+  // For GitHub Pages srikrishnab83-ux.github.io - could be root or repo subfolder
+  // Try all possible login locations
+  const paths = [
+    // Absolute from origin
+    origin + '/seller/login.html',
+    origin + '/login.html',
+    origin + '/buyer/login.html',
+    origin + '/customer/login.html',
+    
+    // Relative from current
+    '../seller/login.html',
+    '../login.html',
+    './seller/login.html',
+    './login.html',
+    'seller/login.html',
+    'login.html',
+    
+    // One level up + seller
+    currentDir + '/seller/login.html',
+    currentDir + '/../seller/login.html',
+    
+    // Root index with login modal
+    origin + '/index.html',
+    '../index.html',
+    './index.html',
+    origin + '/'
+  ];
+  
+  // Remove duplicates
+  return [...new Set(paths)];
 }
 
-// Check if admin email typed, then show seller tab
-window.checkAdminEmail = function(email) {
-  const lower = email.toLowerCase().trim();
-  if(ADMIN_EMAILS.includes(lower)) {
-    document.getElementById('sellTab').classList.add('show');
-    document.getElementById('adminHint').innerText = '✅ Admin email detected - Seller tab unlocked';
-    document.getElementById('adminHint').style.color = '#2e7d32';
-    document.getElementById('adminHint').style.fontWeight = 'bold';
+function showDebugInfo() {
+  const debugDiv = document.getElementById('debugPath');
+  if(!debugDiv) return;
+  const paths = getPossibleLoginPaths();
+  debugDiv.innerHTML = `<b>Debug - Current URL:</b> ${window.location.href}<br><b>Trying login paths:</b><br>${paths.slice(0,6).join('<br>')}`;
+}
+
+window.goHome = function() {
+  // Smart go home - try to find index.html
+  const origin = window.location.origin;
+  // Try to go to root index
+  if(window.location.pathname.includes('/customer/') || window.location.pathname.includes('/buyer/') || window.location.pathname.includes('/seller/')) {
+    window.location.href = '../index.html';
   } else {
-    // Keep hidden for non-admin, unless ?admin=1 in URL
-    if(!urlParams.get('admin') && !urlParams.get('seller') && urlParams.get('mode') !== 'seller') {
-      // Don't hide if already in seller tab
-      if(currentMainTab !== 'sell') {
-        document.getElementById('sellTab').classList.remove('show');
-        document.getElementById('adminHint').innerText = 'Buyer login only. Seller login hidden for public.';
-        document.getElementById('adminHint').style.color = '#999';
-      }
-    }
+    window.location.href = origin + '/index.html';
   }
 }
 
-window.switchMainTab = function(tab) {
-  currentMainTab = tab;
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.form-switch').forEach(f => f.classList.remove('active'));
+window.handleSmartLogin = async function(e) {
+  e.preventDefault();
+  localStorage.setItem('redirectAfterLogin', 'orders');
   
-  if(tab === 'buy') {
-    document.getElementById('buyTab').classList.add('active');
-    document.getElementById('buyLoginForm').classList.add('active');
-  } else if(tab === 'sell') {
-    // Only allow if admin or ?admin=1
-    const isAdminVisible = document.getElementById('sellTab').classList.contains('show');
-    if(!isAdminVisible) {
-      showError("Seller login is currently disabled for public. Only main admin can access.");
+  const btn = document.getElementById('loginBtnPrimary');
+  btn.innerText = 'Finding login page...';
+  btn.disabled = true;
+  
+  showDebugInfo();
+  
+  const paths = getPossibleLoginPaths();
+  
+  // Try to find which login path actually exists by trying to fetch
+  // Since GitHub Pages doesn't allow HEAD check easily due to CORS, we try sequential redirect with fallback
+  // First try the most likely: ../seller/login.html
+  const mostLikely = [
+    '../seller/login.html',
+    './seller/login.html',
+    'seller/login.html',
+    '/seller/login.html',
+    '../login.html',
+    '../index.html'
+  ];
+  
+  // Try first path immediately
+  let loginFound = false;
+  for(let path of mostLikely) {
+    try {
+      // For GitHub Pages, we can't reliably check existence via fetch due to CORS and 404 page returns 200 sometimes
+      // So we try to navigate and set a fallback timer
+      console.log("Trying login path:", path);
+      window.location.href = path;
+      loginFound = true;
+      break;
+    } catch(err) {
+      console.log("Path failed:", path, err);
+      continue;
+    }
+  }
+  
+  // Fallback: if still on same page after 2 seconds, go to home
+  setTimeout(() => {
+    if(!loginFound || window.location.href.includes('order') || document.title.includes('My Orders')) {
+      console.log("Login paths failed, going to home");
+      window.location.href = '../index.html';
+    }
+  }, 2000);
+}
+
+onAuthStateChanged(auth, async (user) => {
+  if(user){
+    currentUser = user;
+    document.getElementById('loginPrompt').style.display = 'none';
+    loadOrders();
+  } else {
+    document.getElementById('ordersList').innerHTML = '';
+    document.getElementById('loginPrompt').style.display = 'block';
+    showDebugInfo();
+  }
+});
+
+async function loadOrders() {
+  const listDiv = document.getElementById('ordersList');
+  listDiv.innerHTML = 'Loading your orders...';
+  
+  try {
+    const q = query(collection(db, "orders"), where("userId", "==", currentUser.uid));
+    const snap = await getDocs(q);
+    
+    if(snap.empty) {
+      listDiv.innerHTML = '<div style="background:#fff; padding:20px; border-radius:8px; text-align:center">No orders yet. <a href="#" onclick="goHome()">Shop Now</a></div>';
       return;
     }
-    document.getElementById('sellTab').classList.add('active');
-    document.getElementById('sellLoginForm').classList.add('active');
-  }
-}
 
-window.showBuyLogin = function() {
-  document.querySelectorAll('.form-switch').forEach(f => f.classList.remove('active'));
-  document.getElementById('buyLoginForm').classList.add('active');
-  clearMessages();
-}
-window.showBuySignup = function() {
-  document.querySelectorAll('.form-switch').forEach(f => f.classList.remove('active'));
-  document.getElementById('buySignupForm').classList.add('active');
-  clearMessages();
-}
-window.showSellLogin = function() {
-  document.querySelectorAll('.form-switch').forEach(f => f.classList.remove('active'));
-  document.getElementById('sellLoginForm').classList.add('active');
-  clearMessages();
-}
-window.showSellSignup = function() {
-  document.querySelectorAll('.form-switch').forEach(f => f.classList.remove('active'));
-  document.getElementById('sellSignupForm').classList.add('active');
-  clearMessages();
-}
+    let orders = [];
+    snap.forEach(doc => orders.push({ id: doc.id, ...doc.data() }));
+    orders.sort((a,b) => (b.createdAt?.seconds||0) - (a.createdAt?.seconds||0));
 
-function showError(msg) {
-  const el = document.getElementById('errorMsg');
-  el.innerText = msg;
-  el.style.display = 'block';
-  document.getElementById('successMsg').style.display = 'none';
-  setTimeout(() => el.style.display = 'none', 4000);
-}
-function showSuccess(msg) {
-  const el = document.getElementById('successMsg');
-  el.innerText = msg;
-  el.style.display = 'block';
-  document.getElementById('errorMsg').style.display = 'none';
-}
-function clearMessages() {
-  document.getElementById('errorMsg').style.display = 'none';
-  document.getElementById('successMsg').style.display = 'none';
-}
+    let html = '';
+    for(let order of orders) {
+      const orderIdShort = order.id.substring(0,6).toUpperCase();
+      const dateStr = order.createdAt ? new Date(order.createdAt.seconds*1000).toLocaleString() : '';
+      const total = order.finalTotal || 0;
+      const tracking = order.trackingStatus || 'Order Received';
+      
+      const steps = ['Order Received', 'Approved', 'Packed', 'Shipped', 'Out for Delivery', 'Delivered'];
+      let currentStepIndex = steps.indexOf(tracking);
+      if(currentStepIndex === -1) currentStepIndex = 0;
 
-// BUYER LOGIN
-window.loginBuyer = async function() {
-  const email = document.getElementById('buyLoginEmail').value.trim();
-  const password = document.getElementById('buyLoginPassword').value;
-  if(!email || !password) return showError("Enter email and password");
-  
-  try {
-    const cred = await signInWithEmailAndPassword(auth, email, password);
-    showSuccess("✅ Login successful! Redirecting...");
-    // Check if admin
-    if(ADMIN_EMAILS.includes(email.toLowerCase())) {
-      // Admin buyer login goes to seller dashboard
-      setTimeout(() => window.location.href = 'dashboard.html', 1000);
-    } else {
-      // Normal buyer goes to home or orders
-      const redirect = localStorage.getItem('redirectAfterLogin');
-      if(redirect === 'cart') {
-        setTimeout(() => window.location.href = '../buyer/cart.html', 1000);
-      } else if(redirect === 'orders') {
-        setTimeout(() => window.location.href = '../customer/order.html', 1000);
-      } else {
-        setTimeout(() => window.location.href = '../index.html', 1000);
+      let timelineHtml = '<div class="order-timeline">';
+      steps.forEach((step, idx) => {
+        let cls = '';
+        if(idx < currentStepIndex) cls = 'completed';
+        else if(idx === currentStepIndex) cls = 'active';
+        const icon = idx < currentStepIndex ? '✓' : idx+1;
+        timelineHtml += `<div class="timeline-step ${cls}"><div class="circle">${icon}</div><p>${step}</p></div>`;
+      });
+      timelineHtml += '</div>';
+
+      let itemsHtml = '';
+      if(order.items) {
+        order.items.forEach(item => {
+          const returnBadge = item.returnAvailable ? `<span class="badge-return-ok">✅ ${item.returnDays||7} Days Return</span>` : `<span class="badge-no-return">❌ No Return</span>`;
+          const exchangeBadge = item.exchangeAvailable ? `<span class="badge-return-ok">✅ ${item.exchangeDays||7} Days Exchange</span>` : '';
+          itemsHtml += `
+            <div class="item-row">
+              <img src="${item.image || ''}">
+              <div style="flex:1">
+                <b>${item.name||'Product'}</b><br>
+                <small>Qty: ${item.qty||1} ${item.size ? '| Size: '+item.size : ''} ${item.color ? '| Color: '+item.color : ''}</small><br>
+                <b>₹${Number(item.price||0).toLocaleString()}</b><br>
+                <div style="margin-top:4px">${returnBadge} ${exchangeBadge}</div>
+                ${item.returnPolicy ? `<small style="font-size:10px; color:#666">${item.returnPolicy}</small>` : ''}
+              </div>
+            </div>
+          `;
+        });
       }
+
+      let statusBadgeClass = 'badge-received';
+      if(tracking === 'Shipped' || tracking === 'Out for Delivery') statusBadgeClass = 'badge-shipped';
+      if(tracking === 'Delivered') statusBadgeClass = 'badge-delivered';
+
+      html += `
+        <div class="order-card">
+          <div class="order-header">
+            <div>
+              <b>Order #${orderIdShort}</b><br>
+              <small>${dateStr}</small>
+            </div>
+            <div style="text-align:right">
+              <b>Total: ₹${total}</b><br>
+              <span class="badge-status ${statusBadgeClass}">${tracking}</span>
+            </div>
+          </div>
+          ${timelineHtml}
+          ${itemsHtml}
+          <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:8px">
+            <button class="btn-invoice" onclick="downloadInvoice('${order.id}')">📄 Download Invoice</button>
+            <button class="btn-track" onclick="trackCourier('${order.id}')">📦 Track Courier</button>
+            ${tracking === 'Delivered' ? `<button class="btn-review" onclick="rateReview('${order.id}')">⭐ Rate & Review</button>` : ''}
+          </div>
+        </div>
+      `;
     }
+
+    listDiv.innerHTML = html;
+
   } catch(e) {
-    showError(e.message);
+    console.error("Load orders error", e);
+    listDiv.innerHTML = `<div style="background:#ffebee; padding:15px; border-radius:8px">Error loading orders: ${e.message}</div>`;
   }
 }
 
-// BUYER SIGNUP
-window.signupBuyer = async function() {
-  const name = document.getElementById('buySignupName').value.trim();
-  const email = document.getElementById('buySignupEmail').value.trim();
-  const password = document.getElementById('buySignupPassword').value;
-  const confirm = document.getElementById('buySignupConfirm').value;
-  
-  if(!name) return showError("Enter full name");
-  if(!email) return showError("Enter email");
-  if(password.length < 6) return showError("Password min 6 characters");
-  if(password !== confirm) return showError("Passwords don't match");
-  
+window.downloadInvoice = async function(orderId) {
   try {
-    const cred = await createUserWithEmailAndPassword(auth, email, password);
-    // Save buyer profile
-    await setDoc(doc(db, "buyers", cred.user.uid), {
-      name: name,
-      email: email,
-      uid: cred.user.uid,
-      role: "buyer",
-      createdAt: serverTimestamp()
-    });
-    showSuccess("✅ Account created! Redirecting to home...");
-    setTimeout(() => window.location.href = '../index.html', 1500);
+    const docSnap = await getDoc(doc(db, "orders", orderId));
+    if(!docSnap.exists()) return alert("Order not found");
+    const order = docSnap.data();
+    const { jsPDF } = window.jspdf || await import('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js').then(m => window.jspdf);
+    const pdf = new jsPDF();
+    let y=10;
+    pdf.text(`Shopline Kerala - Invoice`, 10, y); y+=10;
+    pdf.text(`Order ID: #${orderId.substring(0,6)}`, 10, y); y+=10;
+    pdf.text(`Customer: ${order.customer?.name||''}`, 10, y); y+=10;
+    pdf.text(`Total: Rs.${order.finalTotal||0}`, 10, y); y+=10;
+    pdf.text(`Date: ${order.createdAt ? new Date(order.createdAt.seconds*1000).toLocaleDateString() : ''}`, 10, y); y+=10;
+    if(order.items) {
+      order.items.forEach(item => {
+        pdf.text(`${item.name} x ${item.qty} - Rs.${item.price}`, 10, y); y+=7;
+        if(y>280){ pdf.addPage(); y=10; }
+      });
+    }
+    pdf.save(`Invoice-${orderId.substring(0,6)}.pdf`);
   } catch(e) {
-    showError(e.message);
+    alert("Invoice download: " + e.message);
   }
 }
 
-// SELLER LOGIN
-window.loginSeller = async function() {
-  const email = document.getElementById('sellLoginEmail').value.trim();
-  const password = document.getElementById('sellLoginPassword').value;
-  if(!email || !password) return showError("Enter seller email and password");
-  
-  // Only allow admin email for now
-  if(!ADMIN_EMAILS.includes(email.toLowerCase())) {
-    return showError("Seller registration is currently closed. Only main admin can login as seller. Public will see only Buyer login.");
-  }
-  
-  try {
-    const cred = await signInWithEmailAndPassword(auth, email, password);
-    showSuccess("✅ Seller login successful! Going to dashboard...");
-    setTimeout(() => window.location.href = 'dashboard.html', 1000);
-  } catch(e) {
-    showError(e.message);
-  }
+window.trackCourier = function(orderId) {
+  alert(`Tracking courier for order #${orderId.substring(0,6)}`);
 }
-
-// SELLER SIGNUP
-window.signupSeller = async function() {
-  const name = document.getElementById('sellSignupName').value.trim();
-  const email = document.getElementById('sellSignupEmail').value.trim();
-  const password = document.getElementById('sellSignupPassword').value;
-  const confirm = document.getElementById('sellSignupConfirm').value;
-  
-  if(!name) return showError("Enter seller name");
-  if(!email) return showError("Enter seller email");
-  if(password.length < 6) return showError("Password min 6 characters");
-  if(password !== confirm) return showError("Passwords don't match");
-  
-  // Only allow admin to create seller account for now
-  if(!ADMIN_EMAILS.includes(email.toLowerCase())) {
-    return showError("Seller registration is currently closed for public. Only main admin can create seller account. We are in reselling mode (Meesho products). Marketplace will open after GST registration.");
-  }
-  
-  try {
-    const cred = await createUserWithEmailAndPassword(auth, email, password);
-    await setDoc(doc(db, "sellers", cred.user.uid), {
-      sellerName: name,
-      email: email,
-      name: name,
-      uid: cred.user.uid,
-      role: "seller",
-      createdAt: serverTimestamp()
-    });
-    showSuccess("✅ Seller account created! Going to dashboard...");
-    setTimeout(() => window.location.href = 'dashboard.html', 1500);
-  } catch(e) {
-    showError(e.message);
-  }
+window.rateReview = function(orderId) {
+  const rating = prompt("Rate 1-5 stars:");
+  if(rating) alert(`Thank you for ${rating} stars!`);
 }
-
-// Auto-redirect if already logged in
-onAuthStateChanged(auth, (user) => {
-  if(user) {
-    // If already logged in and on login page with redirect intent
-    const redirect = localStorage.getItem('redirectAfterLogin');
-    if(redirect) {
-      // Don't auto redirect, let user click login, but show message
-      console.log("Already logged in, redirect pending:", redirect);
-    }
-  }
-});
-
-// Secret admin access: press Shift + S 5 times to show seller tab
-let sellerKeyCount = 0;
-let lastKeyTime = 0;
-document.addEventListener('keydown', (e) => {
-  if(e.key.toLowerCase() === 's' && e.shiftKey) {
-    const now = Date.now();
-    if(now - lastKeyTime < 2000) {
-      sellerKeyCount++;
-    } else {
-      sellerKeyCount = 1;
-    }
-    lastKeyTime = now;
-    if(sellerKeyCount >= 3) {
-      document.getElementById('sellTab').classList.add('show');
-      document.getElementById('adminHint').innerText = '🔓 Seller tab unlocked via secret key (Shift+S 3 times)';
-      document.getElementById('adminHint').style.color = '#ff9800';
-      showSuccess("Seller tab unlocked - Admin access");
-      sellerKeyCount = 0;
-    }
-  }
-});
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </body>
 </html>
