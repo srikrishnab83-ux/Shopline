@@ -1,9 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><!-- PLAYABLE_TOUCH_PATCH_V1 --><script>
+(function() {
+  if (window.__playableTouchPatchInstalled) return;
+  window.__playableTouchPatchInstalled = true;
+  var origAdd = EventTarget.prototype.addEventListener;
+  var blockedTypes = { touchstart: 1, touchmove: 1, wheel: 1 };
+  EventTarget.prototype.addEventListener = function(type, listener, options) {
+    if (blockedTypes[type]) {
+      if (options === undefined || options === null) {
+        options = { passive: true };
+      } else if (typeof options === 'boolean') {
+        options = { capture: options, passive: true };
+      } else {
+        options = Object.assign({}, options, { passive: true });
+      }
+    }
+    return origAdd.call(this, type, listener, options);
+  };
+})();
+</script><script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Product Details - Shopline Kerala</title>
+<title>Product Details - Shopline Kerala - FREE Shipping Always</title>
 <style>
 *{box-sizing:border-box; margin:0; padding:0; font-family:Arial, sans-serif}
 body{background:#f1f3f6}
@@ -26,11 +45,8 @@ header a{color:#fff; text-decoration:none; font-weight:bold; font-size:18px}
 .stock{color:#388e3c; font-weight:bold; margin:10px 0; font-size:14px}
 .section{margin:15px 0; padding:15px 0; border-bottom:1px solid #f0f0f0}
 .section-title{font-weight:bold; font-size:15px; margin-bottom:10px; color:#212121}
-
-/* CHIP STYLE FOR BOTH SIZE AND COLOR */
 .chip{padding:8px 16px; border:2px solid #ddd; border-radius:25px; margin:5px; cursor:pointer; display:inline-block; background:#fff; font-size:14px; transition:0.2s}
 .chip.active{border-color:#2874f0; background:#2874f0; color:#fff}
-
 .attr-grid{display:grid; grid-template-columns:120px 1fr; gap:10px; font-size:14px}
 .attr-grid b{color:#878787; font-weight:500}
 .btn-buy{padding:15px; width:100%; background:#ff9f00; color:#fff; border:none; font-size:18px; font-weight:bold; border-radius:4px; cursor:pointer; margin-top:15px}
@@ -39,6 +55,10 @@ header a{color:#fff; text-decoration:none; font-weight:bold; font-size:18px}
 .disabled-btn{background:#ccc!important; cursor:not-allowed!important}
 .desc-box{background:#fff; padding:20px; border-radius:8px; margin-top:15px}
 .desc-box h3{margin-bottom:10px; font-size:18px}
+.free-ship-box{background:#e8f5e9; border:2px solid #4caf50; padding:12px; border-radius:8px; margin:15px 0; display:flex; align-items:center; gap:10px}
+.free-ship-box .icon{font-size:24px}
+.free-ship-box b{color:#2e7d32}
+.delivery-info{background:#f9f9f9; padding:12px; border-radius:8px; margin:10px 0; font-size:13px; border:1px solid #e0e0e0}
 @media(max-width:768px){.product-box{flex-direction:column}.product-img{height:300px}}
 </style>
 </head>
@@ -53,13 +73,14 @@ header a{color:#fff; text-decoration:none; font-weight:bold; font-size:18px}
   <div class="product-box">
 
     <div class="left">
-      <img id="productImage" class="product-img" src="https://via.placeholder.com/400?text=Loading">
+      <img id="productImage" class="product-img" src="https://via.placeholder.com/400?text=Loading" onerror="this.src='https://via.placeholder.com/400?text=No+Image'">
       <div class="thumbs" id="productThumbs"></div>
     </div>
 
     <div class="right">
       <div class="product-title" id="productName">Loading...</div>
-      <span class="rating">4.2 ★</span>
+      <span class="rating">4.2 ★ Verified Buyer</span>
+      <span style="background:#e8f5e9; color:#2e7d32; padding:4px 10px; border-radius:12px; font-size:12px; font-weight:bold; border:1px solid #4caf50; margin-left:8px">🚚 FREE Shipping</span>
 
       <div class="price-section">
         <span class="price" id="productPrice">₹0</span>
@@ -68,6 +89,20 @@ header a{color:#fff; text-decoration:none; font-weight:bold; font-size:18px}
       </div>
 
       <div class="stock" id="productStock"></div>
+
+      <!-- FREE SHIPPING BOX - NEW - NO LIMIT -->
+      <div class="free-ship-box">
+        <span class="icon">🚚</span>
+        <div>
+          <b>FREE Shipping on All Orders</b><br>
+          <span style="font-size:12px; color:#555">No minimum amount - Delivery across all 14 districts of Kerala - 2-3 Days - COD Available</span>
+        </div>
+      </div>
+
+      <div class="delivery-info">
+        <b>📍 Delivery:</b> All Kerala - Kozhikode, Kochi, Trivandrum, Thrissur, Kannur, Alappuzha, Kollam, etc.<br>
+        <b>💰 COD:</b> Available | <b>↩️ Return:</b> 7 Days (if returnable) | <b>✅ Warranty:</b> As per product
+      </div>
 
       <div class="section">
         <div class="section-title">Category</div>
@@ -97,14 +132,22 @@ header a{color:#fff; text-decoration:none; font-weight:bold; font-size:18px}
         </div>
       </div>
 
-      <button id="btnCart" class="btn-cart" onclick="addToCart()">Add to Cart</button>
-      <button id="btnBuy" class="btn-buy" onclick="buyNow()">Buy Now</button>
+      <button id="btnCart" class="btn-cart" onclick="addToCart()">Add to Cart - FREE Shipping</button>
+      <button id="btnBuy" class="btn-buy" onclick="buyNow()">Buy Now - FREE Delivery</button>
+      <p style="font-size:11px; text-align:center; margin-top:8px; color:#388e3c">✅ FREE Shipping on all orders - No minimum - All Kerala</p>
     </div>
   </div>
 
   <div class="desc-box">
     <h3>Product Description</h3>
     <p id="productDescription" style="line-height:1.7; color:#333">Loading...</p>
+    <div style="margin-top:15px; padding:12px; background:#e3f2fd; border-radius:8px; border-left:4px solid #2874f0">
+      <b>🚚 Shipping Policy - FREE Shipping Always:</b><br>
+      <span style="font-size:13px">• No minimum amount required - All orders FREE shipping<br>
+      • Delivery in 2-3 days across all 14 districts of Kerala<br>
+      • No ₹60, No ₹40 charges - Completely FREE<br>
+      • COD Available everywhere in Kerala</span>
+    </div>
   </div>
 </div>
 
@@ -135,7 +178,7 @@ if(productId){
     }
   }).catch(err => {
     console.log(err);
-    alert("Error loading product");
+    alert("Error loading product: " + err.message);
   });
 } else {
   alert("No Product ID");
@@ -149,9 +192,11 @@ function updateCartCount(){
 }
 
 function loadProduct(p){
-  // 1. IMAGE - FIX: support old 'image' and new 'images[0]'
+  // 1. IMAGE - FIX: support old 'image' and new 'images[0]' + fallback
   const mainImg = p.images && p.images[0]? p.images[0] : p.image? p.image : 'https://via.placeholder.com/400?text=No+Image';
-  document.getElementById('productImage').src = mainImg;
+  const imgEl = document.getElementById('productImage');
+  imgEl.src = mainImg;
+  imgEl.onerror = function() { this.src = 'https://via.placeholder.com/400?text=No+Image'; };
   
   var thumbHtml = '';
   let imagesToShow = p.images && p.images.length > 0 ? p.images : [p.image];
@@ -173,7 +218,7 @@ function loadProduct(p){
   document.getElementById('productDiscount').innerText = discount > 0? discount + '% off' : '';
 
   // 3. STOCK
-  var stockText = p.stockQty > 0? p.stockQty + ' left in stock' : 'Out of Stock';
+  var stockText = p.stockQty > 0? p.stockQty + ' left in stock - FREE Shipping' : 'Out of Stock';
   document.getElementById('productStock').innerText = stockText;
   document.getElementById('productStock').style.color = p.stockQty > 0? '#388e3c' : '#d32f2f';
   if(p.stockQty <= 0){
@@ -192,7 +237,7 @@ function loadProduct(p){
     p.sizes.forEach(function(s){
       sizeHtml += '<span class="chip" onclick="selectSize(this, \''+s+'\')">'+s+'</span>';
     });
-  } else { sizeHtml = '<span style="color:#878787">No sizes available</span>'; }
+  } else { sizeHtml = '<span style="color:#878787">No sizes - One size</span>'; }
   document.getElementById('productSizes').innerHTML = sizeHtml;
 
   // 6. COLORS - CHIP STYLE WITH COLOR DOT INSIDE
@@ -204,7 +249,7 @@ function loadProduct(p){
                 + c.name
                 +'</span>';
     });
-  } else { colorHtml = '<span style="color:#878787">No colors available</span>'; }
+  } else { colorHtml = '<span style="color:#878787">No colors - Single color</span>'; }
   document.getElementById('productColors').innerHTML = colorHtml;
 
   // 7. ATTRIBUTES
@@ -214,13 +259,12 @@ function loadProduct(p){
   document.getElementById('productPattern').innerText = p.pattern || 'N/A';
   document.getElementById('productWeight').innerText = p.weight || 'N/A';
   document.getElementById('productBrand').innerText = p.brand || 'N/A';
-  document.getElementById('productDistrict').innerText = p.district || 'N/A';
+  document.getElementById('productDistrict').innerText = p.district || 'Kozhikode';
 
   // 8. DESCRIPTION
-  document.getElementById('productDescription').innerText = p.description || 'No description provided';
+  document.getElementById('productDescription').innerText = p.description || 'No description provided - Quality product from Kerala seller. FREE Shipping across all Kerala.';
 }
 
-// FIXED: querySelectorAll now correct
 function selectSize(el, size){
   document.querySelectorAll('#productSizes .chip').forEach(function(c){ c.classList.remove('active') });
   el.classList.add('active');
@@ -251,16 +295,21 @@ function addToCart(){
     name: currentProduct.name,
     image: currentProduct.images && currentProduct.images[0] ? currentProduct.images[0] : currentProduct.image,
     price: currentProduct.customerPrice,
-    sellerId: currentProduct.sellerId || '', // ADDED FOR RULES
+    sellerId: currentProduct.sellerId || 'c3yryIVuoCWpHHEUNAYZAV9pwVq1',
     size: selectedSize || 'NA',
     color: selectedColor || 'NA',
     variant: variant,
-    qty: 1
+    qty: 1,
+    freeShipping: true,
+    returnAvailable: currentProduct.returnAvailable || false,
+    returnDays: currentProduct.returnDays || 0,
+    exchangeAvailable: currentProduct.exchangeAvailable || false,
+    exchangeDays: currentProduct.exchangeDays || 0
   };
   let existing = cart.find(item => item.id == cartItem.id && item.size == cartItem.size && item.color == cartItem.color);
   if(existing){ existing.qty += 1; } else { cart.push(cartItem); }
   localStorage.setItem('cart', JSON.stringify(cart));
-  alert('✅ Added to cart: ' + currentProduct.name);
+  alert('✅ Added to cart: ' + currentProduct.name + ' - FREE Shipping!');
   updateCartCount();
 }
 
