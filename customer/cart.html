@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your Cart - Shopline Kerala - Per Product Return/Exchange Display</title>
+  <title>Your Cart - Shopline Kerala - Clean Customer View</title>
   <link rel="stylesheet" href="../css/style.css">
   <style>
 .container-cart{max-width:1100px; margin:20px auto; display:flex; gap:20px; padding:0 20px}
@@ -23,12 +23,11 @@
 .free-tag{color:green; font-weight:bold}
 .policy-box{font-size:13px; color:#555; margin-top:15px; line-height:1.6}
 .back-btn{display:inline-block; margin-bottom:15px; text-decoration:none; color:#2874f0; font-weight:bold; font-size:14px}
-.badge-no-return{background:#ffebee; color:#d32f2f; padding:4px 8px; border-radius:12px; font-size:10px; font-weight:bold; border:1px solid #d32f2f; display:inline-block; margin:2px}
-.badge-return-ok{background:#e8f5e9; color:#2e7d32; padding:4px 8px; border-radius:12px; font-size:10px; font-weight:bold; border:1px solid #4caf50; display:inline-block; margin:2px}
-.badge-seller{background:#e3f2fd; color:#1565c0; padding:4px 8px; border-radius:12px; font-size:10px; font-weight:bold; border:1px solid #90caf9; display:inline-block; margin:2px}
-.return-info-box{background:#fff3e0; border:1px solid #ff9800; padding:8px; border-radius:6px; margin-top:8px; font-size:11px}
-.return-info-box.no-return{background:#ffebee; border-color:#d32f2f}
-.return-info-box.has-return{background:#e8f5e9; border-color:#4caf50}
+.badge-no-return{background:#ffebee; color:#d32f2f; padding:4px 8px; border-radius:12px; font-size:10px; font-weight:bold; border:1px solid #ffcdd2; display:inline-block; margin:2px}
+.badge-return-ok{background:#e8f5e9; color:#2e7d32; padding:4px 8px; border-radius:12px; font-size:10px; font-weight:bold; border:1px solid #c8e6c9; display:inline-block; margin:2px}
+.return-info-box{padding:8px; border-radius:6px; margin-top:8px; font-size:11px; line-height:1.4}
+.return-info-box.no-return{background:#ffebee; border:1px solid #ffcdd2; color:#c62828}
+.return-info-box.has-return{background:#e8f5e9; border:1px solid #c8e6c9; color:#2e7d32}
   @media (max-width: 768px){
    .container-cart{flex-direction: column; padding: 0 10px}
    .cart-items,.price-box{flex: 1; width: 100%}
@@ -41,7 +40,7 @@
   </style>
 </head>
 <body>
-  <div class="top-bar"><p>Per-Product Return/Exchange Policy - Delivering across Kerala | COD Available</p></div>
+  <div class="top-bar"><p>Delivering across all 14 districts of Kerala | COD Available | Free Shipping Above ₹999</p></div>
   <header class="navbar">
     <div class="container">
       <div class="logo" onclick="location.href='../index.html'" style="cursor:pointer;">Shopline<span>Kerala</span></div>
@@ -51,7 +50,7 @@
 
   <div class="container-cart">
     <div class="cart-items">
-      <a href="#" onclick="exitAndClearCart()" class="back-btn">← Exit & Clear Cart</a>
+      <a href="#" onclick="exitAndClearCart()" class="back-btn">← Continue Shopping</a>
       <h2>Shopping Cart (<span id="cartCount">0</span> items)</h2>
       <div id="cartList">Loading...</div>
 
@@ -68,31 +67,26 @@
         <div style="flex:1"><label>Landmark</label><input id="custLandmark" placeholder="Near Bus Stand"></div>
       </div>
 
-      <h3 style="margin-top:20px">Return/Exchange Policy Summary</h3>
-      <div class="policy-box" id="overallReturnPolicy">
-        <p>Return/Exchange depends on each product's policy set by seller. Check each item below.</p>
+      <h3 style="margin-top:20px">Delivery Information</h3>
+      <div class="policy-box">
+        <p><b>🚚 Delivery Time:</b> 2-3 Days for Courier. 5-7 Days for Postal.</p>
+        <p><b>💰 COD Available:</b> Cash on Delivery available.</p>
+        <p id="returnPolicyOverall"><b>↩️ Return:</b> Return/Exchange depends on product. Check below each product.</p>
+        <p><b>🎁 FREE Shipping:</b> On orders above ₹999</p>
       </div>
     </div>
 
     <div class="price-box">
       <h3>PRICE DETAILS</h3>
       <p>Price (<span id="itemCount">0</span> items) <span id="totalPrice" style="float:right">₹0</span></p>
-      <div id="sellerTrackingInfo" style="margin:10px 0; padding:10px; background:#e3f2fd; border-radius:6px; font-size:11px; display:none">
-        <b>Seller Tracking (Admin Payment):</b>
-        <div id="sellerTrackingList"></div>
-      </div>
-      <div id="returnSummaryBox" style="margin:10px 0; padding:10px; background:#fff3e0; border-radius:6px; font-size:11px; border:1px solid #ff9800">
-        <b>↩️ Return/Exchange Summary:</b>
-        <div id="returnSummaryList">Loading...</div>
-      </div>
       <h4 style="margin-top:15px">Choose Shipping</h4>
       <label style="display:block; border:1px solid #ddd; padding:10px; margin:8px 0; border-radius:4px"><input type="radio" name="shipping" value="60" checked onchange="updateTotal()"> Courier - ₹60 - 2-3 Days</label>
       <label style="display:block; border:1px solid #ddd; padding:10px; margin:8px 0; border-radius:4px"><input type="radio" name="shipping" value="40" onchange="updateTotal()"> India Post - ₹40 - 5-7 Days</label>
       <p>Shipping Charges <span id="shipCharge" style="float:right">₹60</span></p>
       <hr>
       <h3>Total Amount <span id="finalTotal" style="float:right">₹0</span></h3>
-      <button class="checkout-btn" onclick="checkout()">Place Order - With Return Policy</button>
-      <p style="font-size:11px; color:#666; margin-top:8px; text-align:center">Order goes to Main Admin. Return available only if product allows return (set by seller).</p>
+      <button class="checkout-btn" onclick="checkout()">Place Order</button>
+      <p style="font-size:11px; color:#666; margin-top:8px; text-align:center">Secure checkout | 100% safe</p>
     </div>
   </div>
 
@@ -112,49 +106,33 @@ let currentUserId = null;
 let currentUserEmail = null;
 
 const ADMIN_UID = "c3yryIVuoCWpHHEUNAYZAV9pwVq1";
-const ADMIN_EMAIL = "srikrishnab83@gmail.com";
 
 onAuthStateChanged(auth, (user) => {
   if(user){
     currentUserId = user.uid;
     currentUserEmail = user.email;
   } else {
-    alert("Please login to place order");
-    window.location.href = '../index.html';
+    // Don't redirect immediately, allow viewing cart, but check on checkout
+    currentUserId = null;
   }
 });
 
-async function getSellerInfo(sellerId) {
-  try {
-    const docSnap = await getDoc(doc(db, "sellers", sellerId));
-    if(docSnap.exists()){
-      return docSnap.data();
-    }
-  } catch(e){}
-  return { sellerName: sellerId.substring(0,6), sellerWhatsapp: "N/A" };
-}
-
-async function loadCart() {
+function loadCart() {
   const cartList = document.getElementById('cartList');
-  const sellerTrackingInfo = document.getElementById('sellerTrackingInfo');
-  const sellerTrackingList = document.getElementById('sellerTrackingList');
-  const returnSummaryBox = document.getElementById('returnSummaryList');
-  const overallPolicy = document.getElementById('overallReturnPolicy');
   
   if(cart.length === 0){
     cartList.innerHTML = '<p>Your cart is empty. <a href="../index.html">Shop Now</a></p>';
     document.getElementById('cartCount').innerText = 0;
-    sellerTrackingInfo.style.display = 'none';
-    returnSummaryBox.innerHTML = 'No items';
-    overallPolicy.innerHTML = '<p>Cart empty</p>';
-    updateTotal();
+    document.getElementById('itemCount').innerText = 0;
+    document.getElementById('totalPrice').innerText = '₹0';
+    document.getElementById('finalTotal').innerText = '₹0';
     return;
   }
   cartList.innerHTML = '';
   productTotal = 0;
   let totalQty = 0;
-  let sellerMap = {};
-  let returnSummary = { returnable: 0, nonReturnable: 0, exchangeable: 0, nonExchangeable: 0, details: [] };
+  let hasReturnable = false;
+  let hasNonReturnable = false;
 
   for (let i = 0; i < cart.length; i++) {
     let item = cart[i];
@@ -163,57 +141,43 @@ async function loadCart() {
     productTotal += itemTotal;
     totalQty += item.qty;
 
-    const sellerId = item.sellerId || item.originalSellerId || "unknown";
-    if(!sellerMap[sellerId]) sellerMap[sellerId] = { count: 0, total: 0, name: item.sellerName || sellerId.substring(0,8) };
-    sellerMap[sellerId].count += item.qty;
-    sellerMap[sellerId].total += itemTotal;
-
-    // Return/Exchange tracking
+    // Return/Exchange logic - clean for customer
     const isReturnable = item.returnAvailable || false;
     const isExchangeable = item.exchangeAvailable || false;
     const returnDays = item.returnDays || 0;
     const exchangeDays = item.exchangeDays || 0;
-    const returnPolicyText = item.returnPolicy || (isReturnable || isExchangeable ? `${isReturnable ? returnDays + ' Days Return' : 'No Return'} + ${isExchangeable ? exchangeDays + ' Days Exchange' : 'No Exchange'}` : 'No Return, No Exchange - Final Sale');
 
-    if(isReturnable) returnSummary.returnable++; else returnSummary.nonReturnable++;
-    if(isExchangeable) returnSummary.exchangeable++; else returnSummary.nonExchangeable++;
-    returnSummary.details.push({ name: item.name, returnable: isReturnable, exchangeable: isExchangeable, returnDays, exchangeDays, policy: returnPolicyText });
+    if(isReturnable) hasReturnable = true;
+    else hasNonReturnable = true;
 
-    // Build return badges
     let returnBadges = '';
-    if(isReturnable) {
-      returnBadges += `<span class="badge-return-ok">✅ ${returnDays} Days Return Available</span>`;
+    let returnInfoText = '';
+
+    if(isReturnable && isExchangeable) {
+      returnBadges = `<span class="badge-return-ok">✅ ${returnDays} Days Return</span> <span class="badge-return-ok">✅ ${exchangeDays} Days Exchange</span>`;
+      returnInfoText = `↩️ ${returnDays} Days Return & ${exchangeDays} Days Exchange available`;
+    } else if(isReturnable) {
+      returnBadges = `<span class="badge-return-ok">✅ ${returnDays} Days Return Available</span>`;
+      returnInfoText = `↩️ ${returnDays} Days Return available`;
+    } else if(isExchangeable) {
+      returnBadges = `<span class="badge-return-ok">✅ ${exchangeDays} Days Exchange Available</span>`;
+      returnInfoText = `🔄 ${exchangeDays} Days Exchange available`;
     } else {
-      returnBadges += `<span class="badge-no-return">❌ No Return - Final Sale</span>`;
-    }
-    if(isExchangeable) {
-      returnBadges += `<span class="badge-return-ok">✅ ${exchangeDays} Days Exchange Available</span>`;
-    } else {
-      returnBadges += `<span class="badge-no-return">❌ No Exchange</span>`;
+      returnBadges = `<span class="badge-no-return">❌ No Return & Exchange</span>`;
+      returnInfoText = `❌ No Return, No Exchange - Final Sale`;
     }
 
-    let returnInfoClass = isReturnable || isExchangeable ? 'has-return' : 'no-return';
-    let returnInfoText = '';
-    if(isReturnable && isExchangeable) {
-      returnInfoText = `↩️ This product has ${returnDays} Days Return (₹40 penalty) + ${exchangeDays} Days Exchange (Free) - Set by seller ${item.sellerName || sellerId.substring(0,8)}`;
-    } else if(isReturnable) {
-      returnInfoText = `↩️ This product has ${returnDays} Days Return Available (₹40 courier charge on return) - No Exchange - Seller: ${item.sellerName || sellerId.substring(0,8)}`;
-    } else if(isExchangeable) {
-      returnInfoText = `🔄 This product has ${exchangeDays} Days Exchange Available (Free, same price) - No Return - Seller: ${item.sellerName || sellerId.substring(0,8)}`;
-    } else {
-      returnInfoText = `❌ No Return, No Exchange - Final Sale - This product cannot be returned/exchanged as per seller ${item.sellerName || sellerId.substring(0,8)} policy (like innerwear, cosmetics, etc)`;
-    }
+    let returnInfoClass = (isReturnable || isExchangeable) ? 'has-return' : 'no-return';
 
     cartList.innerHTML += `
       <div class="cart-item">
         <img src="${item.image}">
         <div style="flex:1">
           <h4>${item.name}</h4>
-          <p>Size: <b>${item.size || 'N/A'}</b> | Color: <b>${item.color || 'N/A'}</b></p>
-          <p><b>₹${Number(item.price).toLocaleString()}</b> x ${item.qty} = ₹${itemTotal.toLocaleString()}</p>
-          <div style="margin:5px 0">${returnBadges}</div>
+          <p style="font-size:12px; color:#555">Size: <b>${item.size || 'N/A'}</b> | Color: <b>${item.color || 'N/A'}</b></p>
+          <p><b>₹${Number(item.price).toLocaleString()}</b> x ${item.qty} = <b>₹${itemTotal.toLocaleString()}</b></p>
+          <div style="margin:6px 0">${returnBadges}</div>
           <div class="return-info-box ${returnInfoClass}">${returnInfoText}</div>
-          <div style="margin-top:5px"><span class="badge-seller">Belongs to: ${item.sellerName || sellerId.substring(0,8)} (ID: ${sellerId.substring(0,8)})</span> <small style="font-size:10px">${returnPolicyText}</small></div>
           <div class="qty-box">
             <button class="qty-btn" onclick="updateQty(${i}, -1)">-</button>
             <input class="qty-input" value="${item.qty}" readonly>
@@ -227,54 +191,18 @@ async function loadCart() {
 
   document.getElementById('cartCount').innerText = totalQty;
   document.getElementById('itemCount').innerText = totalQty;
-  updateTotal();
-  updateSellerTrackingDisplay(sellerMap);
-  updateReturnSummaryDisplay(returnSummary);
-}
-
-function updateSellerTrackingDisplay(sellerMap) {
-  const sellerTrackingInfo = document.getElementById('sellerTrackingInfo');
-  const sellerTrackingList = document.getElementById('sellerTrackingList');
-  if(Object.keys(sellerMap).length > 0) {
-    sellerTrackingInfo.style.display = 'block';
-    let html = '';
-    for(let sid in sellerMap) {
-      const s = sellerMap[sid];
-      html += `<div>• ${s.name} (ID: ${sid.substring(0,8)}): ${s.count} items, ₹${s.total.toLocaleString()}</div>`;
-    }
-    sellerTrackingList.innerHTML = html;
-  }
-}
-
-function updateReturnSummaryDisplay(summary) {
-  const returnSummaryBox = document.getElementById('returnSummaryList');
-  const overallPolicy = document.getElementById('overallReturnPolicy');
   
-  let html = '';
-  html += `<div>✅ Returnable: ${summary.returnable} items | ❌ Non-Returnable: ${summary.nonReturnable} items</div>`;
-  html += `<div>🔄 Exchangeable: ${summary.exchangeable} items | ❌ Non-Exchangeable: ${summary.nonExchangeable} items</div>`;
-  html += `<div style="margin-top:8px">`;
-  summary.details.forEach(d => {
-    html += `<div style="font-size:10px; margin:2px 0">• ${d.name}: ${d.policy}</div>`;
-  });
-  html += `</div>`;
-  
-  returnSummaryBox.innerHTML = html;
-  
-  // Overall policy
-  let overallHtml = '';
-  if(summary.returnable === 0 && summary.exchangeable === 0) {
-    overallHtml = `<p><b>❌ No Return, No Exchange for all items in cart - Final Sale</b></p><p style="font-size:11px">All products in your cart are marked as non-returnable by sellers (like innerwear, cosmetics, final sale items). Please check size/color carefully before ordering.</p>`;
-  } else if(summary.nonReturnable === 0 && summary.nonExchangeable === 0) {
-    overallHtml = `<p><b>✅ All items Returnable & Exchangeable</b></p><p style="font-size:11px">All products in cart have return/exchange available as per seller policy. Return period varies per product (3-30 days). Exchange is free, Return has ₹40 courier charge.</p>`;
+  // Update overall return policy text
+  const overallPolicy = document.getElementById('returnPolicyOverall');
+  if(hasReturnable && hasNonReturnable) {
+    overallPolicy.innerHTML = `<b>↩️ Return:</b> Some items returnable, some final sale. Check each product above.`;
+  } else if(hasReturnable) {
+    overallPolicy.innerHTML = `<b>↩️ Return:</b> Return/Exchange available as per product policy.`;
   } else {
-    overallHtml = `<p><b>Mixed Return Policy - Depends on Product</b></p>`;
-    summary.details.forEach(d => {
-      overallHtml += `<p style="font-size:11px">• ${d.name}: ${d.policy}</p>`;
-    });
-    overallHtml += `<p style="font-size:11px; margin-top:8px">Return available only for products where seller enabled return. Exchange available only where seller enabled exchange.</p>`;
+    overallPolicy.innerHTML = `<b>↩️ Return:</b> No Return & Exchange - All items final sale. Check size carefully.`;
   }
-  overallPolicy.innerHTML = overallHtml;
+
+  updateTotal();
 }
 
 window.updateQty = function(index, change){
@@ -315,7 +243,22 @@ window.checkout = async function(){
   if(phone.length!== 10) return alert('Enter 10 digit mobile number');
   if(pincode.length!== 6) return alert('Enter 6 digit pincode');
   if(cart.length === 0) return alert('Cart is empty');
-  if(!currentUserId) return alert('Please login to place order');
+  
+  if(!currentUserId) {
+    alert("Please login to place order");
+    // Fixed login path - try multiple possibilities
+    // If seller login exists at ../seller/login.html or ../login.html or login.html
+    // Redirect to home with login prompt
+    localStorage.setItem('redirectAfterLogin', 'cart');
+    window.location.href = '../seller/login.html';
+    // Fallback: if that 404s, try root
+    setTimeout(() => {
+      if(window.location.href.includes('404') || document.title.includes('404')) {
+        window.location.href = '../index.html';
+      }
+    }, 1000);
+    return;
+  }
 
   const btn = document.querySelector('.checkout-btn');
   btn.innerText = 'Placing Order...';
@@ -324,116 +267,57 @@ window.checkout = async function(){
   try {
     let shippingCharge = productTotal > 999? 0 : parseInt(document.querySelector('input[name="shipping"]:checked').value);
     
-    let originalSellerIds = [...new Set(cart.map(item => item.sellerId || item.originalSellerId).filter(id => id && id !== "unknown"))];
+    let originalSellerIds = [...new Set(cart.map(item => item.sellerId || item.originalSellerId).filter(id => id && id !== "unknown" && id !== undefined))];
+    if(originalSellerIds.length === 0) originalSellerIds = [ADMIN_UID];
     
-    let sellerDetails = [];
-    for(let sid of originalSellerIds) {
-      try {
-        const sinfo = await getSellerInfo(sid);
-        sellerDetails.push({
-          sellerId: sid,
-          sellerName: sinfo.sellerName || sinfo.name || sid.substring(0,8),
-          sellerWhatsapp: sinfo.sellerWhatsapp || sinfo.whatsapp || "N/A",
-          sellerContact: sinfo.sellerContact || sinfo.contact || "N/A",
-          sellerUpiId: sinfo.sellerUpiId || sinfo.upiId || "N/A"
-        });
-      } catch(e) {
-        sellerDetails.push({ sellerId: sid, sellerName: sid.substring(0,8), sellerWhatsapp: "N/A" });
-      }
-    }
-
     let sellerIds = [ADMIN_UID];
 
-    // Enhanced items WITH RETURN POLICY
+    // Clean items for order - keep return policy but hide seller tracking from customer view, keep for admin
     let enhancedItems = cart.map(item => ({
-      ...item,
-      sellerId: item.sellerId || item.originalSellerId || "unknown",
-      originalSellerId: item.sellerId || item.originalSellerId || "unknown",
-      sellerName: item.sellerName || sellerDetails.find(s => s.sellerId === (item.sellerId || ""))?.sellerName || (item.sellerId || "").substring(0,8),
+      name: item.name,
+      price: Number(item.price),
+      qty: item.qty,
+      image: item.image,
+      size: item.size || 'N/A',
+      color: item.color || 'N/A',
       productId: item.id || item.productId || "",
-      // Return/Exchange fields - per product
+      sellerId: item.sellerId || item.originalSellerId || ADMIN_UID,
+      originalSellerId: item.sellerId || item.originalSellerId || ADMIN_UID,
       returnAvailable: item.returnAvailable || false,
       returnDays: item.returnDays || 0,
       exchangeAvailable: item.exchangeAvailable || false,
       exchangeDays: item.exchangeDays || 0,
-      returnPolicy: item.returnPolicy || (item.returnAvailable || item.exchangeAvailable ? `${item.returnAvailable ? (item.returnDays||7) + ' Days Return' : 'No Return'} + ${item.exchangeAvailable ? (item.exchangeDays||7) + ' Days Exchange' : 'No Exchange'}` : 'No Return, No Exchange - Final Sale')
+      returnPolicy: item.returnPolicy || (item.returnAvailable ? `${item.returnDays} Days Return` : 'No Return, No Exchange')
     }));
 
     let returnDate = new Date();
-    // Use max return days from cart for overall order return window, or 3 days default if no return
-    let maxReturnDays = Math.max(...enhancedItems.map(i => i.returnAvailable ? (i.returnDays||0) : 0), 0);
-    if(maxReturnDays === 0) maxReturnDays = 3; // Default 3 days if no returnable items, but still for record
+    let maxReturnDays = Math.max(...enhancedItems.map(i => i.returnAvailable ? (i.returnDays||0) : 0), 3);
     returnDate.setDate(returnDate.getDate() + maxReturnDays);
-
-    // Check return policy summary for order
-    let hasReturnable = enhancedItems.some(i => i.returnAvailable);
-    let hasExchangeable = enhancedItems.some(i => i.exchangeAvailable);
 
     let orderData = {
       userId: currentUserId,
       customerId: currentUserId,
       customerEmail: currentUserEmail || "",
       customer: {name, phone, street, district, state, pincode, landmark},
-      
       items: enhancedItems,
-      
       sellerIds: sellerIds,
       originalSellerIds: originalSellerIds,
-      sellerDetails: sellerDetails,
-      
       productTotal, 
       shippingCharge, 
       finalTotal: productTotal + shippingCharge,
-      
-      // Return/Exchange summary for order level
-      hasReturnableItems: hasReturnable,
-      hasExchangeableItems: hasExchangeable,
-      returnPolicySummary: enhancedItems.map(i => ({ name: i.name, returnAvailable: i.returnAvailable, returnDays: i.returnDays, exchangeAvailable: i.exchangeAvailable, exchangeDays: i.exchangeDays, returnPolicy: i.returnPolicy })),
-      
+      hasReturnableItems: enhancedItems.some(i => i.returnAvailable),
+      hasExchangeableItems: enhancedItems.some(i => i.exchangeAvailable),
       status: "New Order", 
       orderStatus: "new",
       trackingStatus: "Order Received",
       returnStatus: "none",
       canReturnTill: Timestamp.fromDate(returnDate),
-      
-      marketplaceType: "contributor_marketplace",
-      adminId: ADMIN_UID,
-      adminEmail: ADMIN_EMAIL,
-      
-      createdAt: serverTimestamp(),
-      createdAtReadable: new Date().toISOString()
+      createdAt: serverTimestamp()
     };
 
-    console.log("Placing order with return policy tracking:", orderData);
-    
     const docRef = await addDoc(collection(db, "orders"), orderData);
 
-    try {
-      await addDoc(collection(db, "notifications"), {
-        recipientId: ADMIN_UID,
-        recipientType: "admin",
-        sellerId: ADMIN_UID,
-        orderId: docRef.id,
-        message: `New Order #${docRef.id.substring(0,6)} from ${name} - ${originalSellerIds.length} sellers - Returnable: ${hasReturnable ? 'Yes' : 'No'} - Amount ₹${productTotal + shippingCharge}`,
-        type: "new_order",
-        read: false,
-        createdAt: serverTimestamp(),
-        originalSellerIds: originalSellerIds
-      });
-    } catch(e) { console.log("Notification error", e); }
-
-    // Build return policy message for alert
-    let returnMsg = '';
-    if(hasReturnable || hasExchangeable) {
-      returnMsg = '\n\nReturn/Exchange Policy:\n';
-      enhancedItems.forEach(item => {
-        returnMsg += `• ${item.name}: ${item.returnPolicy}\n`;
-      });
-    } else {
-      returnMsg = '\n\nNote: All items in this order are Final Sale - No Return, No Exchange as per seller policy.';
-    }
-
-    alert(`Order Placed Successfully!\nOrder ID: #${docRef.id.substring(0,6)}\nTotal: ₹${productTotal + shippingCharge}${returnMsg}\n\nMarketplace: Order goes to Main Admin. Return available only for products where seller enabled return.`);
+    alert(`Order Placed Successfully! Order ID: #${docRef.id.substring(0,6)} Total: ₹${productTotal + shippingCharge}`);
     
     localStorage.removeItem('cart');
     window.location.href = '../customer/order.html';
@@ -441,7 +325,7 @@ window.checkout = async function(){
   } catch(error) {
     console.error("Order error:", error);
     alert("Order failed: " + error.message);
-    btn.innerText = 'Place Order - With Return Policy';
+    btn.innerText = 'Place Order';
     btn.disabled = false;
   }
 }
