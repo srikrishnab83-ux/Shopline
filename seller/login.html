@@ -2,133 +2,389 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Login - Shopline Kerala</title>
-  <link rel="stylesheet" href="../css/style.css"> <!-- FIXED: added../ -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Shopline Kerala - Buyer Only Public</title>
+  <link rel="stylesheet" href="../css/style.css">
   <style>
-    *{margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif}
-    body{background:#f1f3f6; display:flex; justify-content:center; align-items:center; min-height:100vh}
-  .login-box{width:400px; background:#fff; padding:30px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.1)}
-  .login-box h2{text-align:center; color:#2874f0; margin-bottom:20px; font-size:24px}
-  .tabs{display:flex; margin-bottom:20px; border-bottom:2px solid #eee}
-  .tab{flex:1; text-align:center; padding:12px; cursor:pointer; font-weight:bold; color:#666}
-  .tab.active{border-bottom:3px solid #2874f0; color:#2874f0}
-  .form-group{margin:15px 0}
-  .form-group label{font-weight:bold; display:block; margin-bottom:5px; font-size:14px}
-  .form-group input,.form-group select{width:100%; padding:12px; border:1px solid #ddd; border-radius:4px; font-size:14px}
-  .btn{width:100%; padding:14px; background:#fb641b; color:#fff; border:none; font-size:16px; cursor:pointer; border-radius:4px; font-weight:bold; margin-top:10px}
-  .btn:hover{background:#e55a0f}
-  .link{text-align:center; margin-top:15px; font-size:14px}
-  .link a{color:#2874f0; text-decoration:none}
-  .error{color:red; font-size:13px; margin-top:10px; text-align:center}
+body{background:#f5f7fb; margin:0; font-family:Arial, sans-serif}
+.login-wrapper{min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px}
+.login-card{background:#fff; width:100%; max-width:400px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.08); padding:30px 25px; text-align:center}
+.logo-title{color:#2874f0; font-size:22px; font-weight:bold; margin-bottom:20px}
+.tabs{display:flex; gap:0; margin-bottom:20px; border-bottom:1px solid #eee; position:relative}
+.tab{flex:1; padding:12px; cursor:pointer; font-size:14px; font-weight:bold; color:#666; border-bottom:3px solid transparent; background:none; border-left:none; border-right:none; border-top:none}
+.tab.active{color:#2874f0; border-bottom:3px solid #2874f0}
+.tab.seller-tab{display:none !important} /* Hidden for public by default */
+.tab.seller-tab.show{display:block !important; flex:1}
+.form-group{text-align:left; margin-bottom:15px}
+.form-group label{font-size:13px; font-weight:bold; display:block; margin-bottom:6px; color:#333}
+.form-group input{width:100%; padding:12px; border:1px solid #ddd; border-radius:6px; font-size:14px; box-sizing:border-box}
+.form-group input:focus{border-color:#2874f0; outline:none}
+.btn-login{width:100%; padding:12px; background:#fb641b; color:#fff; border:none; border-radius:6px; font-size:15px; font-weight:bold; cursor:pointer; margin-top:10px}
+.btn-login:hover{background:#e55a17}
+.toggle-link{margin-top:15px; font-size:13px; color:#2874f0; cursor:pointer; display:inline-block; text-decoration:none}
+.toggle-link:hover{text-decoration:underline}
+.divider{margin:15px 0; border-top:1px solid #eee; position:relative}
+.divider span{position:absolute; top:-8px; left:50%; transform:translateX(-50%); background:#fff; padding:0 10px; font-size:11px; color:#999}
+.form-switch{display:none}
+.form-switch.active{display:block}
+.admin-hint{font-size:10px; color:#999; margin-top:20px}
+.error-msg{background:#ffebee; color:#d32f2f; padding:10px; border-radius:6px; font-size:12px; margin-bottom:15px; display:none; text-align:left}
+.success-msg{background:#e8f5e9; color:#2e7d32; padding:10px; border-radius:6px; font-size:12px; margin-bottom:15px; display:none; text-align:left}
   </style>
 </head>
 <body>
-  <div class="login-box">
-    <h2>Shopline Kerala</h2>
+  <div class="login-wrapper">
+    <div class="login-card">
+      <div class="logo-title">Shopline Kerala</div>
+      
+      <div class="tabs" id="mainTabs">
+        <button class="tab active" id="buyTab" onclick="switchMainTab('buy')">I want to Buy</button>
+        <button class="tab seller-tab" id="sellTab" onclick="switchMainTab('sell')">I want to Sell</button>
+      </div>
 
-    <div class="tabs">
-      <div class="tab active" onclick="switchTab('buyer')">I want to Buy</div>
-      <div class="tab" onclick="switchTab('seller')">I want to Sell</div>
+      <div id="errorMsg" class="error-msg"></div>
+      <div id="successMsg" class="success-msg"></div>
+
+      <!-- BUYER LOGIN FORM -->
+      <div id="buyLoginForm" class="form-switch active">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="buyLoginEmail" placeholder="Enter your email" oninput="checkAdminEmail(this.value)">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="buyLoginPassword" placeholder="Min 6 characters">
+        </div>
+        <button class="btn-login" onclick="loginBuyer()">Login as Buyer</button>
+        <div style="margin-top:12px">
+          <a class="toggle-link" onclick="showBuySignup()">New customer? Create Account</a>
+        </div>
+        <div class="divider"><span>OR</span></div>
+        <a class="toggle-link" href="../index.html">← Continue as Guest</a>
+      </div>
+
+      <!-- BUYER SIGNUP FORM -->
+      <div id="buySignupForm" class="form-switch">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="buySignupName" placeholder="Enter full name">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="buySignupEmail" placeholder="Enter email" oninput="checkAdminEmail(this.value)">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="buySignupPassword" placeholder="Min 6 characters">
+        </div>
+        <div class="form-group">
+          <label>Confirm Password</label>
+          <input type="password" id="buySignupConfirm" placeholder="Confirm password">
+        </div>
+        <button class="btn-login" onclick="signupBuyer()">Create Account</button>
+        <div style="margin-top:12px">
+          <a class="toggle-link" onclick="showBuyLogin()">Already have account? Login</a>
+        </div>
+      </div>
+
+      <!-- SELLER LOGIN FORM - Hidden for public, only admin sees -->
+      <div id="sellLoginForm" class="form-switch">
+        <div style="background:#fff3cd; padding:10px; border-radius:6px; font-size:11px; margin-bottom:15px; border-left:4px solid #ffc107; text-align:left">
+          <b>🔐 Seller Access - Admin Only</b><br>
+          This is for sellers/contributors. Currently hidden for public. Only main admin can see this.
+        </div>
+        <div class="form-group">
+          <label>Seller Email</label>
+          <input type="email" id="sellLoginEmail" placeholder="Seller email" value="srikrishnab83@gmail.com">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="sellLoginPassword" placeholder="Min 6 characters">
+        </div>
+        <button class="btn-login" style="background:#2874f0" onclick="loginSeller()">Login as Seller</button>
+        <div style="margin-top:12px">
+          <a class="toggle-link" onclick="showSellSignup()">New seller? Create Seller Account</a>
+        </div>
+        <div style="margin-top:10px">
+          <a class="toggle-link" onclick="switchMainTab('buy')">← Back to Buyer Login</a>
+        </div>
+      </div>
+
+      <!-- SELLER SIGNUP FORM -->
+      <div id="sellSignupForm" class="form-switch">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="sellSignupName" placeholder="Seller full name">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="sellSignupEmail" placeholder="Seller email">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="sellSignupPassword" placeholder="Min 6 characters">
+        </div>
+        <div class="form-group">
+          <label>Confirm Password</label>
+          <input type="password" id="sellSignupConfirm" placeholder="Confirm password">
+        </div>
+        <button class="btn-login" style="background:#2874f0" onclick="signupSeller()">Create Seller Account</button>
+        <div style="margin-top:12px">
+          <a class="toggle-link" onclick="showSellLogin()">Already seller? Login</a>
+        </div>
+      </div>
+
+      <div class="admin-hint" id="adminHint">Buyer login only. Seller login hidden for public.</div>
     </div>
-
-    <form id="authForm" onsubmit="handleAuth(event)">
-      <input type="hidden" id="userType" value="buyer">
-
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="email" placeholder="Enter Email" required>
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="password" placeholder="Min 6 characters" required minlength="6">
-      </div>
-
-      <!-- SELLER EXTRA FIELDS -->
-      <div id="sellerFields" style="display:none">
-        <div class="form-group">
-          <label>Store Name</label>
-          <input type="text" id="sName" placeholder="Your Store Name">
-        </div>
-        <div class="form-group">
-          <label>Mobile</label>
-          <input type="tel" id="sPhone" placeholder="10 digit number" maxlength="10">
-        </div>
-        <div class="form-group">
-          <label>District - All 14 Kerala Districts</label>
-          <select id="sDistrict">
-            <option value="">Select District</option>
-            <option>Kasaragod</option><option>Kannur</option><option>Wayanad</option><option>Kozhikode</option>
-            <option>Malappuram</option><option>Palakkad</option><option>Thrissur</option><option>Ernakulam</option>
-            <option>Idukki</option><option>Kottayam</option><option>Alappuzha</option><option>Pathanamthitta</option>
-            <option>Kollam</option><option>Thiruvananthapuram</option>
-          </select>
-        </div>
-      </div>
-
-      <button class="btn" id="submitBtn">Login</button>
-      <div class="link">
-        <a href="#" onclick="toggleMode()">New? Create Account</a>
-      </div>
-      <p id="error" class="error"></p>
-    </form>
   </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-let isLogin = true;
+const ADMIN_EMAILS = ["srikrishnab83@gmail.com"];
+const ADMIN_UIDS = ["c3yryIVuoCWpHHEUNAYZAV9pwVq1"];
 
-window.switchTab = function(type){
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  event.target.classList.add('active');
-  document.getElementById('userType').value = type;
-  document.getElementById('sellerFields').style.display = type==='seller'? 'block' : 'none';
-  document.getElementById('submitBtn').innerText = isLogin? 'Login' : 'Create Account';
+let currentMainTab = 'buy';
+
+// Check URL for admin access ?admin=1 or ?seller=1 or ?mode=seller
+const urlParams = new URLSearchParams(window.location.search);
+if(urlParams.get('admin') === '1' || urlParams.get('seller') === '1' || urlParams.get('mode') === 'seller') {
+  document.getElementById('sellTab').classList.add('show');
+  document.getElementById('adminHint').innerText = '🔓 Admin mode: Seller tab visible via ?admin=1';
 }
 
-window.toggleMode = function(){
-  isLogin =!isLogin;
-  document.getElementById('submitBtn').innerText = isLogin? 'Login' : 'Create Account';
-}
-
-window.handleAuth = async function(e){
-  e.preventDefault();
-  document.getElementById('error').innerText = '';
-  const type = document.getElementById('userType').value;
-
-  try{
-    let userCred;
-    if(isLogin){
-      userCred = await signInWithEmailAndPassword(auth, email.value, password.value);
-    } else {
-      userCred = await createUserWithEmailAndPassword(auth, email.value, password.value);
-      await setDoc(doc(db, type==='seller'? "sellers" : "users", userCred.user.uid), {
-        name: type==='seller'? sName.value : email.value.split('@')[0],
-        email: email.value,
-        phone: sPhone.value || '',
-        district: sDistrict.value || '',
-        type: type,
-        createdAt: new Date()
-      });
+// Check if admin email typed, then show seller tab
+window.checkAdminEmail = function(email) {
+  const lower = email.toLowerCase().trim();
+  if(ADMIN_EMAILS.includes(lower)) {
+    document.getElementById('sellTab').classList.add('show');
+    document.getElementById('adminHint').innerText = '✅ Admin email detected - Seller tab unlocked';
+    document.getElementById('adminHint').style.color = '#2e7d32';
+    document.getElementById('adminHint').style.fontWeight = 'bold';
+  } else {
+    // Keep hidden for non-admin, unless ?admin=1 in URL
+    if(!urlParams.get('admin') && !urlParams.get('seller') && urlParams.get('mode') !== 'seller') {
+      // Don't hide if already in seller tab
+      if(currentMainTab !== 'sell') {
+        document.getElementById('sellTab').classList.remove('show');
+        document.getElementById('adminHint').innerText = 'Buyer login only. Seller login hidden for public.';
+        document.getElementById('adminHint').style.color = '#999';
+      }
     }
-
-    // FIXED REDIRECTS
-    if(type === 'seller'){
-      window.location.href = 'dashboard.html'; // FIXED: removed seller/
-    } else {
-      window.location.href = '../index.html'; // FIXED: added../ to go to root
-    }
-  }catch(err){
-    document.getElementById('error').innerText = err.message;
   }
 }
+
+window.switchMainTab = function(tab) {
+  currentMainTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.form-switch').forEach(f => f.classList.remove('active'));
+  
+  if(tab === 'buy') {
+    document.getElementById('buyTab').classList.add('active');
+    document.getElementById('buyLoginForm').classList.add('active');
+  } else if(tab === 'sell') {
+    // Only allow if admin or ?admin=1
+    const isAdminVisible = document.getElementById('sellTab').classList.contains('show');
+    if(!isAdminVisible) {
+      showError("Seller login is currently disabled for public. Only main admin can access.");
+      return;
+    }
+    document.getElementById('sellTab').classList.add('active');
+    document.getElementById('sellLoginForm').classList.add('active');
+  }
+}
+
+window.showBuyLogin = function() {
+  document.querySelectorAll('.form-switch').forEach(f => f.classList.remove('active'));
+  document.getElementById('buyLoginForm').classList.add('active');
+  clearMessages();
+}
+window.showBuySignup = function() {
+  document.querySelectorAll('.form-switch').forEach(f => f.classList.remove('active'));
+  document.getElementById('buySignupForm').classList.add('active');
+  clearMessages();
+}
+window.showSellLogin = function() {
+  document.querySelectorAll('.form-switch').forEach(f => f.classList.remove('active'));
+  document.getElementById('sellLoginForm').classList.add('active');
+  clearMessages();
+}
+window.showSellSignup = function() {
+  document.querySelectorAll('.form-switch').forEach(f => f.classList.remove('active'));
+  document.getElementById('sellSignupForm').classList.add('active');
+  clearMessages();
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorMsg');
+  el.innerText = msg;
+  el.style.display = 'block';
+  document.getElementById('successMsg').style.display = 'none';
+  setTimeout(() => el.style.display = 'none', 4000);
+}
+function showSuccess(msg) {
+  const el = document.getElementById('successMsg');
+  el.innerText = msg;
+  el.style.display = 'block';
+  document.getElementById('errorMsg').style.display = 'none';
+}
+function clearMessages() {
+  document.getElementById('errorMsg').style.display = 'none';
+  document.getElementById('successMsg').style.display = 'none';
+}
+
+// BUYER LOGIN
+window.loginBuyer = async function() {
+  const email = document.getElementById('buyLoginEmail').value.trim();
+  const password = document.getElementById('buyLoginPassword').value;
+  if(!email || !password) return showError("Enter email and password");
+  
+  try {
+    const cred = await signInWithEmailAndPassword(auth, email, password);
+    showSuccess("✅ Login successful! Redirecting...");
+    // Check if admin
+    if(ADMIN_EMAILS.includes(email.toLowerCase())) {
+      // Admin buyer login goes to seller dashboard
+      setTimeout(() => window.location.href = 'dashboard.html', 1000);
+    } else {
+      // Normal buyer goes to home or orders
+      const redirect = localStorage.getItem('redirectAfterLogin');
+      if(redirect === 'cart') {
+        setTimeout(() => window.location.href = '../buyer/cart.html', 1000);
+      } else if(redirect === 'orders') {
+        setTimeout(() => window.location.href = '../customer/order.html', 1000);
+      } else {
+        setTimeout(() => window.location.href = '../index.html', 1000);
+      }
+    }
+  } catch(e) {
+    showError(e.message);
+  }
+}
+
+// BUYER SIGNUP
+window.signupBuyer = async function() {
+  const name = document.getElementById('buySignupName').value.trim();
+  const email = document.getElementById('buySignupEmail').value.trim();
+  const password = document.getElementById('buySignupPassword').value;
+  const confirm = document.getElementById('buySignupConfirm').value;
+  
+  if(!name) return showError("Enter full name");
+  if(!email) return showError("Enter email");
+  if(password.length < 6) return showError("Password min 6 characters");
+  if(password !== confirm) return showError("Passwords don't match");
+  
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    // Save buyer profile
+    await setDoc(doc(db, "buyers", cred.user.uid), {
+      name: name,
+      email: email,
+      uid: cred.user.uid,
+      role: "buyer",
+      createdAt: serverTimestamp()
+    });
+    showSuccess("✅ Account created! Redirecting to home...");
+    setTimeout(() => window.location.href = '../index.html', 1500);
+  } catch(e) {
+    showError(e.message);
+  }
+}
+
+// SELLER LOGIN
+window.loginSeller = async function() {
+  const email = document.getElementById('sellLoginEmail').value.trim();
+  const password = document.getElementById('sellLoginPassword').value;
+  if(!email || !password) return showError("Enter seller email and password");
+  
+  // Only allow admin email for now
+  if(!ADMIN_EMAILS.includes(email.toLowerCase())) {
+    return showError("Seller registration is currently closed. Only main admin can login as seller. Public will see only Buyer login.");
+  }
+  
+  try {
+    const cred = await signInWithEmailAndPassword(auth, email, password);
+    showSuccess("✅ Seller login successful! Going to dashboard...");
+    setTimeout(() => window.location.href = 'dashboard.html', 1000);
+  } catch(e) {
+    showError(e.message);
+  }
+}
+
+// SELLER SIGNUP
+window.signupSeller = async function() {
+  const name = document.getElementById('sellSignupName').value.trim();
+  const email = document.getElementById('sellSignupEmail').value.trim();
+  const password = document.getElementById('sellSignupPassword').value;
+  const confirm = document.getElementById('sellSignupConfirm').value;
+  
+  if(!name) return showError("Enter seller name");
+  if(!email) return showError("Enter seller email");
+  if(password.length < 6) return showError("Password min 6 characters");
+  if(password !== confirm) return showError("Passwords don't match");
+  
+  // Only allow admin to create seller account for now
+  if(!ADMIN_EMAILS.includes(email.toLowerCase())) {
+    return showError("Seller registration is currently closed for public. Only main admin can create seller account. We are in reselling mode (Meesho products). Marketplace will open after GST registration.");
+  }
+  
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    await setDoc(doc(db, "sellers", cred.user.uid), {
+      sellerName: name,
+      email: email,
+      name: name,
+      uid: cred.user.uid,
+      role: "seller",
+      createdAt: serverTimestamp()
+    });
+    showSuccess("✅ Seller account created! Going to dashboard...");
+    setTimeout(() => window.location.href = 'dashboard.html', 1500);
+  } catch(e) {
+    showError(e.message);
+  }
+}
+
+// Auto-redirect if already logged in
+onAuthStateChanged(auth, (user) => {
+  if(user) {
+    // If already logged in and on login page with redirect intent
+    const redirect = localStorage.getItem('redirectAfterLogin');
+    if(redirect) {
+      // Don't auto redirect, let user click login, but show message
+      console.log("Already logged in, redirect pending:", redirect);
+    }
+  }
+});
+
+// Secret admin access: press Shift + S 5 times to show seller tab
+let sellerKeyCount = 0;
+let lastKeyTime = 0;
+document.addEventListener('keydown', (e) => {
+  if(e.key.toLowerCase() === 's' && e.shiftKey) {
+    const now = Date.now();
+    if(now - lastKeyTime < 2000) {
+      sellerKeyCount++;
+    } else {
+      sellerKeyCount = 1;
+    }
+    lastKeyTime = now;
+    if(sellerKeyCount >= 3) {
+      document.getElementById('sellTab').classList.add('show');
+      document.getElementById('adminHint').innerText = '🔓 Seller tab unlocked via secret key (Shift+S 3 times)';
+      document.getElementById('adminHint').style.color = '#ff9800';
+      showSuccess("Seller tab unlocked - Admin access");
+      sellerKeyCount = 0;
+    }
+  }
+});
 </script>
 </body>
 </html>
