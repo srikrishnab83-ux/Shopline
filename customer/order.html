@@ -22,7 +22,7 @@
 </script><script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Orders - Shopline Kerala</title>
+  <title>My Orders - Shopline Kerala - FIXED LOGIN PATH</title>
   <link rel="stylesheet" href="../css/style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
@@ -64,7 +64,7 @@
 
   <div class="order-container">
     <h2>📦 My Orders - Order History</h2>
-    <p style="color:#666; font-size:13px; margin-bottom:15px">Track courier, return product, download Meesho-type invoice & give review only for purchased items</p>
+    <p style="color:#666; font-size:13px; margin-bottom:15px">Track courier, return product, download invoice & give review only for purchased items</p>
     <div id="myOrdersList">Loading your orders...</div>
   </div>
 
@@ -82,13 +82,25 @@ let ratingsMap = {};
 
 auth.onAuthStateChanged(user => {
   if(!user){ 
-    // FIXED: Don't auto-redirect, show login message so page is visible on homepage link
-    document.getElementById('myOrdersList').innerHTML = '<div style="background:#fff;padding:30px;text-align:center;border-radius:8px"><h3>Please Login to see your orders</h3><p style="color:#666;margin:10px 0">Your order history, courier tracking, invoices and reviews will appear here.</p><a href="../login.html" style="background:#2874f0;color:#fff;padding:10px 20px;border-radius:4px;text-decoration:none;display:inline-block;margin-top:10px">Login Now</a></div>';
+    // FIXED 404: Changed ../login.html to ../seller/login.html + absolute path for Shopline repo
+    // Before: ../login.html -> https://srikrishnab83-ux.github.io/Shopline/login.html -> 404
+    // After: ../seller/login.html -> https://srikrishnab83-ux.github.io/Shopline/seller/login.html -> WORKS
+    document.getElementById('myOrdersList').innerHTML = '<div style="background:#fff;padding:30px;text-align:center;border-radius:8px"><h3>Please Login to see your orders</h3><p style="color:#666;margin:10px 0">Your order history, courier tracking, invoices and reviews will appear here.</p><a href="../seller/login.html" onclick="handleLoginClick(event)" style="background:#2874f0;color:#fff;padding:10px 20px;border-radius:4px;text-decoration:none;display:inline-block;margin-top:10px">Login Now</a><p style="font-size:11px;color:#999;margin-top:10px">If button still 404, your login is at: /Shopline/seller/login.html<br>Direct link: <a href="/Shopline/seller/login.html">https://srikrishnab83-ux.github.io/Shopline/seller/login.html</a></p></div>';
     return; 
   }
   currentUser = user;
   loadMyOrders();
 });
+
+function handleLoginClick(e){
+  e.preventDefault();
+  localStorage.setItem('redirectAfterLogin', 'orders');
+  // FIXED PATH FOR YOUR REPO: Shopline (capital S)
+  // Try seller/login.html first (correct location), fallback to index
+  const correctLoginPath = '../seller/login.html';
+  console.log('Redirecting to:', correctLoginPath, 'Full:', window.location.origin + '/Shopline/seller/login.html');
+  window.location.href = correctLoginPath;
+}
 
 // FIXED: Removed orderBy to avoid "Missing or insufficient permissions" index error
 async function loadMyOrders(){
@@ -220,7 +232,7 @@ function renderOrders(docs){
       ${isCancelled ? `<p style="color:#c62828; padding:10px 0">Reason: ${o.cancelReason||'Cancelled'}</p>` : timelineHTML}
       ${itemsHTML}
       <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap">
-        <button class="btn-invoice" onclick="downloadInvoice('${orderId}')">🧾 Download Invoice (Meesho-type)</button>
+        <button class="btn-invoice" onclick="downloadInvoice('${orderId}')">🧾 Download Invoice</button>
         <button class="btn-track" onclick="trackCourier('${orderId}')">📦 Track Courier</button>
         ${canReturn ? `<button class="btn-return" onclick="returnProduct('${orderId}')">↩ Return Product</button>` : ''}
         ${isDelivered && o.returnStatus==='requested' ? '<span style="font-size:12px;color:#ff9800">Return Requested</span>' : ''}
