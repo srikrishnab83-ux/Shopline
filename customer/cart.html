@@ -1,9 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><!-- PLAYABLE_TOUCH_PATCH_V1 --><script>
+(function() {
+  if (window.__playableTouchPatchInstalled) return;
+  window.__playableTouchPatchInstalled = true;
+  var origAdd = EventTarget.prototype.addEventListener;
+  var blockedTypes = { touchstart: 1, touchmove: 1, wheel: 1 };
+  EventTarget.prototype.addEventListener = function(type, listener, options) {
+    if (blockedTypes[type]) {
+      if (options === undefined || options === null) {
+        options = { passive: true };
+      } else if (typeof options === 'boolean') {
+        options = { capture: options, passive: true };
+      } else {
+        options = Object.assign({}, options, { passive: true });
+      }
+    }
+    return origAdd.call(this, type, listener, options);
+  };
+})();
+</script><script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your Cart - Shopline Kerala - Clean Customer View</title>
+  <title>Your Cart - Shopline Kerala - FREE Shipping Always - No Limit</title>
   <link rel="stylesheet" href="../css/style.css">
   <style>
 .container-cart{max-width:1100px; margin:20px auto; display:flex; gap:20px; padding:0 20px}
@@ -20,27 +39,24 @@
 .form-group label{font-size:13px; font-weight:bold}
 .form-group input,.form-group textarea{padding:10px; margin-top:5px; border:1px solid #ccc; border-radius:4px; width:95%}
 .req{color:red}
-.free-tag{color:green; font-weight:bold}
-.policy-box{font-size:13px; color:#555; margin-top:15px; line-height:1.6}
-.back-btn{display:inline-block; margin-bottom:15px; text-decoration:none; color:#2874f0; font-weight:bold; font-size:14px}
+.free-tag{color:#2e7d32; font-weight:bold; background:#e8f5e9; padding:4px 8px; border-radius:12px; border:1px solid #4caf50}
 .badge-no-return{background:#ffebee; color:#d32f2f; padding:4px 8px; border-radius:12px; font-size:10px; font-weight:bold; border:1px solid #ffcdd2; display:inline-block; margin:2px}
 .badge-return-ok{background:#e8f5e9; color:#2e7d32; padding:4px 8px; border-radius:12px; font-size:10px; font-weight:bold; border:1px solid #c8e6c9; display:inline-block; margin:2px}
 .return-info-box{padding:8px; border-radius:6px; margin-top:8px; font-size:11px; line-height:1.4}
 .return-info-box.no-return{background:#ffebee; border:1px solid #ffcdd2; color:#c62828}
 .return-info-box.has-return{background:#e8f5e9; border:1px solid #c8e6c9; color:#2e7d32}
+.free-ship-banner{background:#e8f5e9; border:2px solid #4caf50; padding:10px; border-radius:8px; text-align:center; margin:10px 0; color:#2e7d32; font-weight:bold}
   @media (max-width: 768px){
    .container-cart{flex-direction: column; padding: 0 10px}
    .cart-items,.price-box{flex: 1; width: 100%}
    .price-box{position: static; margin-top: 20px}
    .cart-item{flex-direction: column}
    .cart-item img{width: 100%; height: 200px}
-   .form-group[style*="display:flex"]{flex-direction: column}
-   .checkout-btn{font-size: 18px; padding: 16px}
   }
   </style>
 </head>
 <body>
-  <div class="top-bar"><p>Delivering across all 14 districts of Kerala | COD Available | Free Shipping Above ₹999</p></div>
+  <div class="top-bar"><p>🚚 FREE Shipping on ALL orders - No minimum - Delivering across all 14 districts of Kerala | COD Available</p></div>
   <header class="navbar">
     <div class="container">
       <div class="logo" onclick="location.href='../index.html'" style="cursor:pointer;">Shopline<span>Kerala</span></div>
@@ -50,8 +66,9 @@
 
   <div class="container-cart">
     <div class="cart-items">
-      <a href="#" onclick="exitAndClearCart()" class="back-btn">← Continue Shopping</a>
+      <a href="../index.html" class="back-btn" style="display:inline-block; margin-bottom:15px; text-decoration:none; color:#2874f0; font-weight:bold">← Continue Shopping</a>
       <h2>Shopping Cart (<span id="cartCount">0</span> items)</h2>
+      <div class="free-ship-banner">🎉 FREE Shipping on ALL orders - No minimum amount! - All Kerala Delivery</div>
       <div id="cartList">Loading...</div>
 
       <h3 style="margin-top:20px">Customer Details <span class="req">*</span></h3>
@@ -66,27 +83,28 @@
         <div style="flex:1"><label>Pincode <span class="req">*</span></label><input id="custPincode" placeholder="6 Digit Pincode"></div>
         <div style="flex:1"><label>Landmark</label><input id="custLandmark" placeholder="Near Bus Stand"></div>
       </div>
-
-      <h3 style="margin-top:20px">Delivery Information</h3>
-      <div class="policy-box">
-        <p><b>🚚 Delivery Time:</b> 2-3 Days for Courier. 5-7 Days for Postal.</p>
-        <p><b>💰 COD Available:</b> Cash on Delivery available.</p>
-        <p id="returnPolicyOverall"><b>↩️ Return:</b> Return/Exchange depends on product. Check below each product.</p>
-        <p><b>🎁 FREE Shipping:</b> On orders above ₹999</p>
-      </div>
     </div>
 
     <div class="price-box">
       <h3>PRICE DETAILS</h3>
       <p>Price (<span id="itemCount">0</span> items) <span id="totalPrice" style="float:right">₹0</span></p>
-      <h4 style="margin-top:15px">Choose Shipping</h4>
-      <label style="display:block; border:1px solid #ddd; padding:10px; margin:8px 0; border-radius:4px"><input type="radio" name="shipping" value="60" checked onchange="updateTotal()"> Courier - ₹60 - 2-3 Days</label>
-      <label style="display:block; border:1px solid #ddd; padding:10px; margin:8px 0; border-radius:4px"><input type="radio" name="shipping" value="40" onchange="updateTotal()"> India Post - ₹40 - 5-7 Days</label>
-      <p>Shipping Charges <span id="shipCharge" style="float:right">₹60</span></p>
+      
+      <div style="background:#e8f5e9; padding:12px; border-radius:8px; margin:10px 0; border:1px solid #4caf50">
+        <b>🚚 Shipping:</b>
+        <label style="display:block; border:2px solid #4caf50; padding:10px; margin:8px 0; border-radius:8px; background:#fff; cursor:pointer">
+          <input type="radio" name="shipping" value="0" checked onchange="updateTotal()" style="accent-color:#4caf50"> 
+          <b>FREE Shipping - All Orders</b> - 2-3 Days - No minimum amount
+          <span style="float:right; color:#2e7d32; font-weight:bold">FREE</span>
+        </label>
+        <p style="font-size:11px; color:#2e7d32; margin-top:5px">✅ No ₹60, No ₹40 - FREE for all Kerala - No limit!</p>
+      </div>
+
+      <p>Shipping Charges <span id="shipCharge" style="float:right"><span class="free-tag">FREE</span></span></p>
       <hr>
       <h3>Total Amount <span id="finalTotal" style="float:right">₹0</span></h3>
-      <button class="checkout-btn" onclick="checkout()">Place Order</button>
-      <p style="font-size:11px; color:#666; margin-top:8px; text-align:center">Secure checkout | 100% safe</p>
+      <p id="freeShipMsg" style="font-size:11px; color:#2e7d32; background:#e8f5e9; padding:8px; border-radius:4px; margin-top:8px">🎉 You got FREE Shipping - No minimum amount required!</p>
+      <button class="checkout-btn" onclick="checkout()">Place Order - FREE Shipping</button>
+      <p style="font-size:11px; color:#666; margin-top:8px; text-align:center">Secure checkout | 100% safe | FREE Delivery</p>
     </div>
   </div>
 
@@ -112,7 +130,6 @@ onAuthStateChanged(auth, (user) => {
     currentUserId = user.uid;
     currentUserEmail = user.email;
   } else {
-    // Don't redirect immediately, allow viewing cart, but check on checkout
     currentUserId = null;
   }
 });
@@ -131,8 +148,6 @@ function loadCart() {
   cartList.innerHTML = '';
   productTotal = 0;
   let totalQty = 0;
-  let hasReturnable = false;
-  let hasNonReturnable = false;
 
   for (let i = 0; i < cart.length; i++) {
     let item = cart[i];
@@ -141,14 +156,10 @@ function loadCart() {
     productTotal += itemTotal;
     totalQty += item.qty;
 
-    // Return/Exchange logic - clean for customer
     const isReturnable = item.returnAvailable || false;
     const isExchangeable = item.exchangeAvailable || false;
     const returnDays = item.returnDays || 0;
     const exchangeDays = item.exchangeDays || 0;
-
-    if(isReturnable) hasReturnable = true;
-    else hasNonReturnable = true;
 
     let returnBadges = '';
     let returnInfoText = '';
@@ -171,7 +182,7 @@ function loadCart() {
 
     cartList.innerHTML += `
       <div class="cart-item">
-        <img src="${item.image}">
+        <img src="${item.image}" onerror="this.src='https://via.placeholder.com/100?text=No+Image'">
         <div style="flex:1">
           <h4>${item.name}</h4>
           <p style="font-size:12px; color:#555">Size: <b>${item.size || 'N/A'}</b> | Color: <b>${item.color || 'N/A'}</b></p>
@@ -191,17 +202,6 @@ function loadCart() {
 
   document.getElementById('cartCount').innerText = totalQty;
   document.getElementById('itemCount').innerText = totalQty;
-  
-  // Update overall return policy text
-  const overallPolicy = document.getElementById('returnPolicyOverall');
-  if(hasReturnable && hasNonReturnable) {
-    overallPolicy.innerHTML = `<b>↩️ Return:</b> Some items returnable, some final sale. Check each product above.`;
-  } else if(hasReturnable) {
-    overallPolicy.innerHTML = `<b>↩️ Return:</b> Return/Exchange available as per product policy.`;
-  } else {
-    overallPolicy.innerHTML = `<b>↩️ Return:</b> No Return & Exchange - All items final sale. Check size carefully.`;
-  }
-
   updateTotal();
 }
 
@@ -213,15 +213,12 @@ window.updateQty = function(index, change){
 }
 
 window.updateTotal = function(){
-  let shippingCharge = parseInt(document.querySelector('input[name="shipping"]:checked').value);
-  if(productTotal > 999){
-    shippingCharge = 0;
-    document.getElementById('shipCharge').innerHTML = '<span class="free-tag">FREE</span>';
-  } else {
-    document.getElementById('shipCharge').innerText = '₹' + shippingCharge;
-  }
+  // FIXED: FREE SHIPPING ALWAYS - NO LIMIT, NO ₹60, NO ₹40
+  const shippingCharge = 0; // ALWAYS 0 - FREE FOR ALL
+  
+  document.getElementById('shipCharge').innerHTML = '<span class="free-tag">FREE</span>';
   document.getElementById('totalPrice').innerText = '₹' + productTotal.toLocaleString();
-  document.getElementById('finalTotal').innerText = '₹' + (productTotal + shippingCharge).toLocaleString();
+  document.getElementById('finalTotal').innerText = '₹' + productTotal.toLocaleString(); // Total = Product total only
 }
 
 window.removeItem = function(index){
@@ -246,17 +243,8 @@ window.checkout = async function(){
   
   if(!currentUserId) {
     alert("Please login to place order");
-    // Fixed login path - try multiple possibilities
-    // If seller login exists at ../seller/login.html or ../login.html or login.html
-    // Redirect to home with login prompt
     localStorage.setItem('redirectAfterLogin', 'cart');
     window.location.href = '../seller/login.html';
-    // Fallback: if that 404s, try root
-    setTimeout(() => {
-      if(window.location.href.includes('404') || document.title.includes('404')) {
-        window.location.href = '../index.html';
-      }
-    }, 1000);
     return;
   }
 
@@ -265,14 +253,12 @@ window.checkout = async function(){
   btn.disabled = true;
 
   try {
-    let shippingCharge = productTotal > 999? 0 : parseInt(document.querySelector('input[name="shipping"]:checked').value);
+    // FIXED: FREE SHIPPING ALWAYS - NO CHARGE
+    let shippingCharge = 0; // ALWAYS FREE
     
     let originalSellerIds = [...new Set(cart.map(item => item.sellerId || item.originalSellerId).filter(id => id && id !== "unknown" && id !== undefined))];
     if(originalSellerIds.length === 0) originalSellerIds = [ADMIN_UID];
     
-    let sellerIds = [ADMIN_UID];
-
-    // Clean items for order - keep return policy but hide seller tracking from customer view, keep for admin
     let enhancedItems = cart.map(item => ({
       name: item.name,
       price: Number(item.price),
@@ -287,7 +273,7 @@ window.checkout = async function(){
       returnDays: item.returnDays || 0,
       exchangeAvailable: item.exchangeAvailable || false,
       exchangeDays: item.exchangeDays || 0,
-      returnPolicy: item.returnPolicy || (item.returnAvailable ? `${item.returnDays} Days Return` : 'No Return, No Exchange')
+      returnPolicy: item.returnPolicy || 'No Return, No Exchange'
     }));
 
     let returnDate = new Date();
@@ -300,13 +286,12 @@ window.checkout = async function(){
       customerEmail: currentUserEmail || "",
       customer: {name, phone, street, district, state, pincode, landmark},
       items: enhancedItems,
-      sellerIds: sellerIds,
+      sellerIds: [ADMIN_UID],
       originalSellerIds: originalSellerIds,
       productTotal, 
-      shippingCharge, 
-      finalTotal: productTotal + shippingCharge,
+      shippingCharge: 0, // FREE
+      finalTotal: productTotal, // No shipping added - FREE SHIPPING
       hasReturnableItems: enhancedItems.some(i => i.returnAvailable),
-      hasExchangeableItems: enhancedItems.some(i => i.exchangeAvailable),
       status: "New Order", 
       orderStatus: "new",
       trackingStatus: "Order Received",
@@ -315,9 +300,10 @@ window.checkout = async function(){
       createdAt: serverTimestamp()
     };
 
+    const { collection: col, addDoc: add } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
     const docRef = await addDoc(collection(db, "orders"), orderData);
 
-    alert(`Order Placed Successfully! Order ID: #${docRef.id.substring(0,6)} Total: ₹${productTotal + shippingCharge}`);
+    alert(`Order Placed Successfully! Order ID: #${docRef.id.substring(0,6)} Total: ₹${productTotal} with FREE Shipping!`);
     
     localStorage.removeItem('cart');
     window.location.href = '../customer/order.html';
@@ -325,15 +311,8 @@ window.checkout = async function(){
   } catch(error) {
     console.error("Order error:", error);
     alert("Order failed: " + error.message);
-    btn.innerText = 'Place Order';
+    btn.innerText = 'Place Order - FREE Shipping';
     btn.disabled = false;
-  }
-}
-
-window.exitAndClearCart = function(){
-  if(confirm('Are you sure? This will remove all items from your cart.')){
-    localStorage.removeItem('cart');
-    window.location.href = '../index.html';
   }
 }
 
