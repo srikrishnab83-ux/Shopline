@@ -1,25 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><!-- PLAYABLE_TOUCH_PATCH_V1 --><script>
+(function() {
+  if (window.__playableTouchPatchInstalled) return;
+  window.__playableTouchPatchInstalled = true;
+  var origAdd = EventTarget.prototype.addEventListener;
+  var blockedTypes = { touchstart: 1, touchmove: 1, wheel: 1 };
+  EventTarget.prototype.addEventListener = function(type, listener, options) {
+    if (blockedTypes[type]) {
+      if (options === undefined || options === null) {
+        options = { passive: true };
+      } else if (typeof options === 'boolean') {
+        options = { capture: options, passive: true };
+      } else {
+        options = Object.assign({}, options, { passive: true });
+      }
+    }
+    return origAdd.call(this, type, listener, options);
+  };
+})();
+</script><script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Products - Shopline Kerala</title>
+  <title>Products - Shopline Kerala - FIXED 404 + FREE Shipping No Limit</title>
   <link rel="stylesheet" href="../css/style.css">
   <style>
    .search-wrap{display:flex; gap:5px; flex:1; max-width:400px; margin:0 20px}
    .search-wrap input{padding:8px; border-radius:4px; border:none; width:100%}
    .search-wrap button{padding:8px 12px; border:none; border-radius:4px; background:#fff; cursor:pointer}
    .add-cart-btn{background:#fb641b; color:#fff; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; width:100%; margin-top:8px; font-weight:bold}
-   .product-card{padding:10px; border:1px solid #eee; border-radius:8px; background:#fff}
-   .product-card:hover{box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+   .product-card{padding:10px; border:1px solid #eee; border-radius:8px; background:#fff; cursor:pointer; transition:0.2s; text-align:center}
+   .product-card:hover{box-shadow:0 4px 12px rgba(0,0,0,0.15); transform:translateY(-2px)}
+   .product-card img{width:100%; height:200px; object-fit:contain; background:#f9f9f9; border-radius:4px; border:1px solid #eee}
    .oldPrice{text-decoration:line-through; color:#878787; font-size:12px; margin-left:5px}
    .discount{color:#388e3c; font-size:12px; font-weight:bold}
+   .free-badge{background:#e8f5e9; color:#2e7d32; padding:4px 8px; border-radius:12px; font-size:10px; font-weight:bold; border:1px solid #4caf50; display:inline-block; margin:5px 0}
+   .product-grid-4{display:grid; grid-template-columns:repeat(4,1fr); gap:15px; padding:10px 0}
+   @media(max-width:768px){.product-grid-4{grid-template-columns:repeat(2,1fr)}}
   </style>
 </head>
 <body>
-  <!-- SAME HEADER AS HOMEPAGE -->
+  <!-- SAME HEADER AS HOMEPAGE - FIXED NO SELLER -->
   <div class="top-bar">
-    <p>Delivering across all 14 districts of Kerala | COD Available</p>
+    <p>🚚 FREE Shipping on ALL orders - No minimum - Delivering across all 14 districts of Kerala | COD Available</p>
   </div>
   <header class="navbar">
     <div class="container" style="display:flex; align-items:center">
@@ -29,15 +52,15 @@
         <button id="searchBtn" onclick="searchProducts()">🔍</button>
       </div>
       <div class="nav-icons">
-        <a href="auth.html" id="authLink">Login</a>
-        <a href="cart.html" id="cartLink" style="background:#fb641b; padding:8px 15px; border-radius:4px; color:#fff">🛒 Cart(0)</a>
+        <a href="../seller/login.html" id="authLink">Login</a>
+        <a href="cart.html" id="cartLink" style="background:#fb641b; padding:8px 15px; border-radius:4px; color:#fff; text-decoration:none">🛒 Cart(0)</a>
       </div>
     </div>
   </header>
 
   <!-- FILTERS - 12 CATEGORIES HARDCODED -->
   <section class="filters">
-    <div class="container" style="display:flex; gap:10px; flex-wrap:wrap; padding:15px">
+    <div class="container" style="display:flex; gap:10px; flex-wrap:wrap; padding:15px; background:#fff; margin:10px 0; align-items:center">
       <h3>Filters</h3>
       <select id="districtFilter"><option value="all">All Districts</option></select>
 
@@ -64,13 +87,14 @@
         <option value="1000-5000">₹1000 - ₹5000</option>
         <option value="5000+">Above ₹5000</option>
       </select>
+      <span style="margin-left:auto; background:#e8f5e9; color:#2e7d32; padding:6px 12px; border-radius:20px; font-size:11px; font-weight:bold; border:1px solid #4caf50">🚚 FREE Shipping Always</span>
     </div>
   </section>
 
   <!-- PRODUCT RESULTS -->
   <section class="products-page">
     <div class="container">
-      <h2 id="resultTitle">All Products</h2>
+      <h2 id="resultTitle">All Products - FREE Shipping</h2>
       <p id="resultCount">Loading...</p>
       <div class="product-grid-4" id="productGrid">
         <!-- Products will load here from Firebase -->
@@ -133,6 +157,18 @@ function updateCartCount(){
   document.getElementById('cartLink').innerText = `🛒 Cart(${totalQty})`;
 }
 
+// FIXED: PRODUCT CLICK 404 - Use correct path product.html?id= (same folder) OR absolute /Shopline/customer/product.html?id=
+function openProduct(productId) {
+  // This file is at /Shopline/customer/products.html
+  // Product details is at /Shopline/customer/product.html?id=
+  // FIXED: Use product.html?id= (same folder) not ../product.html
+  // For GitHub Pages safety, use absolute path with repo name
+  const isGitHub = window.location.hostname.includes('github.io');
+  const url = isGitHub ? `/Shopline/customer/product.html?id=${productId}` : `product.html?id=${productId}`;
+  console.log('Opening product fixed:', productId, 'URL:', url);
+  window.location.href = url;
+}
+
 async function loadProducts() {
   try {
     const snap = await getDocs(collection(db, "products"));
@@ -143,7 +179,7 @@ async function loadProducts() {
       const p = doc.data();
       p.id = doc.id;
       allProducts.push(p);
-      districts.add(p.district);
+      if(p.district) districts.add(p.district);
     });
 
     fillDropdown(districtFilter, districts);
@@ -159,12 +195,14 @@ async function loadProducts() {
     updateCartCount();
   } catch(e) {
     console.error("Error:", e);
-    document.getElementById('productGrid').innerHTML = "Error loading products";
+    document.getElementById('productGrid').innerHTML = `<p style="text-align:center; grid-column:1/-1; color:#d32f2f">Error loading products: ${e.message}</p>`;
   }
 }
 
 function fillDropdown(select, items) {
-  select.innerHTML = '<option value="all">All</option>';
+  const firstOpt = select.options[0];
+  select.innerHTML = '';
+  select.appendChild(firstOpt);
   items.forEach(item => {
     if(item){
       const opt = document.createElement('option');
@@ -192,40 +230,44 @@ function updateSubcategoryDropdown() {
 
 function displayProducts(products) {
   const container = document.getElementById('productGrid');
-  document.getElementById('resultCount').innerText = `${products.length} Products Found`;
+  document.getElementById('resultCount').innerText = `${products.length} Products Found - FREE Shipping on All`;
   container.innerHTML = '';
   if(products.length == 0){
-    container.innerHTML = "<p>No products found</p>";
+    container.innerHTML = "<p style='grid-column:1/-1; text-align:center; padding:40px'>No products found<br><a href='products.html'>View All</a></p>";
     return;
   }
   products.forEach(p => {
-    const img = p.images && p.images[0]? p.images[0] : 'img/no-image.jpg';
+    const img = p.images && p.images[0]? p.images[0] : p.image ? p.image : 'https://via.placeholder.com/200?text=No+Image';
     const price = p.customerPrice || p.price || 0;
     const oldPrice = p.oldPrice || price;
     const discount = oldPrice > price? Math.round((1 - price/oldPrice)*100) : 0;
 
     container.innerHTML += `
       <div class="product-card" data-name="${p.name}">
-        <div onclick="location.href='../product.html?id=${p.id}'" style="cursor:pointer">
-          <img src="${img}" style="width:100%; height:200px; object-fit:cover">
+        <div onclick="openProduct('${p.id}')" style="cursor:pointer">
+          <img src="${img}" style="width:100%; height:200px; object-fit:contain" onerror="this.src='https://via.placeholder.com/200?text=No+Image'; this.onerror=null">
           <h3>${p.name}</h3>
           <p class="price">₹${Number(price).toLocaleString()} <span class="oldPrice">${oldPrice > price? '₹'+Number(oldPrice).toLocaleString() : ''}</span></p>
           <p class="discount">${discount > 0? discount+'% off' : ''}</p>
-          <p><small>📍 ${p.district} | ${p.category} > ${p.subcategory}</small></p>
+          <span class="free-badge">🚚 FREE Shipping</span>
+          <p><small>📍 ${p.district || 'Kerala'} | ${p.category || 'Fashion'} ${p.subcategory ? '> ' + p.subcategory : ''}</small></p>
         </div>
-        <button class="add-cart-btn" onclick="quickAddToCart('${p.id}', '${p.name}', '${img}', ${price})">Add to Cart</button>
+        <button class="add-cart-btn" onclick="quickAddToCart('${p.id}', '${p.name.replace(/'/g, "\\'")}', '${img}', ${price}, '${p.sellerId || ''}')">Add to Cart</button>
       </div>
     `;
   });
 }
 
-// 3. FIXED ADD TO CART
-window.quickAddToCart = function(id, name, image, price) {
+// 3. FIXED ADD TO CART - WITH FREE SHIPPING
+window.quickAddToCart = function(id, name, image, price, sellerId) {
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
   const cartItem = {
     id, name, image, price: Number(price), qty: 1,
-    size: 'NA', color: 'NA', variant: 'Default'
+    sellerId: sellerId || 'c3yryIVuoCWpHHEUNAYZAV9pwVqVq1',
+    size: 'NA', color: 'NA', variant: 'Default',
+    freeShipping: true,
+    returnAvailable: false
   }
 
   const existing = cart.find(item => item.id === id && item.variant === 'Default');
@@ -236,9 +278,8 @@ window.quickAddToCart = function(id, name, image, price) {
   }
 
   localStorage.setItem('cart', JSON.stringify(cart));
-  alert(`${name} added to cart`);
+  alert(`${name} added to cart - FREE Shipping!`);
   updateCartCount();
-  window.location.href = 'cart.html';
 }
 
 // 4. SEARCH FUNCTION
@@ -263,8 +304,8 @@ function applyFilters() {
   if(searchQuery) {
     filtered = filtered.filter(p =>
       p.name.toLowerCase().includes(searchQuery) ||
-      p.category.toLowerCase().includes(searchQuery) ||
-      p.subcategory.toLowerCase().includes(searchQuery)
+      (p.category && p.category.toLowerCase().includes(searchQuery)) ||
+      (p.subcategory && p.subcategory.toLowerCase().includes(searchQuery))
     );
   }
   if(districtFilter.value!= 'all') filtered = filtered.filter(p => p.district == districtFilter.value);
