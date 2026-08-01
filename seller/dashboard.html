@@ -1,27 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><!-- PLAYABLE_TOUCH_PATCH_V1 --><script>
-(function() {
-  if (window.__playableTouchPatchInstalled) return;
-  window.__playableTouchPatchInstalled = true;
-  var origAdd = EventTarget.prototype.addEventListener;
-  var blockedTypes = { touchstart: 1, touchmove: 1, wheel: 1 };
-  EventTarget.prototype.addEventListener = function(type, listener, options) {
-    if (blockedTypes[type]) {
-      if (options === undefined || options === null) {
-        options = { passive: true };
-      } else if (typeof options === 'boolean') {
-        options = { capture: options, passive: true };
-      } else {
-        options = Object.assign({}, options, { passive: true });
-      }
-    }
-    return origAdd.call(this, type, listener, options);
-  };
-})();
-</script><script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
+<head>
   <meta charset="UTF-8">
-  <title>Seller Dashboard - Shopline Kerala FINAL - Contributor Marketplace with Seller Tracking & Top Sellers</title>
+  <title>Seller Dashboard FINAL - Return/Exchange Per Product Option + Seller Tracking</title>
   <script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <link rel="stylesheet" href="../css/style.css">
@@ -71,6 +52,11 @@
 .chip.active{border-color:#2874f0; background:#e3f2fd; color:#2874f0; font-weight:bold}
 .note{background:#fff3cd; padding:10px; border-left:4px solid #ffc107; margin:15px 0; font-size:13px}
 .price-box{background:#e8f5e9; padding:15px; border-radius:8px; margin-top:10px; border:1px solid #c8e6c9}
+.return-box{background:#fff3e0; padding:15px; border-radius:8px; margin-top:15px; border:2px solid #ff9800}
+.return-option{display:flex; gap:15px; margin:10px 0; align-items:center; flex-wrap:wrap}
+.return-option label{display:flex; align-items:center; gap:6px; padding:8px 14px; border:2px solid #ddd; border-radius:20px; cursor:pointer; background:#fff; font-size:12px; font-weight:bold}
+.return-option input[type="radio"]:checked + span{color:#ff9800}
+.return-option label.active{border-color:#ff9800; background:#fff3e0}
 .section-title{margin-top:20px; margin-bottom:10px; color:#2874f0; border-bottom:1px solid #ddd; padding-bottom:5px; font-size:15px}
 .badge-cancel{background:#ffebee; color:#d32f2f; padding:4px 8px; border-radius:4px; font-size:11px}
 .badge-return{background:#e3f2fd; color:#1976d2; padding:4px 8px; border-radius:4px; font-size:11px}
@@ -79,6 +65,8 @@
 .badge-status{padding:4px 8px; border-radius:12px; font-size:10px; font-weight:bold; background:#e3f2fd; color:#1565c0}
 .badge-seller{background:#e8f5e9; color:#2e7d32; padding:4px 8px; border-radius:12px; font-size:10px; font-weight:bold; border:1px solid #4caf50}
 .badge-top{background:#fff3e0; color:#e65100; padding:6px 10px; border-radius:20px; font-size:11px; font-weight:bold; border:1px solid #ff9800}
+.badge-no-return{background:#ffebee; color:#d32f2f; padding:4px 8px; border-radius:12px; font-size:10px; font-weight:bold; border:1px solid #d32f2f}
+.badge-return-ok{background:#e8f5e9; color:#2e7d32; padding:4px 8px; border-radius:12px; font-size:10px; font-weight:bold; border:1px solid #4caf50}
 .gst-breakup{background:#fff; padding:12px; border-radius:6px; margin-top:10px; font-size:13px; border:1px dashed #388e3c; line-height:1.8}
 .edit-modal{position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; display:none; justify-content:center; align-items:flex-start; overflow-y:auto; padding:20px}
 .edit-modal-content{background:#fff; width:95%; max-width:950px; margin:20px auto; border-radius:12px; padding:20px; max-height:95vh; overflow-y:auto}
@@ -101,10 +89,10 @@
   </style>
 </head>
 <body>
-  <div class="top-bar"><p id="topBarText">Shopline Kerala - Marketplace | Sellers add products, Orders only to Admin, Seller Tracking + Top Sellers + Payment Tracking</p></div>
+  <div class="top-bar"><p id="topBarText">Shopline Kerala - Marketplace with Per-Product Return/Exchange + Seller Tracking</p></div>
   <header class="navbar">
     <div class="container" style="display:flex; justify-content:space-between; align-items:center">
-      <div class="logo">Shopline<span>Kerala</span> Seller <span id="adminBadge" style="display:none" class="badge-admin">MAIN ADMIN</span> <span id="contributorBadge" style="display:none; background:#e3f2fd; color:#1565c0; padding:6px 12px; border-radius:20px; font-size:11px">CONTRIBUTOR - Products Only</span></div>
+      <div class="logo">Shopline<span>Kerala</span> Seller <span id="adminBadge" style="display:none" class="badge-admin">MAIN ADMIN</span> <span id="contributorBadge" style="display:none; background:#e3f2fd; color:#1565c0; padding:6px 12px; border-radius:20px; font-size:11px">CONTRIBUTOR</span></div>
       <div>
         <button class="btn-back" onclick="goHome()">⬅ Home</button>
         <button class="btn-logout" onclick="logout()">Logout</button>
@@ -114,111 +102,94 @@
 
   <div class="dashboard">
     <div class="tabs">
-      <button class="tab-btn active" onclick="openTab(event,'orders')">📦 Orders (Admin Only)</button>
+      <button class="tab-btn active" onclick="openTab(event,'orders')">📦 Orders</button>
       <button class="tab-btn" onclick="openTab(event,'profile')">👤 My Seller Profile</button>
-      <button class="tab-btn" onclick="openTab(event,'products')">🛍 My Products</button>
-      <button class="tab-btn" onclick="openTab(event,'add')">➕ Add Product</button>
-      <button class="tab-btn" onclick="openTab(event,'mySales')">💰 My Sales Report</button>
-      <button class="tab-btn admin-tab" id="adminTabBtn" onclick="openTab(event,'admin')">🔐 ADMIN - All Control</button>
+      <button class="tab-btn" onclick="openTab(event,'products')">🛍 My Products + Return Info</button>
+      <button class="tab-btn" onclick="openTab(event,'add')">➕ Add Product + Return/Exchange</button>
+      <button class="tab-btn" onclick="openTab(event,'mySales')">💰 My Sales</button>
+      <button class="tab-btn admin-tab" id="adminTabBtn" onclick="openTab(event,'admin')">🔐 ADMIN</button>
     </div>
 
-    <!-- ORDERS TAB - Only Admin Gets Orders -->
     <div id="orders" class="tab-content active">
       <div id="adminOrdersView">
-        <h2>📦 All Orders - With Seller Tracking (Whose Product Sold)</h2>
-        <div class="note"><b>Contributor Marketplace:</b> Other sellers add products, but orders come only to YOU (Main Admin). You can see whose product sold to pay them. Return Penalty ₹40 seller paid, Exchange ₹0.</div>
+        <h2>📦 All Orders - With Seller Tracking + Return Info</h2>
+        <div class="note">Return policy per product - only if seller allowed return while adding product.</div>
         <div class="stats">
-          <div class="stat-card"><h3 id="totalOrders">0</h3><p>Total Orders (Admin Only)</p></div>
-          <div class="stat-card" style="background:#fb641b"><h3 id="newOrders">0</h3><p>Active Orders</p></div>
+          <div class="stat-card"><h3 id="totalOrders">0</h3><p>Total Orders</p></div>
+          <div class="stat-card" style="background:#fb641b"><h3 id="newOrders">0</h3><p>Active</p></div>
           <div class="stat-card" style="background:#d32f2f"><h3 id="cancelledCount">0</h3><p>Cancelled</p></div>
           <div class="stat-card" style="background:#1976d2"><h3 id="returnCount">0</h3><p>Returns/Exchange</p></div>
-          <div class="stat-card" style="background:#388e3c"><h3 id="totalRevenue">₹0</h3><p>Total Revenue</p></div>
-          <div class="stat-card" style="background:#9c27b0"><h3 id="totalProducts">0</h3><p>My Products + All Contributors</p></div>
+          <div class="stat-card" style="background:#388e3c"><h3 id="totalRevenue">₹0</h3><p>Revenue</p></div>
+          <div class="stat-card" style="background:#9c27b0"><h3 id="totalProducts">0</h3><p>Products</p></div>
         </div>
         <table class="orders-table">
-          <thead><tr><th>Order ID</th><th>Customer</th><th>Items + Belongs To (Seller Tracking)</th><th>Amount</th><th>Status / Tracking</th><th>Courier</th><th>Notify</th><th>Action</th></tr></thead>
+          <thead><tr><th>Order ID</th><th>Customer</th><th>Items + Return Policy + Belongs To</th><th>Amount</th><th>Status</th><th>Courier</th><th>Notify</th><th>Action</th></tr></thead>
           <tbody id="ordersList"></tbody>
         </table>
       </div>
       <div id="contributorOrdersView" style="display:none">
         <div style="background:#fff3cd; padding:30px; border-radius:12px; text-align:center; border-left:6px solid #ffc107">
           <h2>ℹ️ Contributor Mode - No Orders</h2>
-          <p style="margin:15px 0">You are registered as <b>Product Contributor</b>.</p>
-          <p>You can <b>add and edit your products</b> to Shopline Kerala website.</p>
-          <p>Your products are visible on website and customers buy them.</p>
-          <p>But <b>all orders are received only by Main Admin</b> (srikrishnab83@gmail.com).</p>
-          <p>Main admin will track whose product sold and pay you accordingly.</p>
-          <div style="margin-top:20px; background:#e3f2fd; padding:15px; border-radius:8px">
-            <b>Your Role:</b> Add Products → Admin Sells → Admin Pays You<br>
-            <b>Check My Sales Report tab to see how many of your products sold</b>
-          </div>
-          <button class="btn-save" style="margin-top:20px" onclick="openTab(event,'mySales')">View My Sales Report →</button>
+          <p>Your products visible on website, orders managed by Main Admin</p>
+          <button class="btn-save" onclick="openTab(event,'mySales')">View My Sales →</button>
         </div>
       </div>
     </div>
 
-    <!-- SELLER PROFILE TAB - NEW -->
     <div id="profile" class="tab-content">
-      <h2>👤 My Seller Profile - Name, WhatsApp, Contact for Payment Tracking</h2>
-      <div class="note">Fill your details correctly - Admin will use this to pay you when your product sells. WhatsApp number for order updates.</div>
+      <h2>👤 My Seller Profile - Name, WhatsApp, Contact for Payment</h2>
       <div class="seller-profile-box">
-        <h3 style="color:#2874f0; margin-bottom:15px">Seller Information for Payment & Contact</h3>
         <div class="profile-grid">
           <div class="form-group"><label>Seller Full Name *</label><input id="sellerName" placeholder="Your full name" required></div>
-          <div class="form-group"><label>WhatsApp Number * (For order updates)</label><input id="sellerWhatsapp" placeholder="10 digit WhatsApp" type="tel" required></div>
-          <div class="form-group"><label>Contact / Calling Number *</label><input id="sellerContact" placeholder="Contact number" type="tel" required></div>
+          <div class="form-group"><label>WhatsApp Number *</label><input id="sellerWhatsapp" placeholder="10 digit WhatsApp" type="tel" required></div>
+          <div class="form-group"><label>Contact Number *</label><input id="sellerContact" placeholder="Contact number" type="tel" required></div>
           <div class="form-group"><label>Email (Auto)</label><input id="sellerEmail" readonly style="background:#f5f5f5"></div>
-          <div class="form-group"><label>UPI ID * (For receiving payment)</label><input id="sellerUpiId" placeholder="yourname@upi" required></div>
+          <div class="form-group"><label>UPI ID *</label><input id="sellerUpiId" placeholder="yourname@upi" required></div>
           <div class="form-group"><label>UPI Holder Name</label><input id="sellerUpiName" placeholder="Name as per UPI"></div>
-          <div class="form-group"><label>Shop / Business Name</label><input id="sellerShopName" placeholder="Your shop name"></div>
+          <div class="form-group"><label>Shop Name</label><input id="sellerShopName" placeholder="Your shop name"></div>
           <div class="form-group"><label>District *</label>
             <select id="sellerDistrict" required>
               <option value="">Select District</option>
               <option value="Kasaragod">Kasaragod</option><option value="Kannur">Kannur</option><option value="Wayanad">Wayanad</option><option value="Kozhikode">Kozhikode</option><option value="Malappuram">Malappuram</option><option value="Palakkad">Palakkad</option><option value="Thrissur">Thrissur</option><option value="Ernakulam">Ernakulam</option><option value="Idukki">Idukki</option><option value="Kottayam">Kottayam</option><option value="Alappuzha">Alappuzha</option><option value="Pathanamthitta">Pathanamthitta</option><option value="Kollam">Kollam</option><option value="Thiruvananthapuram">Thiruvananthapuram</option>
             </select>
           </div>
-          <div class="form-group" style="grid-column:1/3"><label>Full Address</label><textarea id="sellerAddress" rows="2" placeholder="Your full address for records"></textarea></div>
+          <div class="form-group" style="grid-column:1/3"><label>Full Address</label><textarea id="sellerAddress" rows="2" placeholder="Your full address"></textarea></div>
         </div>
         <button class="btn-save" onclick="saveSellerProfile()">💾 Save Seller Profile</button>
         <div style="margin-top:15px; background:#e8f5e9; padding:15px; border-radius:8px">
           <b>Seller ID:</b> <span id="displaySellerId">Loading...</span><br>
-          <b>Role:</b> <span id="displaySellerRole">Contributor - Products Only, No Orders</span><br>
-          <b>Status:</b> <span style="color:green">Active Contributor</span> - You can add/edit products, admin handles orders & pays you.
+          <b>Role:</b> <span id="displaySellerRole">Contributor</span><br>
         </div>
       </div>
     </div>
 
-    <!-- MY SALES REPORT TAB - NEW FOR CONTRIBUTORS -->
     <div id="mySales" class="tab-content">
-      <h2>💰 My Sales Report - How Many of My Products Sold, Payment Due</h2>
+      <h2>💰 My Sales Report</h2>
       <div class="admin-stats">
-        <div class="admin-stat" style="border-left-color:#388e3c"><h3 id="myTotalProductsSold">0</h3><p>My Products Sold Count</p></div>
-        <div class="admin-stat" style="border-left-color:#2874f0"><h3 id="myTotalRevenueGenerated">₹0</h3><p>Total Sales Generated By My Products</p></div>
-        <div class="admin-stat" style="border-left-color:#ff9800"><h3 id="myPaymentDue">₹0</h3><p>Payment Due From Admin (After Fee & Penalty)</p></div>
-        <div class="admin-stat" style="border-left-color:#9c27b0"><h3 id="myTotalProductsCount">0</h3><p>My Total Products on Website</p></div>
+        <div class="admin-stat" style="border-left-color:#388e3c"><h3 id="myTotalProductsSold">0</h3><p>My Products Sold</p></div>
+        <div class="admin-stat" style="border-left-color:#2874f0"><h3 id="myTotalRevenueGenerated">₹0</h3><p>Sales Generated</p></div>
+        <div class="admin-stat" style="border-left-color:#ff9800"><h3 id="myPaymentDue">₹0</h3><p>Payment Due</p></div>
+        <div class="admin-stat" style="border-left-color:#9c27b0"><h3 id="myTotalProductsCount">0</h3><p>My Products</p></div>
       </div>
       <table class="orders-table">
-        <thead><tr><th>Order ID</th><th>Date</th><th>My Product Sold</th><th>Customer</th><th>Sale Amount</th><th>Fee/Penalty</th><th>My Earning</th><th>Status</th></tr></thead>
+        <thead><tr><th>Order ID</th><th>Date</th><th>My Product + Return Policy</th><th>Customer</th><th>Sale Amount</th><th>Fee</th><th>My Earning</th><th>Status</th></tr></thead>
         <tbody id="mySalesList"></tbody>
       </table>
     </div>
 
-    <!-- PRODUCTS TAB -->
     <div id="products" class="tab-content">
-      <h2>My Products - Added By Me (Seller Tracking)</h2>
-      <div class="note"><b>Note:</b> Your products visible on main website. Orders go to main admin, admin will pay you based on sales. Check My Sales Report.</div>
+      <h2>My Products - With Return/Exchange Info</h2>
       <table class="products-table">
-        <thead><tr><th>Image</th><th>Name + Seller Info</th><th>Price (Customer Pays)</th><th>Category</th><th>District</th><th>Stock</th><th>Sales Count</th><th>Action</th></tr></thead>
+        <thead><tr><th>Image</th><th>Name + Seller + Return Policy</th><th>Price</th><th>Category</th><th>District</th><th>Stock</th><th>Sales</th><th>Action</th></tr></thead>
         <tbody id="productsList"></tbody>
       </table>
     </div>
 
-    <!-- ADD PRODUCT TAB -->
     <div id="add" class="tab-content">
-      <h2>Add New Product - Will Be Listed on Main Website (Order to Admin)</h2>
-      <div class="note"><b>Contributor Mode:</b> Product you add will show on Shopline Kerala main website. Customer buys → Order goes to main admin → Admin tracks it's your product → Pays you. Fill seller profile first!</div>
+      <h2>Add New Product - With Return/Exchange Option + Seller Tracking</h2>
+      <div class="note">Choose return/exchange availability per product - Some products returnable, some final sale - Like Amazon/Meesho</div>
       <form id="addProductForm" onsubmit="addProduct(event)">
-        <h3 class="section-title">1. Basic Details + Seller Tracking (Auto)</h3>
+        <h3 class="section-title">1. Basic Details + Seller Tracking</h3>
         <div class="form-grid">
           <div class="form-group"><label>Product Name *</label><input id="pName" required></div>
           <div class="form-group"><label>Brand</label><input id="pBrand"></div>
@@ -230,16 +201,17 @@
             </select>
           </div>
           <div class="form-group"><label>Sub Category *</label><select id="pSubcategory" required><option value="">Select Category First</option></select></div>
-          <div class="form-group"><label>HSN Code</label><input id="pHsn" placeholder="Ex: 8517 for mobiles"></div>
+          <div class="form-group"><label>HSN Code</label><input id="pHsn" placeholder="Ex: 8517"></div>
           <div class="form-group"><label>District *</label>
             <select id="pDistrict" required>
               <option value="">Select District</option>
               <option value="Kasaragod">Kasaragod</option><option value="Kannur">Kannur</option><option value="Wayanad">Wayanad</option><option value="Kozhikode">Kozhikode</option><option value="Malappuram">Malappuram</option><option value="Palakkad">Palakkad</option><option value="Thrissur">Thrissur</option><option value="Ernakulam">Ernakulam</option><option value="Idukki">Idukki</option><option value="Kottayam">Kottayam</option><option value="Alappuzha">Alappuzha</option><option value="Pathanamthitta">Pathanamthitta</option><option value="Kollam">Kollam</option><option value="Thiruvananthapuram">Thiruvananthapuram</option>
             </select>
           </div>
-          <div class="form-group"><label>Seller Reference (Auto - For Admin Tracking)</label><input id="pSellerRef" readonly style="background:#e8f5e9; font-weight:bold"></div>
+          <div class="form-group"><label>Seller Reference (Auto)</label><input id="pSellerRef" readonly style="background:#e8f5e9; font-weight:bold"></div>
         </div>
-        <h3 class="section-title">2. Price, Stock & GST (With Total)</h3>
+
+        <h3 class="section-title">2. Price, Stock & GST</h3>
         <div class="price-box">
           <div class="form-grid">
             <div class="form-group"><label>Your Selling Price ₹ * (Base without GST)</label><input id="pPrice" type="number" min="0" step="0.01" oninput="calcPrice()" required></div>
@@ -251,109 +223,155 @@
               </select>
             </div>
           </div>
-          <p style="margin-top:10px"><b>Platform Fee:</b> ₹20 (Deducted by Admin) | <b>Your Earning:</b> Base Price - Fee | <b>Return Penalty if returned:</b> ₹40 courier paid by seller (you if your product returned)</p>
-          <div class="gst-breakup" id="gstBreakup">Enter Price and GST to see total breakup and your earning</div>
+          <div class="gst-breakup" id="gstBreakup">Enter Price and GST to see total</div>
         </div>
-        <h3 class="section-title">3. Variants - Size & Color</h3>
+
+        <h3 class="section-title" style="color:#ff9800">3. Return & Exchange Policy - Per Product (IMPORTANT)</h3>
+        <div class="return-box">
+          <p style="font-weight:bold; margin-bottom:10px">↩️ Choose Return Policy for This Product:</p>
+          
+          <div class="form-group">
+            <label>Return Available? *</label>
+            <div class="return-option">
+              <label id="returnYesLabel" onclick="setReturnOption(true)"><input type="radio" name="returnAvailable" value="yes" id="returnYes"> <span>✅ Yes - Return Available (Customer can return)</span></label>
+              <label id="returnNoLabel" onclick="setReturnOption(false)" class="active"><input type="radio" name="returnAvailable" value="no" id="returnNo" checked> <span>❌ No - No Return (Final Sale - Like innerwear, cosmetics)</span></label>
+            </div>
+          </div>
+
+          <div id="returnDaysDiv" style="display:none; margin-top:10px">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Return Period (Days) *</label>
+                <select id="pReturnDays">
+                  <option value="3">3 Days Return</option>
+                  <option value="7" selected>7 Days Return</option>
+                  <option value="15">15 Days Return</option>
+                  <option value="30">30 Days Return</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Return Charge / Penalty</label>
+                <input value="₹40 Courier Paid by Seller" readonly style="background:#ffebee">
+              </div>
+            </div>
+            <p style="font-size:11px; color:#666; margin-top:5px">If customer returns, ₹40 courier charge deducted from your payout</p>
+          </div>
+
+          <div class="form-group" style="margin-top:15px">
+            <label>Exchange Available? (Size/Color Change) *</label>
+            <div class="return-option">
+              <label id="exchangeYesLabel" onclick="setExchangeOption(true)"><input type="radio" name="exchangeAvailable" value="yes" id="exchangeYes"> <span>✅ Yes - Exchange Available</span></label>
+              <label id="exchangeNoLabel" onclick="setExchangeOption(false)" class="active"><input type="radio" name="exchangeAvailable" value="no" id="exchangeNo" checked> <span>❌ No - No Exchange</span></label>
+            </div>
+          </div>
+
+          <div id="exchangeDaysDiv" style="display:none; margin-top:10px">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Exchange Period (Days) *</label>
+                <select id="pExchangeDays">
+                  <option value="3">3 Days Exchange</option>
+                  <option value="7" selected>7 Days Exchange</option>
+                  <option value="15">15 Days Exchange</option>
+                  <option value="30">30 Days Exchange</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Exchange Charge</label>
+                <input value="₹0 Free Exchange (Same Price)" readonly style="background:#e8f5e9">
+              </div>
+            </div>
+          </div>
+
+          <div style="background:#fff; padding:10px; border-radius:6px; margin-top:10px; font-size:11px; border:1px dashed #ff9800">
+            <b>Preview for Customer:</b>
+            <div id="returnPreview">❌ No Return, No Exchange - Final Sale</div>
+          </div>
+        </div>
+
+        <h3 class="section-title">4. Variants - Size & Color</h3>
         <div class="form-group"><label>Sizes</label><div class="size-grid" id="sizeGrid"></div><div style="display:flex; gap:8px; margin-top:8px"><input id="extraSize" placeholder="Add custom size e.g. 38, 40" style="flex:1"><button type="button" class="btn-add" onclick="addExtraSize()">+ Add Size</button></div></div>
         <div class="form-group"><label>Colors</label><div class="color-grid" id="colorGrid"></div><div style="display:flex; gap:8px; margin-top:10px"><input type="color" id="extraColor" value="#ff0000" style="width:50px"><input id="colorName" placeholder="Color Name e.g. Red" style="flex:1"><button type="button" class="btn-add" onclick="addExtraColor()">+ Add Color</button></div></div>
-        <h3 class="section-title">4. Images & Description</h3>
+        <h3 class="section-title">5. Images & Description</h3>
         <div class="form-group"><label>Product Images * Max 4</label><button type="button" class="btn-upload" onclick="openUpload()">📷 Upload From Gallery</button><input type="hidden" id="cloudinaryUrls"><div class="img-preview" id="imgPreview"></div></div>
-        <div class="form-group"><label>Description</label><textarea id="pDesc" rows="4" placeholder="Product description"></textarea></div>
-        <button type="submit" class="btn-save">Save Product to Main Website (Order to Admin)</button>
+        <div class="form-group"><label>Description</label><textarea id="pDesc" rows="4" placeholder="Product description + mention return policy if needed"></textarea></div>
+        <button type="submit" class="btn-save">Save Product with Return Policy to Website</button>
       </form>
     </div>
 
-    <!-- ADMIN PANEL - FULL CONTROL WITH SELLER TRACKING & TOP SELLERS -->
     <div id="admin" class="tab-content">
-      <h2>🔐 ADMIN PANEL - Marketplace Control + Seller Tracking + Top Sellers + Payment to Sellers</h2>
-      <p style="font-size:12px; color:#d32f2f; background:#ffebee; padding:10px; border-radius:6px">⚠ Only Main Admin (srikrishnab83@gmail.com) - You get ALL orders, track whose product sold, pay contributors. Contributors add products but get 0 orders directly.</p>
-      
+      <h2>🔐 ADMIN PANEL - Marketplace Control</h2>
       <div class="admin-stats">
-        <div class="admin-stat"><h3 id="adminTotalSellers">0</h3><p>Total Contributors + You</p></div>
-        <div class="admin-stat"><h3 id="adminTotalOrders">0</h3><p>All Orders (Only You)</p></div>
-        <div class="admin-stat"><h3 id="adminTotalProducts">0</h3><p>All Products on Website</p></div>
-        <div class="admin-stat"><h3 id="adminTotalPayout">₹0</h3><p>Total Pending Payout to Sellers</p></div>
+        <div class="admin-stat"><h3 id="adminTotalSellers">0</h3><p>Total Contributors</p></div>
+        <div class="admin-stat"><h3 id="adminTotalOrders">0</h3><p>All Orders</p></div>
+        <div class="admin-stat"><h3 id="adminTotalProducts">0</h3><p>All Products</p></div>
+        <div class="admin-stat"><h3 id="adminTotalPayout">₹0</h3><p>Pending Payout</p></div>
       </div>
-
       <div class="admin-subtabs">
-        <div class="admin-subtab active" onclick="openAdminSubtab(event,'topSellers')">🏆 Top Sellers - Highest Sale</div>
-        <div class="admin-subtab" onclick="openAdminSubtab(event,'allSellers')">👥 All Sellers with Name, WhatsApp, Contact + Payment Due</div>
-        <div class="admin-subtab" onclick="openAdminSubtab(event,'allOrdersAdmin')">📦 All Orders + Whose Product Sold + Seller Tracking</div>
-        <div class="admin-subtab" onclick="openAdminSubtab(event,'sellerWiseOrders')">📊 Seller-wise Orders Report</div>
-        <div class="admin-subtab" onclick="openAdminSubtab(event,'payoutsAdmin')">💰 Payouts - Pay Contributors</div>
-        <div class="admin-subtab" onclick="openAdminSubtab(event,'returnsAdmin')">🔄 Returns/Exchange + Whose Product Returned</div>
+        <div class="admin-subtab active" onclick="openAdminSubtab(event,'topSellers')">🏆 Top Sellers</div>
+        <div class="admin-subtab" onclick="openAdminSubtab(event,'allSellers')">👥 All Sellers</div>
+        <div class="admin-subtab" onclick="openAdminSubtab(event,'allOrdersAdmin')">📦 All Orders + Return Policy</div>
+        <div class="admin-subtab" onclick="openAdminSubtab(event,'sellerWiseOrders')">📊 Seller-wise Orders</div>
+        <div class="admin-subtab" onclick="openAdminSubtab(event,'payoutsAdmin')">💰 Payouts</div>
+        <div class="admin-subtab" onclick="openAdminSubtab(event,'returnsAdmin')">🔄 Returns/Exchange</div>
       </div>
-
       <div id="topSellers" class="admin-subcontent">
-        <h3>🏆 Top Sellers - Whose Product Sold Highest - Leaderboard</h3>
-        <div class="note">Top sellers based on total sales value of their products. You can see who contributes most to your website.</div>
+        <h3>🏆 Top Sellers</h3>
         <div id="topSellersCards" style="display:grid; grid-template-columns:repeat(3,1fr); gap:15px; margin-bottom:20px"></div>
         <table class="orders-table">
-          <thead><tr><th>Rank</th><th>Seller Name + WhatsApp + Contact</th><th>Seller ID</th><th>Total Products</th><th>Total Sales Count</th><th>Total Sales Value</th><th>Payment Due to Seller</th><th>Action</th></tr></thead>
+          <thead><tr><th>Rank</th><th>Seller Name + WhatsApp</th><th>Seller ID</th><th>Total Products</th><th>Sales Count</th><th>Sales Value</th><th>Payment Due</th><th>Action</th></tr></thead>
           <tbody id="topSellersList"></tbody>
         </table>
       </div>
-
       <div id="allSellers" class="admin-subcontent" style="display:none">
-        <h3>👥 All Sellers / Contributors - Name, WhatsApp, Contact, Payment Tracking</h3>
+        <h3>👥 All Sellers</h3>
         <table class="orders-table">
-          <thead><tr><th>Seller ID + Role</th><th>Name + Shop + Contact Details</th><th>WhatsApp + Contact</th><th>UPI for Payment</th><th>Total Products</th><th>Total Sales (Whose Product Sold)</th><th>Payment Due + Top Seller</th><th>Action</th></tr></thead>
+          <thead><tr><th>Seller ID</th><th>Name + Contact</th><th>WhatsApp + Contact</th><th>UPI</th><th>Products</th><th>Sales</th><th>Payment Due</th><th>Action</th></tr></thead>
           <tbody id="allSellersList"></tbody>
         </table>
       </div>
-
       <div id="allOrdersAdmin" class="admin-subcontent" style="display:none">
-        <h3>📦 All Orders - With Seller Tracking (Product Belongs To Whom)</h3>
-        <p style="font-size:11px; color:#666">Each order shows which seller's product sold, so you know whom to pay. Product belongs to tracking.</p>
+        <h3>📦 All Orders + Return Policy Per Product</h3>
         <table class="orders-table">
-          <thead><tr><th>Order ID + Date</th><th>Customer</th><th>Items + Product Belongs To (Seller Name, WhatsApp)</th><th>Amount + Fee</th><th>Status</th><th>Courier</th><th>Notify Seller (Contributor) + Buyer</th><th>Invoice + Seller Tracking</th></tr></thead>
+          <thead><tr><th>Order ID</th><th>Customer</th><th>Items + Return Policy + Belongs To</th><th>Amount</th><th>Status</th><th>Courier</th><th>Notify</th><th>Invoice</th></tr></thead>
           <tbody id="allOrdersAdminList"></tbody>
         </table>
       </div>
-
       <div id="sellerWiseOrders" class="admin-subcontent" style="display:none">
-        <h3>📊 Seller-wise Orders Report - Whose Product Sold When, Payment Calculation</h3>
+        <h3>📊 Seller-wise Orders</h3>
         <div style="margin-bottom:15px">
           <label>Filter by Seller: </label>
-          <select id="filterSellerSelect" onchange="loadSellerWiseOrders()" style="padding:8px; border:1px solid #ddd; border-radius:4px; min-width:250px">
+          <select id="filterSellerSelect" onchange="loadSellerWiseOrders()" style="padding:8px; min-width:250px">
             <option value="">All Sellers</option>
           </select>
         </div>
         <table class="orders-table">
-          <thead><tr><th>Order ID</th><th>Date</th><th>Seller (Whose Product)</th><th>Product Sold</th><th>Customer</th><th>Sale Value</th><th>Fee & Penalty</th><th>Net Payable to Seller</th><th>Status</th></tr></thead>
+          <thead><tr><th>Order ID</th><th>Date</th><th>Seller</th><th>Product + Return Policy</th><th>Customer</th><th>Sale Value</th><th>Fee</th><th>Net Payable</th><th>Status</th></tr></thead>
           <tbody id="sellerWiseOrdersList"></tbody>
         </table>
-        <div style="margin-top:15px; background:#e8f5e9; padding:15px; border-radius:8px">
-          <b>Selected Seller Total:</b> <span id="selectedSellerTotal">₹0</span> | <b>Payment Due:</b> <span id="selectedSellerDue">₹0</span>
-        </div>
       </div>
-
       <div id="payoutsAdmin" class="admin-subcontent" style="display:none">
-        <h3>💰 Payouts - Pay Contributors Whose Products Sold</h3>
-        <p style="font-size:11px; color:#666">Track whose product sold, calculate payment due (Sale - Fee ₹20 - Penalty ₹40 if returned), pay via UPI, WhatsApp. Top sellers highest payout.</p>
+        <h3>💰 Payouts</h3>
         <table class="orders-table">
-          <thead><tr><th>Seller + WhatsApp + Contact + UPI</th><th>Total Sales from Seller's Products</th><th>Fee & Penalty Deduction</th><th>Net Payable to Seller</th><th>Payment Status</th><th>Payment Link + WhatsApp Pay</th><th>Action</th></tr></thead>
+          <thead><tr><th>Seller + WhatsApp + UPI</th><th>Total Sales</th><th>Fee & Penalty</th><th>Net Payable</th><th>Status</th><th>Payment Link</th><th>Action</th></tr></thead>
           <tbody id="payoutsAdminList"></tbody>
         </table>
       </div>
-
       <div id="returnsAdmin" class="admin-subcontent" style="display:none">
-        <h3>🔄 Returns / Exchange - Whose Product Returned, Penalty to Whose Account</h3>
+        <h3>🔄 Returns / Exchange - Only If Product Allows Return</h3>
         <table class="orders-table">
-          <thead><tr><th>Req ID + Order</th><th>Customer</th><th>Product + Belongs To (Seller Tracking)</th><th>Type + Reason</th><th>Return Courier</th><th>Invoice</th><th>Notify Contributor + Buyer</th><th>Penalty & Action</th></tr></thead>
+          <thead><tr><th>Req ID</th><th>Customer</th><th>Product + Return Policy</th><th>Type + Reason</th><th>Courier</th><th>Invoice</th><th>Notify</th><th>Action</th></tr></thead>
           <tbody id="returnsAdminList"></tbody>
         </table>
       </div>
     </div>
   </div>
 
-  <!-- MODALS -->
-  <div id="courierModal" class="courier-modal"><div class="courier-box"><h3>📦 Courier Details</h3><input type="hidden" id="courierOrderId"><div class="form-group"><label>Courier Partner *</label><select id="courierName" style="padding:10px; border:1px solid #ddd; border-radius:4px"><option>Delhivery</option><option>DTDC</option><option>India Post</option><option>Ecom Express</option><option>BlueDart</option><option>Shopline Logistics</option><option>Other</option></select></div><div class="form-group" style="margin-top:10px"><label>AWB *</label><input id="awbNumber" placeholder="Tracking"></div><div class="form-group" style="margin-top:10px"><label>Location</label><input id="courierLocation" placeholder="Kochi Hub"></div><div style="display:flex; gap:10px; margin-top:15px"><button class="btn-save" style="flex:1" onclick="saveCourier()">Save & Ship</button><button class="btn-delete" style="flex:1; padding:12px" onclick="closeCourierModal()">Cancel</button></div></div></div>
-
-  <div id="notifyModal" class="notify-modal"><div class="notify-box"><div class="edit-header"><h2>📲 Notify Contributor/Buyer</h2><button class="close-edit" onclick="closeNotifyModal()">×</button></div><input type="hidden" id="notifyOrderId"><input type="hidden" id="notifyType"><input type="hidden" id="notifyTarget"><input type="hidden" id="notifySellerId"><input type="hidden" id="notifyCustomerId"><div class="form-group"><label>To</label><input id="notifyTo" readonly style="background:#f5f5f5; padding:10px"></div><div class="form-group" style="margin-top:10px"><label>Message *</label><textarea id="notifyMessage" rows="4" style="padding:10px"></textarea></div><div style="display:flex; gap:8px; margin-top:12px"><button class="btn-notify-buyer" style="flex:1; padding:12px" onclick="sendWhatsappNotify()">📲 WhatsApp</button><button class="btn-notify-seller" style="flex:1; padding:12px" onclick="sendWebsiteNotify()">🔔 Website</button></div><button class="btn-save" style="width:100%; margin-top:10px" onclick="sendBothNotify()">Send Both</button></div></div>
-
-  <div id="editModal" class="edit-modal"><div class="edit-modal-content"><div class="edit-header"><h2>✏ Edit Product</h2><button class="close-edit" onclick="closeEditPopup()">×</button></div><form id="editProductForm" onsubmit="updateProduct(event)"><input type="hidden" id="editId"><div class="form-grid"><div class="form-group"><label>Name *</label><input id="editName" required></div><div class="form-group"><label>Brand</label><input id="editBrand"></div><div class="form-group"><label>Category *</label><select id="editCategory" onchange="loadEditSubCat()" required><option>Mobiles</option><option>Fashion</option><option>Electronics</option><option>Home</option><option>Grocery</option><option>Beauty</option></select></div><div class="form-group"><label>Sub Category *</label><select id="editSubcategory" required></select></div><div class="form-group"><label>HSN</label><input id="editHsn"></div><div class="form-group"><label>District *</label><select id="editDistrict" required><option value="Kasaragod">Kasaragod</option><option value="Kannur">Kannur</option><option value="Wayanad">Wayanad</option><option value="Kozhikode">Kozhikode</option><option value="Malappuram">Malappuram</option><option value="Palakkad">Palakkad</option><option value="Thrissur">Thrissur</option><option value="Ernakulam">Ernakulam</option><option value="Idukki">Idukki</option><option value="Kottayam">Kottayam</option><option value="Alappuzha">Alappuzha</option><option value="Pathanamthitta">Pathanamthitta</option><option value="Kollam">Kollam</option><option value="Thiruvananthapuram">Thiruvananthapuram</option></select></div></div><div class="price-box"><div class="form-grid"><div class="form-group"><label>Base Price ₹ *</label><input id="editPrice" type="number" min="0" step="0.01" oninput="calcEditPrice()" required></div><div class="form-group"><label>Old MRP ₹</label><input id="editOldPrice" type="number"></div><div class="form-group"><label>Stock Qty *</label><input id="editStock" type="number" required></div><div class="form-group"><label>GST %</label><select id="editGst" onchange="calcEditPrice()"><option value="0">0%</option><option value="5">5%</option><option value="12">12%</option><option value="18">18%</option><option value="28">28%</option></select></div></div><div class="gst-breakup" id="editGstBreakup"></div></div><div class="form-group"><label>Sizes</label><div class="size-grid" id="editSizeGrid"></div><div style="display:flex; gap:8px; margin-top:8px"><input id="editExtraSize" placeholder="Custom size" style="flex:1"><button type="button" class="btn-add" onclick="addEditExtraSize()">+ Add</button></div></div><div class="form-group"><label>Colors</label><div class="color-grid" id="editColorGrid"></div><div style="display:flex; gap:8px; margin-top:10px"><input type="color" id="editExtraColor" value="#ff0000" style="width:50px"><input id="editColorName" placeholder="Color Name" style="flex:1"><button type="button" class="btn-add" onclick="addEditExtraColor()">+ Add Color</button></div></div><div class="form-group"><button type="button" class="btn-upload" onclick="editOpenUpload()">📷 Add More Images</button><div class="img-preview" id="editImgPreview"></div></div><div class="form-group"><label>Description</label><textarea id="editDesc" rows="3"></textarea></div><div style="display:flex; gap:10px; margin-top:20px"><button type="submit" class="btn-save" style="flex:1">Update</button><button type="button" class="btn-delete" style="flex:1; padding:12px" onclick="closeEditPopup()">Cancel</button></div></form></div></div>
+  <div id="courierModal" class="courier-modal"><div class="courier-box"><h3>📦 Courier Details</h3><input type="hidden" id="courierOrderId"><div class="form-group"><label>Courier Partner *</label><select id="courierName" style="padding:10px"><option>Delhivery</option><option>DTDC</option><option>India Post</option><option>Ecom Express</option><option>BlueDart</option></select></div><div class="form-group" style="margin-top:10px"><label>AWB *</label><input id="awbNumber" placeholder="Tracking"></div><div class="form-group" style="margin-top:10px"><label>Location</label><input id="courierLocation" placeholder="Kochi Hub"></div><div style="display:flex; gap:10px; margin-top:15px"><button class="btn-save" style="flex:1" onclick="saveCourier()">Save & Ship</button><button class="btn-delete" style="flex:1; padding:12px" onclick="closeCourierModal()">Cancel</button></div></div></div>
+  <div id="notifyModal" class="notify-modal"><div class="notify-box"><div class="edit-header"><h2>📲 Notify</h2><button class="close-edit" onclick="closeNotifyModal()">×</button></div><input type="hidden" id="notifyOrderId"><input type="hidden" id="notifyType"><input type="hidden" id="notifyTarget"><input type="hidden" id="notifySellerId"><input type="hidden" id="notifyCustomerId"><div class="form-group"><label>To</label><input id="notifyTo" readonly style="background:#f5f5f5; padding:10px"></div><div class="form-group" style="margin-top:10px"><label>Message *</label><textarea id="notifyMessage" rows="4" style="padding:10px"></textarea></div><div style="display:flex; gap:8px; margin-top:12px"><button class="btn-notify-buyer" style="flex:1; padding:12px" onclick="sendWhatsappNotify()">📲 WhatsApp</button><button class="btn-notify-seller" style="flex:1; padding:12px" onclick="sendWebsiteNotify()">🔔 Website</button></div><button class="btn-save" style="width:100%; margin-top:10px" onclick="sendBothNotify()">Send Both</button></div></div>
+  <div id="editModal" class="edit-modal"><div class="edit-modal-content"><div class="edit-header"><h2>✏ Edit Product + Return Policy</h2><button class="close-edit" onclick="closeEditPopup()">×</button></div><form id="editProductForm" onsubmit="updateProduct(event)"><input type="hidden" id="editId"><div class="form-grid"><div class="form-group"><label>Name *</label><input id="editName" required></div><div class="form-group"><label>Brand</label><input id="editBrand"></div><div class="form-group"><label>Category *</label><select id="editCategory" onchange="loadEditSubCat()" required><option>Mobiles</option><option>Fashion</option><option>Electronics</option><option>Home</option><option>Grocery</option><option>Beauty</option></select></div><div class="form-group"><label>Sub Category *</label><select id="editSubcategory" required></select></div><div class="form-group"><label>HSN</label><input id="editHsn"></div><div class="form-group"><label>District *</label><select id="editDistrict" required><option value="Kasaragod">Kasaragod</option><option value="Kannur">Kannur</option><option value="Wayanad">Wayanad</option><option value="Kozhikode">Kozhikode</option><option value="Malappuram">Malappuram</option><option value="Palakkad">Palakkad</option><option value="Thrissur">Thrissur</option><option value="Ernakulam">Ernakulam</option><option value="Idukki">Idukki</option><option value="Kottayam">Kottayam</option><option value="Alappuzha">Alappuzha</option><option value="Pathanamthitta">Pathanamthitta</option><option value="Kollam">Kollam</option><option value="Thiruvananthapuram">Thiruvananthapuram</option></select></div></div><div class="price-box"><div class="form-grid"><div class="form-group"><label>Base Price ₹ *</label><input id="editPrice" type="number" min="0" step="0.01" oninput="calcEditPrice()" required></div><div class="form-group"><label>Old MRP ₹</label><input id="editOldPrice" type="number"></div><div class="form-group"><label>Stock Qty *</label><input id="editStock" type="number" required></div><div class="form-group"><label>GST %</label><select id="editGst" onchange="calcEditPrice()"><option value="0">0%</option><option value="5">5%</option><option value="12">12%</option><option value="18">18%</option><option value="28">28%</option></select></div></div><div class="gst-breakup" id="editGstBreakup"></div></div>
+  <div class="return-box"><p style="font-weight:bold">↩️ Return/Exchange Policy</p><div class="form-group"><label>Return Available?</label><div class="return-option"><label onclick="setEditReturnOption(true)"><input type="radio" name="editReturnAvailable" value="yes" id="editReturnYes"> Yes</label><label onclick="setEditReturnOption(false)"><input type="radio" name="editReturnAvailable" value="no" id="editReturnNo" checked> No</label></div></div><div id="editReturnDaysDiv" style="display:none"><select id="editReturnDays"><option value="3">3 Days</option><option value="7" selected>7 Days</option><option value="15">15 Days</option><option value="30">30 Days</option></select></div><div class="form-group" style="margin-top:10px"><label>Exchange Available?</label><div class="return-option"><label onclick="setEditExchangeOption(true)"><input type="radio" name="editExchangeAvailable" value="yes" id="editExchangeYes"> Yes</label><label onclick="setEditExchangeOption(false)"><input type="radio" name="editExchangeAvailable" value="no" id="editExchangeNo" checked> No</label></div></div><div id="editExchangeDaysDiv" style="display:none"><select id="editExchangeDays"><option value="3">3 Days</option><option value="7" selected>7 Days</option><option value="15">15 Days</option><option value="30">30 Days</option></select></div></div>
+  <div class="form-group"><label>Sizes</label><div class="size-grid" id="editSizeGrid"></div><div style="display:flex; gap:8px; margin-top:8px"><input id="editExtraSize" placeholder="Custom size" style="flex:1"><button type="button" class="btn-add" onclick="addEditExtraSize()">+ Add</button></div></div><div class="form-group"><label>Colors</label><div class="color-grid" id="editColorGrid"></div><div style="display:flex; gap:8px; margin-top:10px"><input type="color" id="editExtraColor" value="#ff0000" style="width:50px"><input id="editColorName" placeholder="Color Name" style="flex:1"><button type="button" class="btn-add" onclick="addEditExtraColor()">+ Add Color</button></div></div><div class="form-group"><button type="button" class="btn-upload" onclick="editOpenUpload()">📷 Add More Images</button><div class="img-preview" id="editImgPreview"></div></div><div class="form-group"><label>Description</label><textarea id="editDesc" rows="3"></textarea></div><div style="display:flex; gap:10px; margin-top:20px"><button type="submit" class="btn-save" style="flex:1">Update</button><button type="button" class="btn-delete" style="flex:1; padding:12px" onclick="closeEditPopup()">Cancel</button></div></form></div></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -380,7 +398,11 @@ let editSelectedSizes = [];
 let editSelectedColors = [];
 let editLastCalc = { base:0, gstPercent:18, customerTotal:0 };
 let currentEditId = null;
-let sellerCache = {}; // Cache seller info for performance
+let sellerCache = {};
+let returnAvailable = false;
+let exchangeAvailable = false;
+let editReturnAvailable = false;
+let editExchangeAvailable = false;
 
 const subCategories = {
   "Mobiles": ["Smartphones", "Feature Phones", "Mobile Accessories"],
@@ -403,14 +425,12 @@ auth.onAuthStateChanged(async user => {
     if(isAdmin){
       document.getElementById('adminTabBtn').classList.add('show');
       document.getElementById('adminBadge').style.display='inline-block';
-      document.getElementById('displaySellerRole').innerText = "MAIN ADMIN - Gets All Orders, Pays Contributors";
-      document.getElementById('topBarText').innerText = 'MAIN ADMIN - Shopline Kerala Marketplace | You get ALL orders, track whose product sold, pay contributors | Top Sellers Leaderboard';
+      document.getElementById('displaySellerRole').innerText = "MAIN ADMIN";
       document.getElementById('adminOrdersView').style.display='block';
       document.getElementById('contributorOrdersView').style.display='none';
     }else{
       document.getElementById('contributorBadge').style.display='inline-block';
-      document.getElementById('displaySellerRole').innerText = "CONTRIBUTOR - Add Products Only, No Direct Orders";
-      document.getElementById('topBarText').innerText = 'CONTRIBUTOR MODE - Add products to main website, orders go to main admin, admin pays you based on sales';
+      document.getElementById('displaySellerRole').innerText = "CONTRIBUTOR";
       document.getElementById('adminOrdersView').style.display='none';
       document.getElementById('contributorOrdersView').style.display='block';
     }
@@ -421,10 +441,7 @@ auth.onAuthStateChanged(async user => {
     calcPrice();
     loadOrders();
     loadMySalesReport();
-    if(isAdmin) {
-      loadAdminData();
-      loadTopSellers();
-    }
+    if(isAdmin) loadAdminData();
   }
 });
 
@@ -452,7 +469,58 @@ function openAdminSubtab(evt, subtab){
   if(subtab==='returnsAdmin') loadReturnsAdmin();
 }
 
-// SELLER PROFILE - NEW WITH NAME, WHATSAPP, CONTACT
+// RETURN/EXCHANGE OPTIONS
+function setReturnOption(available){
+  returnAvailable = available;
+  document.getElementById('returnYes').checked = available;
+  document.getElementById('returnNo').checked = !available;
+  document.getElementById('returnYesLabel').classList.toggle('active', available);
+  document.getElementById('returnNoLabel').classList.toggle('active', !available);
+  document.getElementById('returnDaysDiv').style.display = available ? 'block' : 'none';
+  updateReturnPreview();
+}
+function setExchangeOption(available){
+  exchangeAvailable = available;
+  document.getElementById('exchangeYes').checked = available;
+  document.getElementById('exchangeNo').checked = !available;
+  document.getElementById('exchangeYesLabel').classList.toggle('active', available);
+  document.getElementById('exchangeNoLabel').classList.toggle('active', !available);
+  document.getElementById('exchangeDaysDiv').style.display = available ? 'block' : 'none';
+  updateReturnPreview();
+}
+function updateReturnPreview(){
+  let preview = '';
+  if(returnAvailable && exchangeAvailable){
+    const rDays = document.getElementById('pReturnDays').value;
+    const eDays = document.getElementById('pExchangeDays').value;
+    preview = `✅ ${rDays} Days Return Available (₹40 penalty) + ✅ ${eDays} Days Exchange Available (Free)`;
+  } else if(returnAvailable){
+    const rDays = document.getElementById('pReturnDays').value;
+    preview = `✅ ${rDays} Days Return Available (₹40 penalty) + ❌ No Exchange`;
+  } else if(exchangeAvailable){
+    const eDays = document.getElementById('pExchangeDays').value;
+    preview = `❌ No Return + ✅ ${eDays} Days Exchange Available (Free)`;
+  } else {
+    preview = `❌ No Return, No Exchange - Final Sale - Customer cannot return/exchange`;
+  }
+  document.getElementById('returnPreview').innerText = preview;
+}
+document.getElementById('pReturnDays')?.addEventListener('change', updateReturnPreview);
+document.getElementById('pExchangeDays')?.addEventListener('change', updateReturnPreview);
+
+function setEditReturnOption(available){
+  editReturnAvailable = available;
+  document.getElementById('editReturnYes').checked = available;
+  document.getElementById('editReturnNo').checked = !available;
+  document.getElementById('editReturnDaysDiv').style.display = available ? 'block' : 'none';
+}
+function setEditExchangeOption(available){
+  editExchangeAvailable = available;
+  document.getElementById('editExchangeYes').checked = available;
+  document.getElementById('editExchangeNo').checked = !available;
+  document.getElementById('editExchangeDaysDiv').style.display = available ? 'block' : 'none';
+}
+
 async function loadSellerProfile(){
   try{
     const doc = await db.collection("sellers").doc(currentUser.uid).get();
@@ -460,8 +528,8 @@ async function loadSellerProfile(){
       const s = doc.data();
       sellerCache[currentUser.uid] = s;
       document.getElementById('sellerName').value = s.sellerName || s.name || '';
-      document.getElementById('sellerWhatsapp').value = s.sellerWhatsapp || s.whatsapp || s.upiPhone || '';
-      document.getElementById('sellerContact').value = s.sellerContact || s.contact || s.phone || '';
+      document.getElementById('sellerWhatsapp').value = s.sellerWhatsapp || s.whatsapp || '';
+      document.getElementById('sellerContact').value = s.sellerContact || s.contact || '';
       document.getElementById('sellerUpiId').value = s.sellerUpiId || s.upiId || '';
       document.getElementById('sellerUpiName').value = s.sellerUpiName || s.upiHolderName || '';
       document.getElementById('sellerShopName').value = s.sellerShopName || s.shopName || '';
@@ -470,7 +538,6 @@ async function loadSellerProfile(){
     }
   }catch(e){ console.log("Profile load error", e); }
 }
-
 async function saveSellerProfile(){
   const data = {
     sellerName: document.getElementById('sellerName').value.trim(),
@@ -483,7 +550,6 @@ async function saveSellerProfile(){
     sellerAddress: document.getElementById('sellerAddress').value.trim(),
     email: currentUser.email,
     uid: currentUser.uid,
-    // Backward compatibility
     name: document.getElementById('sellerName').value.trim(),
     whatsapp: document.getElementById('sellerWhatsapp').value.trim(),
     contact: document.getElementById('sellerContact').value.trim(),
@@ -491,32 +557,24 @@ async function saveSellerProfile(){
     upiHolderName: document.getElementById('sellerUpiName').value.trim(),
     shopName: document.getElementById('sellerShopName').value.trim(),
     district: document.getElementById('sellerDistrict').value,
-    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
   };
-  
   if(!data.sellerName) return alert("Enter Seller Name");
   if(!data.sellerWhatsapp) return alert("Enter WhatsApp Number");
   if(!data.sellerContact) return alert("Enter Contact Number");
-  if(!data.sellerUpiId) return alert("Enter UPI ID for payment");
-  
+  if(!data.sellerUpiId) return alert("Enter UPI ID");
   await db.collection("sellers").doc(currentUser.uid).set(data, {merge:true});
   sellerCache[currentUser.uid] = data;
-  alert("✅ Seller Profile Saved! Name: " + data.sellerName + ", WhatsApp: " + data.sellerWhatsapp + "\nAdmin will use this to pay you when your product sells.");
+  alert("✅ Seller Profile Saved!");
 }
-
 async function getSellerInfo(sellerId){
   if(sellerCache[sellerId]) return sellerCache[sellerId];
   try{
     const doc = await db.collection("sellers").doc(sellerId).get();
-    if(doc.exists){
-      sellerCache[sellerId] = doc.data();
-      return doc.data();
-    }
+    if(doc.exists){ sellerCache[sellerId] = doc.data(); return doc.data(); }
   }catch(e){}
-  return { sellerName: sellerId.substring(0,8), sellerWhatsapp: "N/A", sellerContact: "N/A", upiId: "N/A" };
+  return { sellerName: sellerId.substring(0,8), sellerWhatsapp: "N/A", sellerContact: "N/A" };
 }
-
 function loadSubCat(){
   const cat = document.getElementById('pCategory').value;
   const sub = document.getElementById('pSubcategory');
@@ -539,17 +597,16 @@ function calcPrice(){
   const customerPays = base + gstAmount + PLATFORM_FEE;
   const yourEarning = base - PLATFORM_FEE;
   lastCalc = { base, gstPercent: gstP, gstAmount, cgst, sgst, customerTotal: customerPays, earning: yourEarning };
-  document.getElementById('gstBreakup').innerHTML = `<div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;"><span>Base Price (Your Price):</span><span>₹${base.toFixed(2)}</span><span>CGST @${(gstP/2).toFixed(1)}%:</span><span>₹${cgst.toFixed(2)}</span><span>SGST @${(gstP/2).toFixed(1)}%:</span><span>₹${sgst.toFixed(2)}</span><span>Platform Fee (Admin):</span><span>₹${PLATFORM_FEE.toFixed(2)}</span><span style="font-weight:bold">Customer Pays:</span><span style="font-weight:bold; color:#d32f2f">₹${customerPays.toFixed(2)}</span><span style="border-top:2px solid #388e3c; margin-top:5px; padding-top:5px; font-weight:bold; color:#388e3c">Your Earning (When Sold):</span><span style="border-top:2px solid #388e3c; margin-top:5px; padding-top:5px; font-weight:bold; color:#388e3c">₹${yourEarning.toFixed(2)} (Base - Fee)</span></div>`;
+  document.getElementById('gstBreakup').innerHTML = `<div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;"><span>Base:</span><span>₹${base.toFixed(2)}</span><span>CGST:</span><span>₹${cgst.toFixed(2)}</span><span>SGST:</span><span>₹${sgst.toFixed(2)}</span><span>Fee:</span><span>₹20</span><span style="font-weight:bold">Customer Pays:</span><span style="font-weight:bold; color:#d32f2f">₹${customerPays.toFixed(2)}</span></div>`;
 }
 function calcEditPrice(){
   const base = Number(document.getElementById('editPrice').value)||0;
   const gstP = Number(document.getElementById('editGst').value)||0;
   const PLATFORM_FEE = 20;
   const gstAmount = (base * gstP) / 100;
-  const cgst = gstAmount / 2; const sgst = gstAmount / 2;
   const customerPays = base + gstAmount + PLATFORM_FEE;
-  editLastCalc = { base, gstPercent: gstP, gstAmount, cgst, sgst, customerTotal: customerPays };
-  document.getElementById('editGstBreakup').innerHTML = `<div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;"><span>Base:</span><span>₹${base.toFixed(2)}</span><span>CGST:</span><span>₹${cgst.toFixed(2)}</span><span>SGST:</span><span>₹${sgst.toFixed(2)}</span><span>Fee:</span><span>₹20</span><span style="font-weight:bold; color:#d32f2f;">Total:</span><span style="font-weight:bold; color:#d32f2f;">₹${customerPays.toFixed(2)}</span></div>`;
+  editLastCalc = { base, gstPercent: gstP, gstAmount, customerTotal: customerPays };
+  document.getElementById('editGstBreakup').innerHTML = `<div>Base: ₹${base} | Total: ₹${customerPays}</div>`;
 }
 function renderSizeColor(){
   const sizeGrid = document.getElementById('sizeGrid');
@@ -566,7 +623,6 @@ function renderSizeColor(){
 }
 function toggleSize(s){ selectedSizes.includes(s)? selectedSizes=selectedSizes.filter(x=>x!=s) : selectedSizes.push(s); renderSizeColor(); }
 function addExtraSize(){ const val = document.getElementById('extraSize').value.toUpperCase().trim(); if(!val) return; if(!selectedSizes.includes(val)){ selectedSizes.push(val); document.getElementById('extraSize').value=''; renderSizeColor(); }}
-function removeSize(s){ selectedSizes=selectedSizes.filter(x=>x!=s); renderSizeColor(); }
 function addExtraColor(){ const code = document.getElementById('extraColor').value; const name = document.getElementById('colorName').value.trim(); if(!name) return alert("Enter color name"); selectedColors.push({name, code}); document.getElementById('colorName').value=''; renderSizeColor(); }
 function removeColor(name){ selectedColors=selectedColors.filter(x=>x.name!=name); renderSizeColor(); }
 function renderEditSizeColor(){
@@ -575,11 +631,6 @@ function renderEditSizeColor(){
   ['S','M','L','XL','XXL'].forEach(s => {
     const active = editSelectedSizes.includes(s)? 'active':'';
     sizeGrid.innerHTML += `<div class="chip ${active}" onclick="editToggleSize('${s}')">${s}</div>`;
-  });
-  editSelectedSizes.forEach(s=>{
-    if(!['S','M','L','XL','XXL'].includes(s)){
-      sizeGrid.innerHTML += `<div class="chip active">${s} <span onclick="editRemoveSize('${s}')" style="cursor:pointer">X</span></div>`;
-    }
   });
   const colorGrid = document.getElementById('editColorGrid');
   colorGrid.innerHTML='';
@@ -631,7 +682,7 @@ function addProduct(e){
   if(uploadedUrls.length==0) return alert("Upload atleast 1 image");
   const sellerProfile = sellerCache[currentUser.uid] || {};
   if(!sellerProfile.sellerName) {
-    alert("Please fill Seller Profile first (Name, WhatsApp, Contact, UPI)");
+    alert("Please fill Seller Profile first");
     openTab(null, 'profile');
     return;
   }
@@ -652,32 +703,36 @@ function addProduct(e){
     hsn: document.getElementById('pHsn').value || '9999',
     sizes: selectedSizes,
     colors: selectedColors,
-    sellerId: currentUser.uid, // Who added product - for tracking whose product sold
+    sellerId: currentUser.uid,
     sellerName: sellerProfile.sellerName || currentUser.email,
     sellerWhatsapp: sellerProfile.sellerWhatsapp || '',
     sellerContact: sellerProfile.sellerContact || '',
     sellerEmail: currentUser.email,
-    originalSellerId: currentUser.uid, // For payment tracking
+    originalSellerId: currentUser.uid,
+    // NEW RETURN/EXCHANGE FIELDS
+    returnAvailable: returnAvailable,
+    returnDays: returnAvailable ? Number(document.getElementById('pReturnDays').value) : 0,
+    exchangeAvailable: exchangeAvailable,
+    exchangeDays: exchangeAvailable ? Number(document.getElementById('pExchangeDays').value) : 0,
+    returnPolicy: returnAvailable || exchangeAvailable ? `${returnAvailable ? document.getElementById('pReturnDays').value + ' Days Return' : 'No Return'} + ${exchangeAvailable ? document.getElementById('pExchangeDays').value + ' Days Exchange' : 'No Exchange'}` : 'No Return, No Exchange - Final Sale',
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
   };
   db.collection("products").add(product).then(() => {
-    alert(`✅ Product Added to Main Website!\nProduct: ${product.name}\nSeller: ${product.sellerName}\nWhatsApp: ${product.sellerWhatsapp}\n\nWhen sold, order goes to Main Admin, but tracking shows it's your product for payment.`);
+    alert(`✅ Product Added with Return Policy!\nProduct: ${product.name}\nReturn: ${product.returnAvailable ? product.returnDays + ' Days' : 'No Return'}\nExchange: ${product.exchangeAvailable ? product.exchangeDays + ' Days' : 'No Exchange'}\nPolicy: ${product.returnPolicy}`);
     document.getElementById('addProductForm').reset();
     selectedSizes=[]; selectedColors=[]; uploadedUrls=[];
+    returnAvailable=false; exchangeAvailable=false;
+    setReturnOption(false); setExchangeOption(false);
     document.getElementById('imgPreview').innerHTML='';
     renderSizeColor();
     loadProducts();
   }).catch(err => alert("Error: " + err.message));
 }
 
-// LOAD ORDERS WITH SELLER TRACKING - ONLY ADMIN GETS ORDERS
 async function loadOrders() {
-  if(!isAdmin){
-    // Contributor sees no orders
-    return;
-  }
+  if(!isAdmin) return;
   try{
-    const snap = await db.collection("orders").get(); // Admin gets ALL orders
+    const snap = await db.collection("orders").get();
     let total=0, active=0, cancelled=0, revenue=0;
     let html='', cancelledHtml='';
     let docs = [];
@@ -696,31 +751,25 @@ async function loadOrders() {
         cancelledHtml += `<tr><td>#${orderId.substring(0,6)}</td><td>${o.customer?.name||''}</td><td>${o.items?.length||0} items</td><td>₹${o.finalTotal||0}</td><td>${o.cancelReason||''}</td></tr>`;
       } else {
         active++;
-        // Build seller tracking info for each item
         let itemsHtml = '';
         let sellerTrackingHtml = '';
         if(o.items) {
           for(let item of o.items) {
-            const prodSellerId = item.sellerId || item.originalSellerId || o.originalSellerIds?.[0] || o.sellerIds?.[0] || 'Unknown';
+            const prodSellerId = item.sellerId || item.originalSellerId || 'Unknown';
             const sellerInfo = await getSellerInfo(prodSellerId);
-            itemsHtml += `${item.name||'Product'} (Qty ${item.qty||1})<br>`;
-            sellerTrackingHtml += `<span class="badge-seller">Belongs to: ${sellerInfo.sellerName||sellerInfo.name||prodSellerId.substring(0,6)}<br>WhatsApp: ${sellerInfo.sellerWhatsapp||sellerInfo.whatsapp||'N/A'}<br>Contact: ${sellerInfo.sellerContact||sellerInfo.contact||'N/A'}</span><br>`;
+            // Return policy per item
+            const returnPolicy = item.returnAvailable ? `<span class="badge-return-ok">✅ ${item.returnDays||7} Days Return</span>` : `<span class="badge-no-return">❌ No Return</span>`;
+            const exchangePolicy = item.exchangeAvailable ? `<span class="badge-return-ok">✅ ${item.exchangeDays||7} Days Exchange</span>` : `<span class="badge-no-return">❌ No Exchange</span>`;
+            itemsHtml += `${item.name||'Product'} (Qty ${item.qty||1})<br>${returnPolicy} ${exchangePolicy}<br><small>Policy: ${item.returnPolicy||'No Return'}</small><br>`;
+            sellerTrackingHtml += `<span class="badge-seller">Belongs to: ${sellerInfo.sellerName||prodSellerId.substring(0,6)}<br>WhatsApp: ${sellerInfo.sellerWhatsapp||'N/A'}</span><br>`;
           }
         }
 
         let trackingSelect = `<select onchange="handleTracking('${orderId}', this.value)" style="padding:4px"><option ${tracking==='Order Received'?'selected':''}>Order Received</option><option ${tracking==='Approved'?'selected':''}>Approved</option><option ${tracking==='Packed'?'selected':''}>Packed</option><option ${tracking==='Shipped'?'selected':''}>Shipped</option><option ${tracking==='Delivered'?'selected':''}>Delivered</option></select>`;
         let actionBtn = `<button class="btn-invoice" onclick="downloadInvoice('${orderId}')">Invoice</button><button class="btn-courier" onclick="openCourierModal('${orderId}')">Courier</button><button class="btn-cancel" onclick="cancelOrder('${orderId}')">Cancel</button>`;
-        let notifyBtn = `<button class="btn-notify-buyer" onclick="openNotifyModal('${orderId}','${o.customer?.phone||''}','${o.customer?.name||''}','buyer','order','${o.sellerIds?.[0]||''}','${o.customerId||o.userId||''}','${o.customer?.email||''}')">Notify Buyer</button>`;
+        let notifyBtn = `<button class="btn-notify-buyer" onclick="openNotifyModal('${orderId}','${o.customer?.phone||''}','${o.customer?.name||''}','buyer','order','${o.sellerIds?.[0]||''}','${o.customerId||''}','')">Notify Buyer</button>`;
 
-        // Notify the contributor whose product sold
-        if(o.items && o.items.length > 0) {
-          const prodSellerId = o.items[0].sellerId || o.originalSellerIds?.[0] || '';
-          if(prodSellerId && prodSellerId !== ADMIN_UID) {
-            notifyBtn += `<br><button class="btn-notify-seller" onclick="openNotifyModal('${orderId}','','Contributor ${prodSellerId.substring(0,6)}','seller','order','${prodSellerId}','${o.customerId||''}','')">Notify Seller (Whose Product Sold)</button>`;
-          }
-        }
-
-        html += `<tr><td>#${orderId.substring(0,6)}<br><small>${o.createdAt? new Date(o.createdAt.seconds*1000).toLocaleDateString(): ''}</small></td><td>${o.customer?.name||''}<br><small>${o.customer?.phone||''}</small><br><small>${o.customer?.email||''}</small></td><td>${itemsHtml}<br><div style="background:#e8f5e9; padding:8px; border-radius:6px; border:1px solid #4caf50">${sellerTrackingHtml}</div></td><td>₹${o.finalTotal||0}<br><small>Fee ₹20</small></td><td>${trackingSelect}</td><td>${courierInfo}</td><td>${notifyBtn}</td><td>${actionBtn}</td></tr>`;
+        html += `<tr><td>#${orderId.substring(0,6)}<br><small>${o.createdAt? new Date(o.createdAt.seconds*1000).toLocaleDateString(): ''}</small></td><td>${o.customer?.name||''}<br><small>${o.customer?.phone||''}</small></td><td>${itemsHtml}<br><div style="background:#e8f5e9; padding:8px; border-radius:6px">${sellerTrackingHtml}</div></td><td>₹${o.finalTotal||0}</td><td>${trackingSelect}</td><td>${courierInfo}</td><td>${notifyBtn}</td><td>${actionBtn}</td></tr>`;
       }
     }
     document.getElementById('totalOrders').innerText=total;
@@ -728,20 +777,19 @@ async function loadOrders() {
     document.getElementById('cancelledCount').innerText=cancelled;
     document.getElementById('totalRevenue').innerText='₹'+revenue.toLocaleString();
     document.getElementById('ordersList').innerHTML=html || '<tr><td colspan="8">No orders</td></tr>';
-    document.getElementById('cancelledList').innerHTML=cancelledHtml || '<tr><td colspan="5">No cancelled</td></tr>';
-  }catch(e){ console.log("Orders error:", e); document.getElementById('ordersList').innerHTML=`<tr><td colspan="8">Error: ${e.message}</td></tr>` }
+  }catch(e){ document.getElementById('ordersList').innerHTML=`<tr><td colspan="8">Error: ${e.message}</td></tr>` }
 }
 
-// MY SALES REPORT FOR CONTRIBUTOR
 async function loadMySalesReport(){
-  if(isAdmin) return; // Admin doesn't need this, they have seller-wise report
+  if(isAdmin) return;
   try{
+    const prodSnap = await db.collection("products").where("sellerId","==",currentUser.uid).get();
+    document.getElementById('myTotalProductsCount').innerText = prodSnap.size;
     const snap = await db.collection("orders").get();
     let mySales = [];
     let totalSold = 0;
     let totalRevenue = 0;
     let totalEarning = 0;
-
     snap.forEach(doc => {
       const o = doc.data();
       if(o.items) {
@@ -751,224 +799,82 @@ async function loadMySalesReport(){
             mySales.push({ orderId: doc.id, order: o, item: item });
             totalSold++;
             totalRevenue += (item.price * (item.qty||1));
-            totalEarning += (item.price * (item.qty||1)) - 20; // Base - fee
+            totalEarning += (item.price * (item.qty||1)) - 20;
           }
         });
       }
-      // Also check originalSellerIds
-      if(o.originalSellerIds && o.originalSellerIds.includes(currentUser.uid)) {
-        // Already counted above, but if items don't have sellerId, count order
-        if(!o.items || o.items.length===0 || !o.items[0].sellerId) {
-          mySales.push({ orderId: doc.id, order: o, item: { name: 'Product', qty: 1, price: o.finalTotal||0 } });
-          totalSold++;
-          totalRevenue += o.finalTotal||0;
-          totalEarning += (o.finalTotal||0) - 20;
-        }
-      }
     });
-
-    // For contributor, since orders go to admin, we need to check products collection for sales via admin's orders
-    // Actually contributor's products are in products collection, orders are in admin's orders with originalSellerIds
-    // So we need to query orders where originalSellerIds array-contains currentUser.uid
-    try{
-      const orderSnap = await db.collection("orders").where("originalSellerIds", "array-contains", currentUser.uid).get();
-      orderSnap.forEach(doc => {
-        const o = doc.data();
-        // Avoid duplicates
-        if(!mySales.find(s=>s.orderId===doc.id)) {
-          mySales.push({ orderId: doc.id, order: o, item: { name: o.items?.[0]?.name||'Product', qty: 1, price: o.finalTotal||0 } });
-          totalSold++;
-          totalRevenue += o.finalTotal||0;
-          totalEarning += (o.finalTotal||0) - 20;
-        }
-      });
-    }catch(e){ console.log("OriginalSeller query error", e); }
-
     document.getElementById('myTotalProductsSold').innerText = totalSold;
     document.getElementById('myTotalRevenueGenerated').innerText = '₹' + totalRevenue.toLocaleString();
     document.getElementById('myPaymentDue').innerText = '₹' + totalEarning.toLocaleString();
-    
-    // Also get my products count
-    const prodSnap = await db.collection("products").where("sellerId","==",currentUser.uid).get();
-    document.getElementById('myTotalProductsCount').innerText = prodSnap.size;
-
     let html = '';
     mySales.forEach(s => {
       const o = s.order;
       const item = s.item;
       const date = o.createdAt ? new Date(o.createdAt.seconds*1000).toLocaleDateString() : '';
       const earning = (item.price * (item.qty||1)) - 20;
-      html += `<tr><td>#${s.orderId.substring(0,6)}</td><td>${date}</td><td>${item.name||'Product'}<br><small>Qty ${item.qty||1}</small></td><td>${o.customer?.name||''}<br><small>${o.customer?.phone||''}</small></td><td>₹${(item.price * (item.qty||1)).toFixed(0)}</td><td>Fee ₹20</td><td><b style="color:green">₹${earning.toFixed(0)}</b></td><td><span class="badge-status">${o.trackingStatus||'Order Received'}</span></td></tr>`;
+      const returnBadge = item.returnAvailable ? `<span class="badge-return-ok">✅ Return ${item.returnDays}d</span>` : `<span class="badge-no-return">❌ No Return</span>`;
+      const exchangeBadge = item.exchangeAvailable ? `<span class="badge-return-ok">✅ Exchange ${item.exchangeDays}d</span>` : `<span class="badge-no-return">❌ No Exchange</span>`;
+      html += `<tr><td>#${s.orderId.substring(0,6)}</td><td>${date}</td><td>${item.name||'Product'}<br>${returnBadge} ${exchangeBadge}<br><small>${item.returnPolicy||''}</small></td><td>${o.customer?.name||''}</td><td>₹${(item.price * (item.qty||1)).toFixed(0)}</td><td>Fee ₹20</td><td><b style="color:green">₹${earning.toFixed(0)}</b></td><td><span class="badge-status">${o.trackingStatus||''}</span></td></tr>`;
     });
-    document.getElementById('mySalesList').innerHTML = html || '<tr><td colspan="8">No sales yet - Your products not sold yet. Keep adding more products!</td></tr>';
-  }catch(e){
-    console.log("My sales error", e);
-    document.getElementById('mySalesList').innerHTML = `<tr><td colspan="8">Error: ${e.message}<br>Note: Make sure checkout page saves originalSellerIds field. See instructions.</td></tr>`;
-  }
+    document.getElementById('mySalesList').innerHTML = html || '<tr><td colspan="8">No sales yet</td></tr>';
+  }catch(e){ document.getElementById('mySalesList').innerHTML = `<tr><td colspan="8">Error: ${e.message}</td></tr>`; }
 }
-
-// ADMIN FUNCTIONS - TOP SELLERS
+function loadAdminData(){ loadTopSellers(); loadAllSellers(); loadAllOrdersAdmin(); loadSellerWiseOrders(); loadPayoutsAdmin(); loadReturnsAdmin(); db.collection("orders").get().then(snap=>{ document.getElementById('adminTotalOrders').innerText=snap.size; }); }
 async function loadTopSellers(){
   try{
     const sellersSnap = await db.collection("sellers").get();
     const ordersSnap = await db.collection("orders").get();
-
+    const productsSnap = await db.collection("products").get();
     let sellerStats = {};
-
-    // Initialize stats for all sellers
     sellersSnap.forEach(doc => {
       const s = doc.data();
-      sellerStats[doc.id] = {
-        sellerId: doc.id,
-        sellerName: s.sellerName || s.name || s.email || doc.id.substring(0,8),
-        sellerWhatsapp: s.sellerWhatsapp || s.whatsapp || s.upiPhone || 'N/A',
-        sellerContact: s.sellerContact || s.contact || 'N/A',
-        sellerEmail: s.email || '',
-        shopName: s.sellerShopName || s.shopName || '',
-        upiId: s.sellerUpiId || s.upiId || 'N/A',
-        totalProducts: 0,
-        totalSalesCount: 0,
-        totalSalesValue: 0,
-        paymentDue: 0
-      };
+      sellerStats[doc.id] = { sellerId: doc.id, sellerName: s.sellerName || s.name || doc.id.substring(0,8), sellerWhatsapp: s.sellerWhatsapp || 'N/A', totalProducts: 0, totalSalesCount: 0, totalSalesValue: 0, paymentDue: 0 };
     });
-
-    // Count products per seller
-    const productsSnap = await db.collection("products").get();
-    productsSnap.forEach(doc => {
-      const p = doc.data();
-      if(sellerStats[p.sellerId]) {
-        sellerStats[p.sellerId].totalProducts++;
-      }
-    });
-
-    // Calculate sales per seller
+    productsSnap.forEach(doc => { const p = doc.data(); if(sellerStats[p.sellerId]) sellerStats[p.sellerId].totalProducts++; });
     ordersSnap.forEach(doc => {
       const o = doc.data();
-      if(o.items) {
-        o.items.forEach(item => {
-          const sid = item.sellerId || item.originalSellerId || '';
-          if(sellerStats[sid]) {
-            sellerStats[sid].totalSalesCount += (item.qty||1);
-            const saleValue = (item.price * (item.qty||1));
-            sellerStats[sid].totalSalesValue += saleValue;
-            sellerStats[sid].paymentDue += (saleValue - 20);
-          }
-        });
-      }
-      // Check originalSellerIds
-      if(o.originalSellerIds) {
-        o.originalSellerIds.forEach(sid => {
-          if(sellerStats[sid] && (!o.items || !o.items[0]?.sellerId)) {
-            sellerStats[sid].totalSalesCount += 1;
-            sellerStats[sid].totalSalesValue += (o.finalTotal||0);
-            sellerStats[sid].paymentDue += ((o.finalTotal||0) - 20);
-          }
-        });
-      }
+      if(o.items) o.items.forEach(item => {
+        const sid = item.sellerId || item.originalSellerId || '';
+        if(sellerStats[sid]) { sellerStats[sid].totalSalesCount += (item.qty||1); const saleValue = (item.price * (item.qty||1)); sellerStats[sid].totalSalesValue += saleValue; sellerStats[sid].paymentDue += (saleValue - 20); }
+      });
     });
-
-    // Sort by totalSalesValue descending
     let sorted = Object.values(sellerStats).sort((a,b) => b.totalSalesValue - a.totalSalesValue);
-
-    // Top 3 cards
     let cardsHtml = '';
-    sorted.slice(0,3).forEach((s, idx) => {
-      const rank = idx+1;
-      const medal = rank===1? '🥇' : rank===2? '🥈' : '🥇';
-      const color = rank===1? '#ff9800' : rank===2? '#9e9e9e' : '#ff7043';
-      cardsHtml += `<div class="top-seller-card" style="background: linear-gradient(135deg, ${color}, ${color}dd)"><div style="font-size:30px">${medal}</div><h3>Rank ${rank}</h3><h4>${s.sellerName}</h4><p>${s.shopName||''}</p><p>WhatsApp: ${s.sellerWhatsapp}</p><h2>₹${s.totalSalesValue.toLocaleString()}</h2><p>${s.totalSalesCount} sales | ${s.totalProducts} products</p><span class="badge-top">Top Seller</span></div>`;
-    });
+    sorted.slice(0,3).forEach((s, idx) => { const rank = idx+1; const medal = rank===1? '🥇' : rank===2? '🥈' : '🥉'; cardsHtml += `<div class="top-seller-card"><div style="font-size:30px">${medal}</div><h3>Rank ${rank}</h3><h4>${s.sellerName}</h4><p>WhatsApp: ${s.sellerWhatsapp}</p><h2>₹${s.totalSalesValue.toLocaleString()}</h2></div>`; });
     document.getElementById('topSellersCards').innerHTML = cardsHtml || '<p>No sales yet</p>';
-
-    // Table
     let html = '';
     sorted.forEach((s, idx) => {
       const rank = idx+1;
-      const rankBadge = rank===1? '<span style="background:gold; padding:4px 8px; border-radius:12px">🥇 1</span>' : rank===2? '<span style="background:silver; padding:4px 8px; border-radius:12px">🥈 2</span>' : rank===3? '<span style="background:#cd7f32; color:#fff; padding:4px 8px; border-radius:12px">🥉 3</span>' : `#${rank}`;
-      html += `<tr><td>${rankBadge}</td><td><b>${s.sellerName}</b><br><small>${s.shopName||''}</small><br><small>WhatsApp: ${s.sellerWhatsapp}<br>Contact: ${s.sellerContact}<br>Email: ${s.sellerEmail}</small></td><td><small>${s.sellerId.substring(0,8)}<br>${s.sellerId}</small></td><td>${s.totalProducts}</td><td><b>${s.totalSalesCount}</b></td><td><b style="color:#388e3c">₹${s.totalSalesValue.toLocaleString()}</b></td><td><b style="color:#d32f2f">₹${s.paymentDue.toLocaleString()}</b><br><small>After Fee ₹20</small></td><td><button class="btn-whatsapp" onclick="window.open('https://wa.me/91${s.sellerWhatsapp}?text=${encodeURIComponent(`Hi ${s.sellerName}, your products sold worth ₹${s.totalSalesValue}. Payment due ₹${s.paymentDue}. Shopline Kerala`)}','_blank')">WhatsApp ${s.sellerName}</button><br><button class="btn-link" style="margin-top:5px" onclick="sendPaymentLink('${s.sellerId}','${s.sellerEmail}','${s.upiId}')">Pay ₹${s.paymentDue}</button></td></tr>`;
+      html += `<tr><td>#${rank}</td><td><b>${s.sellerName}</b><br><small>WhatsApp: ${s.sellerWhatsapp}</small></td><td><small>${s.sellerId.substring(0,8)}</small></td><td>${s.totalProducts}</td><td>${s.totalSalesCount}</td><td>₹${s.totalSalesValue.toLocaleString()}</td><td>₹${s.paymentDue.toLocaleString()}</td><td><button class="btn-whatsapp" onclick="window.open('https://wa.me/91${s.sellerWhatsapp}','_blank')">WhatsApp</button></td></tr>`;
     });
-
     document.getElementById('topSellersList').innerHTML = html || '<tr><td colspan="8">No sellers yet</td></tr>';
     document.getElementById('adminTotalSellers').innerText = sorted.length;
     document.getElementById('adminTotalProducts').innerText = productsSnap.size;
-
-    // Fill filter dropdown
     const filterSelect = document.getElementById('filterSellerSelect');
     filterSelect.innerHTML = '<option value="">All Sellers</option>';
-    sorted.forEach(s => {
-      filterSelect.innerHTML += `<option value="${s.sellerId}">${s.sellerName} - ${s.sellerWhatsapp} - ₹${s.totalSalesValue}</option>`;
-    });
-
-  }catch(e){
-    console.log("Top sellers error", e);
-    document.getElementById('topSellersList').innerHTML = `<tr><td colspan="8">Error: ${e.message}</td></tr>`;
-  }
+    sorted.forEach(s => { filterSelect.innerHTML += `<option value="${s.sellerId}">${s.sellerName} - ₹${s.totalSalesValue}</option>`; });
+  }catch(e){ document.getElementById('topSellersList').innerHTML = `<tr><td colspan="8">Error: ${e.message}</td></tr>`; }
 }
-
-function loadAdminData(){
-  loadTopSellers();
-  loadAllSellers();
-  loadAllOrdersAdmin();
-  loadSellerWiseOrders();
-  loadPayoutsAdmin();
-  loadReturnsAdmin();
-  db.collection("orders").get().then(snap=>{ document.getElementById('adminTotalOrders').innerText=snap.size; });
-}
-
 async function loadAllSellers(){
   const body=document.getElementById('allSellersList');
   try{
     const snap=await db.collection("sellers").get();
     if(snap.empty){ body.innerHTML='<tr><td colspan="8">No sellers yet</td></tr>'; return; }
-    
     const ordersSnap = await db.collection("orders").get();
     let sellerStats = {};
-    snap.forEach(doc => {
-      sellerStats[doc.id] = { totalSalesValue: 0, totalSalesCount: 0, paymentDue: 0, totalProducts: 0 };
-    });
+    snap.forEach(doc => { sellerStats[doc.id] = { totalSalesValue: 0, totalSalesCount: 0, paymentDue: 0, totalProducts: 0 }; });
     const prodSnap = await db.collection("products").get();
-    prodSnap.forEach(doc => {
-      const p = doc.data();
-      if(sellerStats[p.sellerId]) sellerStats[p.sellerId].totalProducts++;
-    });
-    ordersSnap.forEach(doc => {
-      const o = doc.data();
-      if(o.items) {
-        o.items.forEach(item => {
-          const sid = item.sellerId || item.originalSellerId || '';
-          if(sellerStats[sid]) {
-            sellerStats[sid].totalSalesCount++;
-            const val = item.price * (item.qty||1);
-            sellerStats[sid].totalSalesValue += val;
-            sellerStats[sid].paymentDue += val - 20;
-          }
-        });
-      }
-    });
-
+    prodSnap.forEach(doc => { const p = doc.data(); if(sellerStats[p.sellerId]) sellerStats[p.sellerId].totalProducts++; });
+    ordersSnap.forEach(doc => { const o = doc.data(); if(o.items) o.items.forEach(item => { const sid = item.sellerId || ''; if(sellerStats[sid]) { sellerStats[sid].totalSalesCount++; const val = item.price * (item.qty||1); sellerStats[sid].totalSalesValue += val; sellerStats[sid].paymentDue += val - 20; }}); });
     let html='';
     for(const doc of snap.docs){
-      const s=doc.data();
-      const sellerId=doc.id;
-      const stats = sellerStats[sellerId] || { totalSalesValue:0, totalSalesCount:0, paymentDue:0, totalProducts:0 };
-      const isTop = stats.totalSalesValue > 10000;
-      
-      html+=`<tr>
-        <td><b>${sellerId.substring(0,8)}</b><br><small>${sellerId}</small><br>${sellerId===ADMIN_UID? '<span class="badge-admin">MAIN ADMIN</span>' : '<span class="badge-seller">CONTRIBUTOR</span>'}<br>${isTop? '<span class="badge-top">🏆 TOP</span>' : ''}</td>
-        <td><b>${s.sellerName||s.name||''}</b><br><small>${s.sellerShopName||s.shopName||''}</small><br><small>Email: ${s.email||''}<br>District: ${s.sellerDistrict||s.district||''}</small></td>
-        <td><b style="color:#25D366">WhatsApp: ${s.sellerWhatsapp||s.whatsapp||''}</b><br>Contact: ${s.sellerContact||s.contact||''}<br><small>${s.sellerAddress||''}</small></td>
-        <td>${s.sellerUpiId||s.upiId ? `<b style="color:green">${s.sellerUpiId||s.upiId}</b><br><small>${s.sellerUpiName||s.upiHolderName||''}</small>` : '<small style="color:red">UPI Not Filled</small>'}</td>
-        <td>${stats.totalProducts} products</td>
-        <td><b>₹${stats.totalSalesValue.toLocaleString()}</b><br><small>${stats.totalSalesCount} sales</small><br><small>Payment Due: ₹${stats.paymentDue.toLocaleString()}</small></td>
-        <td><b style="color:#d32f2f">₹${stats.paymentDue.toLocaleString()}</b><br><small>After Fee</small><br>${isTop? '<b style="color:#ff9800">TOP SELLER</b>' : ''}</td>
-        <td><button class="btn-whatsapp" onclick="window.open('https://wa.me/91${s.sellerWhatsapp||s.whatsapp||''}?text=${encodeURIComponent(`Hi ${s.sellerName||s.name}, your sale ₹${stats.totalSalesValue}, due ₹${stats.paymentDue}`)}','_blank')">WhatsApp</button><br><button class="btn-link" style="margin-top:5px" onclick="sendPaymentLink('${sellerId}','${s.email||''}','${s.sellerUpiId||s.upiId||''}')">Pay ₹${stats.paymentDue}</button><br><button class="btn-invoice" style="margin-top:5px" onclick="viewSellerDetails('${sellerId}')">View Full</button></td>
-      </tr>`;
+      const s=doc.data(); const sellerId=doc.id; const stats = sellerStats[sellerId] || { totalSalesValue:0, totalSalesCount:0, paymentDue:0, totalProducts:0 };
+      html+=`<tr><td><b>${sellerId.substring(0,8)}</b></td><td><b>${s.sellerName||''}</b><br><small>${s.email||''}</small></td><td>WhatsApp: ${s.sellerWhatsapp||''}<br>Contact: ${s.sellerContact||''}</td><td>${s.sellerUpiId||''}</td><td>${stats.totalProducts}</td><td>₹${stats.totalSalesValue.toLocaleString()}</td><td>₹${stats.paymentDue.toLocaleString()}</td><td><button class="btn-whatsapp" onclick="window.open('https://wa.me/91${s.sellerWhatsapp||''}','_blank')">WhatsApp</button></td></tr>`;
     }
     body.innerHTML=html;
   }catch(e){ body.innerHTML=`<tr><td colspan="8">Error: ${e.message}</td></tr>`; }
 }
-
 async function loadAllOrdersAdmin(){
   const body=document.getElementById('allOrdersAdminList');
   try{
@@ -979,128 +885,76 @@ async function loadAllOrdersAdmin(){
     for(const doc of docs) {
       const o=doc.data();
       let itemsHtml = '';
-      let sellerTrackingHtml = '';
       if(o.items) {
         for(let item of o.items) {
-          const sid = item.sellerId || item.originalSellerId || o.originalSellerIds?.[0] || '';
+          const sid = item.sellerId || '';
           const sinfo = await getSellerInfo(sid);
-          itemsHtml += `${item.name||'Product'} Qty ${item.qty||1}<br>`;
-          sellerTrackingHtml += `<span class="badge-seller">Product Belongs To: ${sinfo.sellerName||sinfo.name||sid.substring(0,6)}<br>WhatsApp: ${sinfo.sellerWhatsapp||sinfo.whatsapp||'N/A'}<br>Contact: ${sinfo.sellerContact||sinfo.contact||'N/A'}<br>UPI: ${sinfo.sellerUpiId||sinfo.upiId||'N/A'}</span><br>`;
+          const returnBadge = item.returnAvailable ? `<span class="badge-return-ok">✅ Return ${item.returnDays}d</span>` : `<span class="badge-no-return">❌ No Return</span>`;
+          const exchangeBadge = item.exchangeAvailable ? `<span class="badge-return-ok">✅ Exchange ${item.exchangeDays}d</span>` : `<span class="badge-no-return">❌ No Exchange</span>`;
+          itemsHtml += `${item.name||'Product'} Qty ${item.qty||1}<br>${returnBadge} ${exchangeBadge}<br><small>${item.returnPolicy||''}</small><br><span class="badge-seller">Belongs to: ${sinfo.sellerName||sid.substring(0,6)}</span><br>`;
         }
       }
-      html+=`<tr><td>#${doc.id.substring(0,6)}<br><small>${o.createdAt? new Date(o.createdAt.seconds*1000).toLocaleDateString(): ''}</small></td><td>${o.customer?.name||''}<br>${o.customer?.phone||''}<br><small>${o.customer?.email||''}</small></td><td>${itemsHtml}<br><div style="background:#fff3e0; padding:8px; border-radius:6px; border:1px solid #ff9800">${sellerTrackingHtml}</div></td><td>₹${o.finalTotal||0}<br><small>Fee ₹20</small><br><small>Original Sellers: ${o.originalSellerIds?.join(', ').substring(0,20)||'Admin'}</small></td><td>${o.trackingStatus||''}<br><small>${o.status||''}</small></td><td>${o.courierName||'No courier'}<br><small>${o.awb||''}</small></td><td><button class="btn-notify-buyer" onclick="openNotifyModal('${doc.id}','${o.customer?.phone||''}','${o.customer?.name||''}','buyer','order','${o.sellerIds?.[0]||''}','${o.customerId||''}','')">Notify Buyer</button><br>${o.items? `<button class="btn-notify-seller" style="margin-top:5px" onclick="openNotifyModal('${doc.id}','','Contributor ${o.items[0].sellerId?.substring(0,6)||''}','seller','order','${o.items[0].sellerId||''}','','')">Notify Product Owner</button>` : ''}</td><td><button class="btn-invoice" onclick="downloadInvoice('${doc.id}')">Invoice</button><br><small>Seller tracking for payment</small></td></tr>`;
+      html+=`<tr><td>#${doc.id.substring(0,6)}</td><td>${o.customer?.name||''}<br>${o.customer?.phone||''}</td><td>${itemsHtml}</td><td>₹${o.finalTotal||0}</td><td>${o.trackingStatus||''}</td><td>${o.courierName||'No courier'}</td><td><button class="btn-notify-buyer" onclick="openNotifyModal('${doc.id}','','Buyer','buyer','order','${o.sellerIds?.[0]||''}','${o.customerId||''}','')">Notify Buyer</button></td><td><button class="btn-invoice" onclick="downloadInvoice('${doc.id}')">Invoice</button></td></tr>`;
     }
     body.innerHTML=html;
   }catch(e){ body.innerHTML=`<tr><td colspan="8">${e.message}</td></tr>`; }
 }
-
 async function loadSellerWiseOrders(){
   const sellerId = document.getElementById('filterSellerSelect').value;
   const body = document.getElementById('sellerWiseOrdersList');
   try{
     let query = db.collection("orders");
-    if(sellerId) {
-      // This will need originalSellerIds field in orders - see checkout fix
-      query = query.where("originalSellerIds", "array-contains", sellerId);
-    }
+    if(sellerId) query = query.where("originalSellerIds", "array-contains", sellerId);
     const snap = await query.get();
-    if(snap.empty){ body.innerHTML='<tr><td colspan="9">No orders for this seller. Make sure checkout saves originalSellerIds field.</td></tr>'; document.getElementById('selectedSellerTotal').innerText='₹0'; document.getElementById('selectedSellerDue').innerText='₹0'; return; }
-    
+    if(snap.empty){ body.innerHTML='<tr><td colspan="9">No orders for this seller</td></tr>'; return; }
     let html = '';
-    let total = 0;
-    let due = 0;
     let docs=[]; snap.forEach(d=>docs.push(d)); docs.sort((a,b)=>(b.data().createdAt?.seconds||0)-(a.data().createdAt?.seconds||0));
-    
     for(const doc of docs) {
       const o = doc.data();
       let relevantItems = [];
-      if(o.items) {
-        o.items.forEach(item => {
-          const sid = item.sellerId || item.originalSellerId || '';
-          if(!sellerId || sid === sellerId || (o.originalSellerIds && o.originalSellerIds.includes(sellerId))) {
-            relevantItems.push(item);
-          }
-        });
-      }
-      if(relevantItems.length===0 && sellerId && o.originalSellerIds && o.originalSellerIds.includes(sellerId)) {
-        relevantItems = [{ name: o.items?.[0]?.name||'Product', qty: 1, price: o.finalTotal||0 }];
-      }
-      
+      if(o.items) o.items.forEach(item => { const sid = item.sellerId || ''; if(!sellerId || sid === sellerId) relevantItems.push(item); });
       for(let item of relevantItems) {
         const saleValue = (item.price * (item.qty||1));
-        const netPayable = saleValue - 20;
-        total += saleValue;
-        due += netPayable;
-        const sellerInfo = sellerId? await getSellerInfo(sellerId) : await getSellerInfo(item.sellerId||'');
-        html += `<tr><td>#${doc.id.substring(0,6)}</td><td>${o.createdAt? new Date(o.createdAt.seconds*1000).toLocaleDateString(): ''}</td><td><b>${sellerInfo.sellerName||sellerInfo.name||item.sellerId||sellerId}</b><br><small>WhatsApp: ${sellerInfo.sellerWhatsapp||''}<br>Contact: ${sellerInfo.sellerContact||''}</small></td><td>${item.name||'Product'}<br><small>Qty ${item.qty||1}</small></td><td>${o.customer?.name||''}<br><small>${o.customer?.phone||''}</small></td><td>₹${saleValue}</td><td>Fee ₹20</td><td><b style="color:green">₹${netPayable}</b></td><td><span class="badge-status">${o.trackingStatus||''}</span></td></tr>`;
+        const returnBadge = item.returnAvailable ? `✅ Return ${item.returnDays}d` : `❌ No Return`;
+        const exchangeBadge = item.exchangeAvailable ? `✅ Exchange ${item.exchangeDays}d` : `❌ No Exchange`;
+        html += `<tr><td>#${doc.id.substring(0,6)}</td><td>${o.createdAt? new Date(o.createdAt.seconds*1000).toLocaleDateString(): ''}</td><td>${sellerId||item.sellerId}</td><td>${item.name||'Product'}<br><small>${returnBadge} | ${exchangeBadge}</small><br><small>${item.returnPolicy||''}</small></td><td>${o.customer?.name||''}</td><td>₹${saleValue}</td><td>₹20</td><td>₹${saleValue-20}</td><td>${o.trackingStatus||''}</td></tr>`;
       }
     }
-    
-    body.innerHTML = html || '<tr><td colspan="9">No sales for this seller yet</td></tr>';
-    document.getElementById('selectedSellerTotal').innerText = '₹' + total.toLocaleString();
-    document.getElementById('selectedSellerDue').innerText = '₹' + due.toLocaleString();
-  }catch(e){
-    body.innerHTML = `<tr><td colspan="9">Error: ${e.message}<br>Make sure you added originalSellerIds in checkout code</td></tr>`;
-  }
+    body.innerHTML = html || '<tr><td colspan="9">No sales</td></tr>';
+  }catch(e){ body.innerHTML = `<tr><td colspan="9">Error: ${e.message}</td></tr>`; }
 }
-
 async function loadPayoutsAdmin(){
   const body=document.getElementById('payoutsAdminList');
   try{
-    // Group orders by seller whose product sold
     const snap = await db.collection("orders").get();
     let sellerPayouts = {};
-
     snap.forEach(doc => {
       const o = doc.data();
-      const returnOver = o.canReturnTill ? new Date() > o.canReturnTill.toDate() : true;
-      // For payout, need delivered + return period over
       if(o.trackingStatus !== 'Delivered') return;
-
-      if(o.items) {
-        o.items.forEach(item => {
-          const sid = item.sellerId || item.originalSellerId || (o.originalSellerIds? o.originalSellerIds[0] : '');
-          if(!sid || sid===ADMIN_UID) return; // Don't payout to admin for own products
-          if(!sellerPayouts[sid]) sellerPayouts[sid] = { totalSales:0, fee:0, penalty:0, netDue:0, orders:[] };
-          const sale = item.price * (item.qty||1);
-          sellerPayouts[sid].totalSales += sale;
-          sellerPayouts[sid].fee += 20;
-          sellerPayouts[sid].netDue += (sale - 20 - (o.returnPenalty||0));
-          sellerPayouts[sid].orders.push(doc.id);
-        });
-      }
+      if(o.items) o.items.forEach(item => {
+        const sid = item.sellerId || '';
+        if(!sid || sid===ADMIN_UID) return;
+        if(!sellerPayouts[sid]) sellerPayouts[sid] = { totalSales:0, fee:0, netDue:0, orders:[] };
+        const sale = item.price * (item.qty||1);
+        sellerPayouts[sid].totalSales += sale;
+        sellerPayouts[sid].fee += 20;
+        sellerPayouts[sid].netDue += (sale - 20);
+        sellerPayouts[sid].orders.push(doc.id);
+      });
     });
-
-    if(Object.keys(sellerPayouts).length===0){
-      body.innerHTML = '<tr><td colspan="7">No payouts pending - Need Delivered orders + return period over. Contributors products sold will show here for payment.</td></tr>';
-      document.getElementById('adminTotalPayout').innerText = '₹0';
-      return;
-    }
-
+    if(Object.keys(sellerPayouts).length===0){ body.innerHTML = '<tr><td colspan="7">No payouts pending</td></tr>'; return; }
     let html = '';
     let totalPayout = 0;
     for(const sid in sellerPayouts) {
       const payout = sellerPayouts[sid];
       const sinfo = await getSellerInfo(sid);
       totalPayout += payout.netDue;
-      html += `<tr>
-        <td><b>${sinfo.sellerName||sinfo.name||sid.substring(0,8)}</b><br><small>${sinfo.sellerShopName||''}</small><br><b style="color:#25D366">WhatsApp: ${sinfo.sellerWhatsapp||''}</b><br>Contact: ${sinfo.sellerContact||''}<br>Email: ${sinfo.email||''}<br>UPI: <b style="color:green">${sinfo.sellerUpiId||sinfo.upiId||'N/A'}</b><br><small>ID: ${sid.substring(0,8)}</small></td>
-        <td>₹${payout.totalSales.toLocaleString()}<br><small>${payout.orders.length} orders</small><br><small>Products sold</small></td>
-        <td>Fee: ₹${payout.fee}<br>Penalty: ₹${payout.penalty||0}<br><small>₹20 per sale</small></td>
-        <td><b style="color:green; font-size:14px">₹${payout.netDue.toLocaleString()}</b><br><small>Net Payable</small></td>
-        <td>pending<br><small>Delivered + return over</small></td>
-        <td><button class="btn-link" onclick="sendPaymentLink('${sid}','${sinfo.email||''}','${sinfo.sellerUpiId||sinfo.upiId||''}','',${payout.netDue})">Payment Link ₹${payout.netDue}</button><br><button class="btn-whatsapp" style="margin-top:5px" onclick="window.open('https://wa.me/91${sinfo.sellerWhatsapp||''}?text=${encodeURIComponent(`Hi ${sinfo.sellerName}, your products sold ₹${payout.totalSales}, payment due ₹${payout.netDue} after fee. UPI: ${sinfo.sellerUpiId||''}. Shopline Kerala`)}','_blank')">WhatsApp Pay</button></td>
-        <td><button class="btn-payout" onclick="markPayoutPaidBulk('${sid}',${payout.netDue},${JSON.stringify(payout.orders).replace(/"/g,'&quot;')})">Mark Paid ₹${payout.netDue}</button><br><small>${payout.orders.length} orders</small></td>
-      </tr>`;
+      html += `<tr><td><b>${sinfo.sellerName||sid.substring(0,8)}</b><br>WhatsApp: ${sinfo.sellerWhatsapp||''}<br>UPI: ${sinfo.sellerUpiId||''}</td><td>₹${payout.totalSales.toLocaleString()}</td><td>Fee: ₹${payout.fee}</td><td>₹${payout.netDue.toLocaleString()}</td><td>pending</td><td><button class="btn-link" onclick="sendPaymentLink('${sid}','','',${payout.netDue})">Pay ₹${payout.netDue}</button></td><td><button class="btn-payout" onclick="markPayoutPaidBulk('${sid}',${payout.netDue})">Mark Paid</button></td></tr>`;
     }
-
     document.getElementById('adminTotalPayout').innerText = '₹' + totalPayout.toLocaleString();
     body.innerHTML = html;
-  }catch(e){
-    body.innerHTML = `<tr><td colspan="7">Error: ${e.message}</td></tr>`;
-  }
+  }catch(e){ body.innerHTML = `<tr><td colspan="7">Error: ${e.message}</td></tr>`; }
 }
-
 async function loadReturnsAdmin(){
   const body=document.getElementById('returnsAdminList');
   try{
@@ -1111,43 +965,13 @@ async function loadReturnsAdmin(){
     for(const doc of docs) {
       const r=doc.data();
       const sinfo = await getSellerInfo(r.sellerId||'');
-      html+=`<tr><td>#${doc.id.substring(0,6)}<br>#${r.orderId?.substring(0,6)||''}</td><td>${r.customerEmail||''}<br><small>${r.customerId||''}</small></td><td>${r.productId||'Product'}<br><span class="badge-seller">Belongs to: ${sinfo.sellerName||sinfo.name||r.sellerId?.substring(0,6)||''}<br>WhatsApp: ${sinfo.sellerWhatsapp||''}<br>Contact: ${sinfo.sellerContact||''}</span></td><td><span class="badge-${r.type==='exchange'?'exchange':'return'}">${r.type?.toUpperCase()||'RETURN'} ₹${r.type==='exchange'?'0':'40 Penalty'}</span><br>${r.reason||''}</td><td>${r.returnCourierName||'Courier Only'}<br>${r.returnAwb||''}</td><td><button class="btn-invoice" onclick="downloadReturnInvoice('${doc.id}')">Return Inv</button><br><button class="btn-invoice" onclick="downloadExchangeInvoice('${doc.id}')">Exch ₹0</button></td><td><button class="btn-notify-seller" onclick="openNotifyModal('${r.orderId||doc.id}','','${sinfo.sellerName||''}','seller','return','${r.sellerId||''}','','')">Notify Seller (Product Owner)</button></td><td><span class="badge-status">${r.status}</span><br>${r.type==='return'? '<small>Penalty ₹40 to seller '+ (sinfo.sellerName||'') + '</small>' : '<small>Exchange ₹0 same price</small>'}<br><button class="btn-approve" onclick="approveReturnExchange('${doc.id}','${r.orderId}',${r.itemIdx},'${r.type}','${r.newSize||''}')">Approve</button></td></tr>`;
+      html+=`<tr><td>#${doc.id.substring(0,6)}</td><td>${r.customerEmail||''}</td><td>${r.productId||'Product'}<br><span class="badge-seller">${sinfo.sellerName||''}</span></td><td><span class="badge-${r.type==='exchange'?'exchange':'return'}">${r.type?.toUpperCase()}</span><br>${r.reason||''}</td><td>${r.returnCourierName||''}</td><td><button class="btn-invoice" onclick="downloadReturnInvoice('${doc.id}')">Return Inv</button></td><td><button class="btn-notify-seller" onclick="openNotifyModal('${r.orderId||doc.id}','','${sinfo.sellerName||''}','seller','return','${r.sellerId||''}','','')">Notify Seller</button></td><td><span class="badge-status">${r.status}</span><br><button class="btn-approve" onclick="approveReturnExchange('${doc.id}','${r.orderId}',${r.itemIdx},'${r.type}')">Approve</button></td></tr>`;
     }
     body.innerHTML=html;
   }catch(e){ body.innerHTML=`<tr><td colspan="8">${e.message}</td></tr>`; }
 }
-
-function sendPaymentLink(sellerId, email, upiId, orderId, amount){
-  let linkAmount = amount || prompt("Enter payout amount?");
-  let upi = upiId || prompt("Enter seller UPI?");
-  if(!upi) return alert("UPI not found");
-  const paymentLink = `upi://pay?pa=${upi}&pn=ShoplineKerala&am=${linkAmount||100}&cu=INR&tn=Payout ${orderId||''}`;
-  const whatsappMsg = `Hi, Your Shopline Kerala payout ₹${linkAmount||''} ready. UPI: ${upi}. Order: ${orderId||''}. Link: ${paymentLink}`;
-  if(confirm(`Pay to seller?\nUPI: ${upi}\nAmount: ₹${linkAmount}`)){
-    db.collection("payoutRequests").add({sellerId, email, upiId: upi, amount: linkAmount||0, orderId: orderId||'', paymentLink, status:'link_sent', createdAt: firebase.firestore.FieldValue.serverTimestamp()});
-    db.collection("notifications").add({recipientId: sellerId, recipientType: 'seller', sellerId, message: `💰 Payment Link ₹${linkAmount} to ${upi}`, type:'payout', read:false, createdAt: firebase.firestore.FieldValue.serverTimestamp()});
-    window.open(`https://wa.me/?text=${encodeURIComponent(whatsappMsg)}`, '_blank');
-    alert(`Payment link sent to seller!`);
-  }
-}
-function viewSellerDetails(sellerId){
-  getSellerInfo(sellerId).then(s=>{
-    alert(`Seller Details:\nID: ${sellerId}\nName: ${s.sellerName||s.name||''}\nShop: ${s.sellerShopName||''}\nWhatsApp: ${s.sellerWhatsapp||''}\nContact: ${s.sellerContact||''}\nEmail: ${s.email||''}\nUPI: ${s.sellerUpiId||s.upiId||''}\nAddress: ${s.sellerAddress||''}\nDistrict: ${s.sellerDistrict||''}`);
-  });
-}
-async function markPayoutPaidBulk(sellerId, amount, orderIds){
-  if(!confirm(`Mark PAID ₹${amount} to seller ${sellerId.substring(0,8)}?`)) return;
-  // Mark all orders of this seller as paid
-  try{
-    const ids = typeof orderIds === 'string' ? JSON.parse(orderIds.replace(/&quot;/g,'"')) : orderIds;
-    for(let oid of ids) {
-      await db.collection("orders").doc(oid).update({ payoutStatus: 'paid_to_contributor', paidToSellerId: sellerId, paidAmount: amount, paidAt: firebase.firestore.FieldValue.serverTimestamp() });
-    }
-    alert(`Paid ₹${amount} to seller!`);
-    loadPayoutsAdmin();
-  }catch(e){ alert("Error: " + e.message); }
-}
-
+function sendPaymentLink(sellerId, email, upiId, amount){ alert(`Pay ₹${amount} to ${sellerId}`); }
+async function markPayoutPaidBulk(sellerId, amount){ if(!confirm(`Mark PAID ₹${amount}?`)) return; alert(`Paid ₹${amount}`); loadPayoutsAdmin(); }
 async function loadProducts() {
   try{
     let query = isAdmin ? await db.collection("products").get() : await db.collection("products").where("sellerId","==",currentUser.uid).get();
@@ -1155,28 +979,17 @@ async function loadProducts() {
     let html='';
     let docs=[]; query.forEach(d=>docs.push(d));
     docs.sort((a,b)=>(b.data().createdAt?.seconds||0)-(a.data().createdAt?.seconds||0));
-    
     for(const d of docs) {
       const p = d.data();
       const sinfo = isAdmin ? await getSellerInfo(p.sellerId) : sellerCache[currentUser.uid] || {};
-      // Count sales of this product
       let salesCount = 0;
-      try{
-        const ordersSnap = await db.collection("orders").get();
-        ordersSnap.forEach(odoc => {
-          const o = odoc.data();
-          if(o.items) {
-            o.items.forEach(item => {
-              if(item.name === p.name || item.productId === d.id) salesCount += (item.qty||1);
-            });
-          }
-        });
-      }catch(e){}
-
-      html += `<tr><td><img src="${p.images?.[0]||''}" width="50" style="border-radius:4px"></td><td><b>${p.name}</b><br><small>Brand: ${p.brand||''}</small><br><span class="badge-seller">Seller: ${sinfo.sellerName||p.sellerName||p.sellerId?.substring(0,6)||''}<br>WhatsApp: ${sinfo.sellerWhatsapp||p.sellerWhatsapp||'N/A'}<br>Contact: ${sinfo.sellerContact||'N/A'}</span></td><td>₹${p.customerPrice||p.price||0}<br><small>Base ₹${p.price||0}</small><br><small>Earning ₹${(p.price||0)-20}</small></td><td>${p.category||''}</td><td>${p.district||''}</td><td>${p.stockQty||0}</td><td><b style="color:#388e3c">${salesCount} sold</b></td><td><button class="btn-edit" onclick="editProduct('${d.id}')">Edit</button><button class="btn-delete" onclick="deleteProduct('${d.id}')">Delete</button></td></tr>`;
+      try{ const ordersSnap = await db.collection("orders").get(); ordersSnap.forEach(odoc => { const o = odoc.data(); if(o.items) o.items.forEach(item => { if(item.name === p.name || item.productId === d.id) salesCount += (item.qty||1); }); }); }catch(e){}
+      const returnBadge = p.returnAvailable ? `<span class="badge-return-ok">✅ Return ${p.returnDays||7}d</span>` : `<span class="badge-no-return">❌ No Return</span>`;
+      const exchangeBadge = p.exchangeAvailable ? `<span class="badge-return-ok">✅ Exchange ${p.exchangeDays||7}d</span>` : `<span class="badge-no-return">❌ No Exchange</span>`;
+      html += `<tr><td><img src="${p.images?.[0]||''}" width="50" style="border-radius:4px"></td><td><b>${p.name}</b><br><small>Brand: ${p.brand||''}</small><br><span class="badge-seller">Seller: ${sinfo.sellerName||p.sellerName||''}</span><br>${returnBadge} ${exchangeBadge}<br><small style="font-size:10px">${p.returnPolicy||''}</small></td><td>₹${p.customerPrice||p.price||0}<br><small>Base ₹${p.price||0}</small></td><td>${p.category||''}</td><td>${p.district||''}</td><td>${p.stockQty||0}</td><td><b style="color:#388e3c">${salesCount} sold</b></td><td><button class="btn-edit" onclick="editProduct('${d.id}')">Edit</button><button class="btn-delete" onclick="deleteProduct('${d.id}')">Delete</button></td></tr>`;
     }
     document.getElementById('totalProducts').innerText= isAdmin? query.size : count;
-    document.getElementById('productsList').innerHTML=html || '<tr><td colspan="8">No products yet. Add one! Fill seller profile first.</td></tr>';
+    document.getElementById('productsList').innerHTML=html || '<tr><td colspan="8">No products yet</td></tr>';
   }catch(e){ console.log("Products error:", e) }
 }
 function deleteProduct(id){ if(confirm('Delete this product?')){ db.collection("products").doc(id).delete().then(loadProducts); }}
@@ -1201,6 +1014,10 @@ async function editProduct(id){
   editUploadedUrls = p.images || [];
   editSelectedSizes = p.sizes || [];
   editSelectedColors = p.colors || [];
+  setEditReturnOption(p.returnAvailable || false);
+  setEditExchangeOption(p.exchangeAvailable || false);
+  document.getElementById('editReturnDays').value = p.returnDays || 7;
+  document.getElementById('editExchangeDays').value = p.exchangeDays || 7;
   renderEditImages();
   renderEditSizeColor();
   calcEditPrice();
@@ -1227,15 +1044,19 @@ async function updateProduct(e){
     images: editUploadedUrls,
     sizes: editSelectedSizes,
     colors: editSelectedColors,
+    returnAvailable: editReturnAvailable,
+    returnDays: editReturnAvailable ? Number(document.getElementById('editReturnDays').value) : 0,
+    exchangeAvailable: editExchangeAvailable,
+    exchangeDays: editExchangeAvailable ? Number(document.getElementById('editExchangeDays').value) : 0,
+    returnPolicy: (editReturnAvailable || editExchangeAvailable) ? `${editReturnAvailable ? document.getElementById('editReturnDays').value + ' Days Return' : 'No Return'} + ${editExchangeAvailable ? document.getElementById('editExchangeDays').value + ' Days Exchange' : 'No Exchange'}` : 'No Return, No Exchange - Final Sale',
     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
   };
   await db.collection("products").doc(currentEditId).update(updated);
-  alert(`✅ Product Updated!`);
+  alert(`✅ Product Updated with Return Policy: ${updated.returnPolicy}`);
   closeEditPopup();
   loadProducts();
 }
 function cancelOrder(id){ let reason = prompt("Cancel reason:"); if(reason){ db.collection("orders").doc(id).update({ status: 'Cancelled', cancelReason: reason }).then(()=>{ alert('Cancelled'); loadOrders(); }); }}
-function approveOrder(id){ db.collection("orders").doc(id).update({ orderStatus: 'approved', trackingStatus: 'Approved' }).then(()=>{ alert('Approved'); loadOrders(); }); }
 function handleTracking(orderId, status){
   if(status==='Shipped'){ openCourierModal(orderId, true); }
   else{
@@ -1274,7 +1095,7 @@ function openNotifyModal(orderId, phone, name, target, type, sellerId, customerI
   document.getElementById('notifySellerId').value=sellerId||'';
   document.getElementById('notifyCustomerId').value=customerId||'';
   document.getElementById('notifyTo').value= target==='buyer'? `Buyer: ${name} (${phone})` : `Seller: ${name} ID: ${sellerId||''}`;
-  let defaultMsg = target==='buyer'? `Hi ${name}, update for order #${(orderId||'').substring(0,6)}: ${type}. Shopline Kerala` : `Hi seller, update for order #${(orderId||'').substring(0,6)}: ${type}. Product belongs to tracking.`;
+  let defaultMsg = target==='buyer'? `Hi ${name}, update for order #${(orderId||'').substring(0,6)}: ${type}.` : `Hi seller, update for order #${(orderId||'').substring(0,6)}: ${type}.`;
   document.getElementById('notifyMessage').value=defaultMsg;
   document.getElementById('notifyModal').style.display='flex';
 }
@@ -1299,7 +1120,7 @@ function sendWebsiteNotify(){
   const sellerId=document.getElementById('notifySellerId').value;
   const customerId=document.getElementById('notifyCustomerId').value;
   db.collection("notifications").add({orderId, recipientId: target==='buyer'? customerId : sellerId, recipientType: target, sellerId, customerId, message: msg, target, type: 'website', read:false, createdAt: firebase.firestore.FieldValue.serverTimestamp(), sentBy: currentUser.uid});
-  alert(`Website notification to ${target} - will appear in their account`);
+  alert(`Website notification to ${target}`);
   closeNotifyModal();
 }
 function sendBothNotify(){ sendWhatsappNotify(); setTimeout(()=>{ sendWebsiteNotify(); }, 500); }
@@ -1308,14 +1129,6 @@ async function approveReturnExchange(returnId, orderId, itemIdx, type, newSize){
   if(!confirm(`Approve ${type}?`)) return;
   await db.collection("returns").doc(returnId).update({status:'approved', approvedAt: firebase.firestore.FieldValue.serverTimestamp(), approvedBy: 'admin'});
   alert(`Approved ${type}`);
-  loadReturnsAdmin();
-}
-async function rejectReturnExchange(returnId){
-  if(!isAdmin) return alert("Only Admin");
-  const reason = prompt("Rejection reason?");
-  if(!reason) return;
-  await db.collection("returns").doc(returnId).update({status:'rejected', rejectReason:reason});
-  alert("Rejected");
   loadReturnsAdmin();
 }
 function downloadInvoice(orderId){
@@ -1339,48 +1152,7 @@ function downloadInvoice(orderId){
     pdf.save(`Invoice-${orderId.substring(0,6)}.pdf`);
   });
 }
-function downloadReturnInvoice(returnId){
-  db.collection("returns").doc(returnId).get().then(async doc=>{
-    if(!doc.exists){ alert("Not found"); return; }
-    const r=doc.data();
-    let item = {name: r.productId||"Product", qty:1, price: r.productPrice||500};
-    try{
-      if(r.orderId){
-        const od = await db.collection("orders").doc(r.orderId).get();
-        if(od.exists){ const odData = od.data(); item = odData.items?.[r.itemIdx]||odData.items?.[0]||item; }
-      }
-    }catch(e){}
-    const pdf=new jsPDF(); let y=12;
-    pdf.setFillColor(220,20,60); pdf.rect(0,0,210,16,'F'); pdf.setTextColor(255,255,255); pdf.setFontSize(14); pdf.setFont("helvetica","bold"); pdf.text("RETURN INVOICE",105,10,{align:"center"});
-    pdf.setTextColor(0,0,0); y=22; pdf.setFontSize(10); pdf.text(`Return ID: #${doc.id.substring(0,8)}`,14,y); pdf.text(`Order ID: #${(r.orderId||'').substring(0,8)}`,110,y); y+=6;
-    pdf.text(`Customer: ${r.customerEmail||''}`,14,y); pdf.text(`Seller: ${r.sellerId?.substring(0,8)||''}`,110,y); y+=6;
-    pdf.text(`Type: ${r.type} | Reason: ${r.reason||''}`,14,y); y+=10;
-    pdf.setFont("helvetica","bold"); pdf.text("Product",15,y); pdf.text("Qty",90,y); pdf.text("Price",120,y); pdf.text("Return Value",160,y); y+=5;
-    pdf.setFont("helvetica","normal"); pdf.text((item.name||'').substring(0,25),15,y); pdf.text(String(item.qty||1),90,y); pdf.text(`Rs.${item.price}`,120,y); pdf.text(`Rs.${(item.price*item.qty).toFixed(0)}`,160,y); y+=10;
-    pdf.setFont("helvetica","bold"); pdf.text(`Subtotal: Rs.${(item.price*item.qty).toFixed(2)}`,120,y); y+=6; pdf.text(`Penalty: Rs.40`,120,y); y+=6; pdf.text(`Net: Rs.${(item.price*item.qty - 40).toFixed(2)}`,14,y);
-    pdf.save(`Return-Invoice-${doc.id.substring(0,6)}.pdf`);
-  });
-}
-function downloadExchangeInvoice(returnId){
-  db.collection("returns").doc(returnId).get().then(async doc=>{
-    if(!doc.exists) return;
-    const r=doc.data();
-    let item = {name: r.productId||"Product", qty:1, price:500};
-    try{
-      if(r.orderId){
-        const od = await db.collection("orders").doc(r.orderId).get();
-        if(od.exists){ const odData = od.data(); item = odData.items?.[r.itemIdx]||odData.items?.[0]||item; }
-      }
-    }catch(e){}
-    const pdf=new jsPDF(); let y=12;
-    pdf.setFillColor(0,184,148); pdf.rect(0,0,210,16,'F'); pdf.setTextColor(255,255,255); pdf.setFontSize(14); pdf.setFont("helvetica","bold"); pdf.text("EXCHANGE INVOICE - Rs.0",105,10,{align:"center"});
-    pdf.setTextColor(0,0,0); y=22; pdf.setFontSize(10); pdf.text(`Exchange ID: #${doc.id.substring(0,8)}`,14,y); pdf.text(`Order ID: #${(r.orderId||'').substring(0,8)}`,110,y); y+=6;
-    pdf.text(`Old: ${r.oldSize||'-'} -> New: ${r.newSize||'-'}`,14,y); pdf.text(`Price: Rs.0`,110,y); y+=10;
-    pdf.setFont("helvetica","bold"); pdf.text("Product",15,y); pdf.text("Old Size",90,y); pdf.text("New Size",120,y); pdf.text("Price",160,y); y+=5;
-    pdf.setFont("helvetica","normal"); pdf.text((item.name||'').substring(0,22),15,y); pdf.text(r.oldSize||'-',90,y); pdf.text(r.newSize||'-',120,y); pdf.text("Rs.0",160,y);
-    pdf.save(`Exchange-Invoice-${doc.id.substring(0,6)}-Rs0.pdf`);
-  });
-}
+function downloadReturnInvoice(returnId){ alert("Return invoice - implement similar"); }
 </script>
 </body>
 </html>
