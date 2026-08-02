@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><!-- PLAYABLE_TOUCH_PATCH_V1 --><script>
+(function() {
+  if (window.__playableTouchPatchInstalled) return;
+  window.__playableTouchPatchInstalled = true;
+  var origAdd = EventTarget.prototype.addEventListener;
+  var blockedTypes = { touchstart: 1, touchmove: 1, wheel: 1 };
+  EventTarget.prototype.addEventListener = function(type, listener, options) {
+    if (blockedTypes[type]) {
+      if (options === undefined || options === null) {
+        options = { passive: true };
+      } else if (typeof options === 'boolean') {
+        options = { capture: options, passive: true };
+      } else {
+        options = Object.assign({}, options, { passive: true });
+      }
+    }
+    return origAdd.call(this, type, listener, options);
+  };
+})();
+</script><script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wishlist - Shopline India - India's Own Shopping Place</title>
+<style>
+body{font-family:Arial,sans-serif;margin:0;background:#f1f3f6}
+header{background:#2874f0;color:#fff;padding:12px 15px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+header a{color:#fff;text-decoration:none;font-weight:bold}
+.container{max-width:1200px;margin:15px auto;padding:0 10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.card{background:#fff;padding:10px;border-radius:8px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.1);position:relative}
+.card img{width:100%;height:140px;object-fit:cover;border-radius:6px;background:#f5f5f5}
+.card h3{font-size:13px;margin:8px 0;height:32px;overflow:hidden}
+.price{font-weight:bold;color:#212121}
+.btn{width:100%;margin-top:6px;padding:7px;border:none;border-radius:4px;cursor:pointer;font-weight:bold;font-size:12px}
+.btn-cart{background:#fb641b;color:#fff}
+.btn-remove{background:#fff;color:#c00;border:1px solid #ff9f9f}
+.empty{text-align:center;padding:60px 20px;background:#fff;border-radius:10px;margin-top:20px}
+.empty a{background:#2874f0;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;display:inline-block;margin-top:15px}
+.top-info{background:#fff;padding:12px;border-radius:8px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+</style>
+</head>
+<body>
+<header>
+<a href="../index.html">← Shopline India</a>
+<span style="font-weight:bold">♡ My Wishlist</span>
+<a href="cart.html">🛒 Cart</a>
+</header>
+
+<div class="container">
+<div class="top-info">
+<div><b id="count">0 Items</b> in Wishlist<br><small style="color:#666">Delivery all over India - Pan India</small></div>
+<button onclick="clearWishlist()" style="background:#ffebee;color:#c00;border:1px solid #ffcdd2;padding:6px 12px;border-radius:6px;cursor:pointer">Clear All</button>
+</div>
+
+<div id="wishlistGrid" class="grid"></div>
+
+<div id="emptyBox" class="empty" style="display:none">
+<h2>Your Wishlist is Empty!</h2>
+<p>Add items you love — Save for later - Shopline India</p>
+<p style="color:#666;font-size:13px">🚚 Delivery all over India</p>
+<a href="products.html">Continue Shopping</a>
+</div>
+</div>
+
+<script>
+function getWishlist(){ return JSON.parse(localStorage.getItem('wishlist'))||[]; }
+function saveWishlist(w){ localStorage.setItem('wishlist', JSON.stringify(w)); }
+
+function render(){
+  const grid = document.getElementById('wishlistGrid');
+  const empty = document.getElementById('emptyBox');
+  const wishlist = getWishlist();
+  document.getElementById('count').textContent = wishlist.length + ' Items';
+  
+  if(wishlist.length===0){
+    grid.style.display='none';
+    empty.style.display='block';
+    return;
+  }
+  grid.style.display='grid';
+  empty.style.display='none';
+  let html='';
+  wishlist.forEach(item=>{
+    html+=`<div class="card">
+      <img src="${item.image}" alt="${item.name}" onclick="location.href='product.html?id=${item.id}'" style="cursor:pointer">
+      <h3>${item.name}</h3>
+      <p class="price">₹${item.price}</p>
+      <button class="btn btn-cart" onclick="addToCart('${item.id}','${item.name.replace(/'/g,"\\'")}','${item.image}',${item.price})">Add to Cart</button>
+      <button class="btn btn-remove" onclick="removeItem('${item.id}')">Remove</button>
+    </div>`;
+  });
+  grid.innerHTML=html;
+}
+
+function removeItem(id){
+  let w=getWishlist();
+  w=w.filter(i=>i.id!==id);
+  saveWishlist(w);
+  render();
+}
+
+function clearWishlist(){
+  if(confirm('Clear all wishlist items?')){
+    localStorage.removeItem('wishlist');
+    render();
+  }
+}
+
+function addToCart(id,name,image,price){
+  let cart=JSON.parse(localStorage.getItem('cart'))||[];
+  const existing=cart.find(i=>i.id===id);
+  if(existing)existing.qty+=1;
+  else cart.push({id,name,image,price,qty:1,variant:'Default',sellerId:''});
+  localStorage.setItem('cart',JSON.stringify(cart));
+  alert(name+' added to cart 🛒 - Delivery all over India');
+}
+
+render();
+</script>
+</body>
+</html>
