@@ -22,7 +22,7 @@
 </script><script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Orders - Shopline Kerala - Cancel Order Added</title>
+<title>My Orders - Fixed No Index Needed</title>
 <style>
 *{box-sizing:border-box; margin:0; padding:0; font-family:Arial, sans-serif}
 body{background:#f1f3f6}
@@ -37,16 +37,12 @@ header a{color:#fff; text-decoration:none; font-weight:bold}
 .status.shipped{background:#fff3e0; color:#f57c00; border:1px solid #ffcc80}
 .status.delivered{background:#e8f5e9; color:#388e3c; border:1px solid #a5d6a7}
 .status.cancelled{background:#ffebee; color:#d32f2f; border:1px solid #ef9a9a}
-.status.returned{background:#f3e5f5; color:#7b1fa2; border:1px solid #ce93d8}
 .order-item{display:flex; gap:12px; padding:10px 0; border-bottom:1px solid #f5f5f5}
 .order-item img{width:70px; height:70px; object-fit:cover; border:1px solid #eee; border-radius:4px}
 .order-item-info{flex:1}
 .order-total{font-weight:bold; font-size:16px; margin-top:10px; display:flex; justify-content:space-between}
 .btn-cancel{background:#fff; color:#d32f2f; border:1px solid #d32f2f; padding:8px 16px; border-radius:4px; cursor:pointer; font-weight:bold; font-size:13px; margin-top:10px}
 .btn-cancel:hover{background:#ffebee}
-.btn-cancel:disabled{background:#eee; color:#999; border-color:#ccc; cursor:not-allowed}
-.cancel-reason-box{background:#fff3e0; padding:10px; border-radius:6px; margin:10px 0; border:1px solid #ffcc80; display:none}
-.cancel-reason-box select, .cancel-reason-box textarea{width:100%; padding:8px; margin:5px 0; border:1px solid #ddd; border-radius:4px}
 .cancel-info{font-size:11px; color:#666; background:#f9f9f9; padding:8px; border-radius:4px; margin-top:8px}
 @media(max-width:768px){.order-header{flex-direction:column}}
 </style>
@@ -60,16 +56,15 @@ header a{color:#fff; text-decoration:none; font-weight:bold}
 
 <div class="container">
   <h2 style="margin:15px 0">📦 My Orders</h2>
-  <p style="font-size:13px; color:#666">You can cancel order within 24 hours if placed wrongly - Delivery all over Kerala</p>
+  <p style="font-size:13px; color:#666">You can cancel order if placed wrongly - Delivery all over Kerala</p>
   <div id="ordersList">Loading your orders...</div>
 </div>
 
-<!-- Cancel Modal -->
 <div id="cancelModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center; padding:15px">
   <div style="background:#fff; border-radius:8px; padding:20px; max-width:400px; width:100%">
     <h3>Cancel Order?</h3>
-    <p style="font-size:13px; color:#666; margin:10px 0">Are you sure you want to cancel this order? Select reason:</p>
-    <select id="cancelReason">
+    <p style="font-size:13px; color:#666; margin:10px 0">Select reason:</p>
+    <select id="cancelReason" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px">
       <option value="">Select Reason</option>
       <option value="Ordered by mistake">Ordered by mistake</option>
       <option value="Found cheaper elsewhere">Found cheaper elsewhere</option>
@@ -88,7 +83,7 @@ header a{color:#fff; text-decoration:none; font-weight:bold}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, query, where, orderBy, getDocs, doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, query, where, getDocs, doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
@@ -111,28 +106,35 @@ onAuthStateChanged(auth, async (user) => {
 async function loadOrders(userId) {
   const ordersList = document.getElementById('ordersList');
   try {
-    const q = query(collection(db, "orders"), where("userId", "==", userId), orderBy("createdAt", "desc"));
+    // FIXED: REMOVED orderBy to avoid index requirement - sort in JS instead
+    const q = query(collection(db, "orders"), where("userId", "==", userId));
     const snap = await getDocs(q);
 
     if(snap.empty){
-      ordersList.innerHTML = '<div style="text-align:center; padding:40px; background:#fff; border-radius:8px"><p>No orders yet</p><a href="../index.html" style="display:inline-block; margin-top:10px; background:#2874f0; color:#fff; padding:10px 20px; border-radius:4px; text-decoration:none">Start Shopping</a><p style="font-size:11px; color:#666; margin-top:10px">Delivery all over Kerala</p></div>';
+      ordersList.innerHTML = '<div style="text-align:center; padding:40px; background:#fff; border-radius:8px"><p>No orders yet - Counts 0</p><a href="../index.html" style="display:inline-block; margin-top:10px; background:#2874f0; color:#fff; padding:10px 20px; border-radius:4px; text-decoration:none">Start Shopping</a></div>';
       return;
     }
 
-    let html = '';
+    // Sort in JS instead of Firestore orderBy - NO INDEX NEEDED
+    let orders = [];
     snap.forEach(docSnap => {
-      const order = docSnap.data();
-      const orderId = docSnap.id;
+      orders.push({ id: docSnap.id, data: docSnap.data() });
+    });
+    orders.sort((a,b) => {
+      const timeA = a.data.createdAt ? a.data.createdAt.toDate().getTime() : 0;
+      const timeB = b.data.createdAt ? b.data.createdAt.toDate().getTime() : 0;
+      return timeB - timeA; // Desc order
+    });
+
+    let html = '';
+    orders.forEach(({id: orderId, data: order}) => {
       const date = order.createdAt ? new Date(order.createdAt.toDate()).toLocaleDateString() : 'N/A';
       const status = order.status || order.orderStatus || 'New Order';
-      const isCancellable = (status === 'New Order' || status === 'Order Received' || status === 'new') && status !== 'Cancelled' && status !== 'Delivered';
+      const isCancellable = (status === 'New Order' || status === 'Order Received' || status === 'new' || status === 'Pending') && !status.toLowerCase().includes('cancel') && !status.toLowerCase().includes('deliver');
       
-      // Check if within 24 hours
       let canCancel = isCancellable;
-      let hoursLeft = 24;
       if(order.createdAt){
         const diffHours = (Date.now() - order.createdAt.toDate().getTime()) / (1000*60*60);
-        hoursLeft = Math.max(0, 24 - diffHours);
         if(diffHours > 24) canCancel = false;
       }
 
@@ -148,7 +150,7 @@ async function loadOrders(userId) {
             <img src="${item.image}" onerror="this.src='https://via.placeholder.com/70?text=No+Image'">
             <div class="order-item-info">
               <b style="font-size:13px">${item.name}</b><br>
-              <span style="font-size:12px; color:#666">Size: ${item.size || 'N/A'} | Color: ${item.color || 'N/A'} | Qty: ${item.qty}</span><br>
+              <span style="font-size:12px; color:#666">Qty: ${item.qty}</span><br>
               <span style="font-size:13px; font-weight:bold">₹${item.price}</span>
             </div>
           </div>
@@ -162,28 +164,17 @@ async function loadOrders(userId) {
               <span class="order-id">Order #${orderId.substring(0,8)}</span> - ${date}<br>
               <span style="font-size:12px; color:#666">Delivery all over Kerala</span>
             </div>
-            <div>
-              <span class="status ${statusClass}">${status}</span>
-            </div>
+            <div><span class="status ${statusClass}">${status}</span></div>
           </div>
           ${itemsHtml}
-          <div class="order-total">
-            <span>Total:</span>
-            <span>₹${(order.finalTotal || order.productTotal || 0).toLocaleString()}</span>
-          </div>
-          <div style="font-size:12px; color:#666; margin-top:5px">
-            📍 ${order.customer ? `${order.customer.street}, ${order.customer.district}, ${order.customer.pincode}` : 'Address N/A'}<br>
-            📞 ${order.customer ? order.customer.phone : ''}
-          </div>
+          <div class="order-total"><span>Total:</span><span>₹${(order.finalTotal || order.productTotal || 0).toLocaleString()}</span></div>
           ${canCancel ? `
             <button class="btn-cancel" onclick="openCancelModal('${orderId}')">❌ Cancel Order</button>
-            <div class="cancel-info">⏰ You can cancel within 24 hours. ${hoursLeft.toFixed(1)} hours left. If ordered wrongly, cancel now.</div>
+            <div class="cancel-info">If ordered wrongly, you can cancel within 24 hours.</div>
           ` : status.toLowerCase().includes('cancel') ? `
-            <div class="cancel-info" style="background:#ffebee; color:#d32f2f">❌ This order was cancelled. ${order.cancelReason ? 'Reason: ' + order.cancelReason : ''}</div>
-          ` : status.toLowerCase().includes('ship') || status.toLowerCase().includes('deliver') ? `
-            <div class="cancel-info">✅ Order ${status} - Cannot cancel now. Contact support via Contact Us page.</div>
+            <div class="cancel-info" style="background:#ffebee; color:#d32f2f">❌ Cancelled - ${order.cancelReason || ''}</div>
           ` : `
-            <div class="cancel-info">Cancel period expired (24 hours). Contact support for help.</div>
+            <div class="cancel-info">Contact support for help.</div>
           `}
         </div>
       `;
@@ -193,7 +184,7 @@ async function loadOrders(userId) {
 
   } catch(e) {
     console.error(e);
-    ordersList.innerHTML = `<p style="color:#d32f2f">Error loading orders: ${e.message}</p>`;
+    ordersList.innerHTML = `<p style="color:#d32f2f; padding:20px; background:#fff; border-radius:8px">Error: ${e.message}<br><br>If you see index error, click the link in error to create index, or use this fixed file (no index needed).<br><br>Quick fix: In Firebase Console > Firestore > Indexes > Create composite index for orders: userId ASC, createdAt DESC</p>`;
   }
 }
 
@@ -211,11 +202,8 @@ window.closeCancelModal = function() {
 window.confirmCancel = async function() {
   const reason = document.getElementById('cancelReason').value;
   const note = document.getElementById('cancelNote').value;
-
   if(!reason) return alert('Please select cancel reason');
-
   if(!currentCancelOrderId) return;
-
   try {
     const orderRef = doc(db, "orders", currentCancelOrderId);
     await updateDoc(orderRef, {
@@ -227,11 +215,9 @@ window.confirmCancel = async function() {
       cancelledAt: serverTimestamp(),
       cancelledBy: currentUser ? currentUser.uid : 'customer'
     });
-
-    alert('✅ Order Cancelled Successfully. Refund (if paid online) will be processed within 2-3 days.');
+    alert('✅ Order Cancelled Successfully.');
     closeCancelModal();
     loadOrders(currentUser.uid);
-
   } catch(e) {
     console.error(e);
     alert('Cancel failed: ' + e.message);
@@ -240,4 +226,3 @@ window.confirmCancel = async function() {
 </script>
 </body>
 </html>
-
