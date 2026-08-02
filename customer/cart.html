@@ -1,28 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><!-- PLAYABLE_TOUCH_PATCH_V1 --><script>
-(function() {
-  if (window.__playableTouchPatchInstalled) return;
-  window.__playableTouchPatchInstalled = true;
-  var origAdd = EventTarget.prototype.addEventListener;
-  var blockedTypes = { touchstart: 1, touchmove: 1, wheel: 1 };
-  EventTarget.prototype.addEventListener = function(type, listener, options) {
-    if (blockedTypes[type]) {
-      if (options === undefined || options === null) {
-        options = { passive: true };
-      } else if (typeof options === 'boolean') {
-        options = { capture: options, passive: true };
-      } else {
-        options = Object.assign({}, options, { passive: true });
-      }
-    }
-    return origAdd.call(this, type, listener, options);
-  };
-})();
-</script><script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cart - Shopline Kerala - Auto Push Added</title>
+<title>Cart - Shopline - All India - No Dropdown</title>
 <style>
 *{box-sizing:border-box; margin:0; padding:0; font-family:Arial, sans-serif}
 body{background:#f1f3f6}
@@ -35,18 +16,23 @@ header a{color:#fff; text-decoration:none; font-weight:bold}
 .cart-item img{width:80px; height:80px; object-fit:cover; border-radius:6px; border:1px solid #eee}
 .qty-box{display:flex; align-items:center; gap:8px; margin-top:8px}
 .qty-btn{width:28px; height:28px; border:1px solid #ccc; background:#fff; border-radius:50%; cursor:pointer; font-weight:bold}
-.form-group{margin:10px 0}
-.form-group input, .form-group textarea, .form-group select{width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; font-size:14px}
+.form-group{margin:10px 0; position:relative}
+.form-group input, .form-group textarea{width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; font-size:14px}
+.form-group input:focus, .form-group textarea:focus{border-color:#2874f0; outline:none}
 .btn-place{width:100%; padding:14px; background:#fb641b; color:#fff; border:none; border-radius:6px; font-weight:bold; font-size:16px; cursor:pointer; margin-top:10px}
 .btn-place:disabled{background:#ccc; cursor:not-allowed}
 .price-row{display:flex; justify-content:space-between; margin:8px 0; font-size:14px}
 .price-row.total{font-weight:bold; font-size:16px; border-top:1px dashed #ddd; padding-top:10px}
+.pincode-hint{font-size:10px; color:#388e3c; margin-top:3px; display:none}
+.pincode-hint.show{display:block}
+.auto-badge{position:absolute; right:8px; top:50%; transform:translateY(-50%); background:#e8f5e9; color:#2e7d32; font-size:9px; padding:2px 6px; border-radius:10px; font-weight:bold; display:none}
+.auto-badge.show{display:block}
 </style>
 </head>
 <body>
 
 <header>
-  <div><a href="../index.html">Shopline<span style="color:#ffe500">Kerala</span></a></div>
+  <div><a href="../index.html">Shopline<span style="color:#ffe500">India</span></a></div>
   <div><a href="order.html">My Orders</a></div>
 </header>
 
@@ -58,28 +44,41 @@ header a{color:#fff; text-decoration:none; font-weight:bold}
 
   <div class="cart-right">
     <h3>Delivery Address</h3>
-    <p style="font-size:11px; color:#666">Delivery all over Kerala</p>
+    <p style="font-size:11px; color:#388e3c; font-weight:bold">🚚 Delivery all over India - Enter Pincode to auto-detect</p>
     
     <div class="form-group"><input type="text" id="custName" placeholder="Full Name *" required></div>
     <div class="form-group"><input type="tel" id="custPhone" placeholder="Phone Number *" required></div>
-    <div class="form-group"><textarea id="custAddress" placeholder="Street, House No *" rows="2" required></textarea></div>
+    
+    <!-- PINCODE FIRST - AUTO DETECTS STATE & DISTRICT -->
     <div class="form-group">
-      <select id="custDistrict">
-        <option value="">Select District *</option>
-        <option>Thiruvananthapuram</option><option>Kollam</option><option>Pathanamthitta</option><option>Alappuzha</option><option>Kottayam</option><option>Idukki</option><option>Ernakulam</option><option>Thrissur</option><option>Palakkad</option><option>Malappuram</option><option>Kozhikode</option><option>Wayanad</option><option>Kannur</option><option>Kasaragod</option>
-      </select>
+      <input type="text" id="custPincode" placeholder="Pincode * (6 digits - auto detects state/district)" required maxlength="6" inputmode="numeric">
+      <span id="pinAutoBadge" class="auto-badge">✓ Auto</span>
+      <div id="pincodeHint" class="pincode-hint">✅ Location detected!</div>
     </div>
-    <div class="form-group"><input type="text" id="custPincode" placeholder="Pincode *" required></div>
+
+    <!-- STATE - TYPED OR AUTO DETECTED (NO DROPDOWN) -->
+    <div class="form-group">
+      <input type="text" id="custState" placeholder="State * (type or auto from pincode)" required>
+      <span id="stateAutoBadge" class="auto-badge">✓ Auto</span>
+    </div>
+
+    <!-- DISTRICT - TYPED OR AUTO DETECTED (NO DROPDOWN) -->
+    <div class="form-group">
+      <input type="text" id="custDistrict" placeholder="District / City * (type or auto from pincode)" required>
+      <span id="districtAutoBadge" class="auto-badge">✓ Auto</span>
+    </div>
+
+    <div class="form-group"><textarea id="custAddress" placeholder="Street, House No, Area *" rows="2" required></textarea></div>
     <div class="form-group"><textarea id="custLandmark" placeholder="Landmark (Optional)" rows="1"></textarea></div>
 
     <div style="margin:15px 0; background:#f9f9f9; padding:10px; border-radius:6px">
       <div class="price-row"><span>Items Total:</span><span id="itemsTotal">₹0</span></div>
-      <div class="price-row"><span>Delivery:</span><span style="color:#388e3c">FREE - Delivery all over Kerala</span></div>
+      <div class="price-row"><span>Delivery:</span><span style="color:#388e3c">FREE - All over India</span></div>
       <div class="price-row total"><span>Total Payable:</span><span id="finalTotal">₹0</span></div>
     </div>
 
     <button id="placeOrderBtn" class="btn-place" onclick="placeOrder()">Place Order</button>
-    <p style="font-size:10px; color:#666; margin-top:8px; text-align:center">You can cancel order within 24 hours if ordered wrongly</p>
+    <p style="font-size:10px; color:#666; margin-top:8px; text-align:center">💡 Tip: Enter pincode first - State & District auto fills<br>You can cancel order within 24 hours if ordered wrongly</p>
   </div>
 </div>
 
@@ -99,7 +98,6 @@ let cart = JSON.parse(localStorage.getItem('cart')) || [];
 onAuthStateChanged(auth, async (user)=>{
   if(user){
     currentUser = user;
-    // Auto-fill name if available
     try {
       const userDoc = await getDoc(doc(db, "users", user.uid));
       if(userDoc.exists()){
@@ -120,7 +118,6 @@ function renderCart() {
     document.getElementById('placeOrderBtn').disabled = true;
     return;
   }
-
   let html = '';
   let total = 0;
   cart.forEach((item, idx)=>{
@@ -142,7 +139,6 @@ function renderCart() {
       </div>
     `;
   });
-
   container.innerHTML = html;
   document.getElementById('itemsTotal').innerText = '₹' + total.toLocaleString();
   document.getElementById('finalTotal').innerText = '₹' + total.toLocaleString();
@@ -159,36 +155,114 @@ window.removeItem = function(idx){
   localStorage.setItem('cart', JSON.stringify(cart));
   renderCart();
 }
-
 renderCart();
 
-// ===== AUTOMATIC PUSH NOTIFICATION LOGIC - ADDED =====
+// ===== AUTO PINCODE DETECT - STATE & DISTRICT TYPED OR AUTO =====
+async function fetchPincodeData(pincode) {
+  const pincodeInput = document.getElementById('custPincode');
+  const stateInput = document.getElementById('custState');
+  const districtInput = document.getElementById('custDistrict');
+  const hint = document.getElementById('pincodeHint');
+  const pinBadge = document.getElementById('pinAutoBadge');
+  const stateBadge = document.getElementById('stateAutoBadge');
+  const distBadge = document.getElementById('districtAutoBadge');
+
+  stateInput.placeholder = 'Detecting state...';
+  districtInput.placeholder = 'Detecting district...';
+
+  try {
+    const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+    const data = await response.json();
+
+    if(data[0].Status === 'Success' && data[0].PostOffice && data[0].PostOffice.length > 0) {
+      const postOffice = data[0].PostOffice[0];
+      const detectedState = postOffice.State;
+      const detectedDistrict = postOffice.District;
+      const detectedName = postOffice.Name;
+
+      // Auto fill both as TYPED text (no dropdown)
+      stateInput.value = detectedState;
+      districtInput.value = detectedDistrict;
+
+      stateInput.placeholder = 'State * (auto from pincode)';
+      districtInput.placeholder = 'District / City * (auto from pincode)';
+
+      // Show auto badges
+      pinBadge.classList.add('show');
+      stateBadge.classList.add('show');
+      distBadge.classList.add('show');
+      hint.innerHTML = `✅ ${detectedName}, ${detectedDistrict}, ${detectedState} detected!`;
+      hint.classList.add('show');
+
+      const landmarkInput = document.getElementById('custLandmark');
+      if(landmarkInput && detectedName && !landmarkInput.value) {
+        landmarkInput.placeholder = `Area: ${detectedName} (auto) - Add landmark`;
+      }
+
+      pincodeInput.style.borderColor = '#4caf50';
+      stateInput.style.borderColor = '#4caf50';
+      districtInput.style.borderColor = '#4caf50';
+
+      setTimeout(()=>{
+        pincodeInput.style.borderColor = '#ddd';
+        stateInput.style.borderColor = '#ddd';
+        districtInput.style.borderColor = '#ddd';
+        pinBadge.classList.remove('show');
+        stateBadge.classList.remove('show');
+        distBadge.classList.remove('show');
+        hint.classList.remove('show');
+      }, 4000);
+
+      console.log(`✅ ${pincode} → ${detectedDistrict}, ${detectedState}`);
+
+    } else {
+      throw new Error('Invalid');
+    }
+  } catch(error) {
+    stateInput.placeholder = 'State * (type manually - invalid pincode)';
+    districtInput.placeholder = 'District / City * (type manually)';
+    pincodeInput.style.borderColor = '#ff9800';
+    setTimeout(()=> pincodeInput.style.borderColor = '#ddd', 2000);
+  }
+}
+
+document.getElementById('custPincode').addEventListener('input', function() {
+  const pin = this.value.trim();
+  if(pin.length === 6 && /^\d{6}$/.test(pin)) {
+    fetchPincodeData(pin);
+  }
+});
+
+// Clear auto badges when user manually edits state/district
+document.getElementById('custState').addEventListener('input', function(){
+  document.getElementById('stateAutoBadge').classList.remove('show');
+});
+document.getElementById('custDistrict').addEventListener('input', function(){
+  document.getElementById('districtAutoBadge').classList.remove('show');
+});
+
+// ===== AUTO PUSH NOTIFICATION =====
 async function sendAutoNotificationToAdmin(orderId, orderData) {
   try {
-    // 1. Create admin notification - Admin push page listens to this collection automatically
     await addDoc(collection(db, "admin_notifications"), {
       type: "new_order",
       title: "🔔 New Order Received!",
-      body: `Order #${orderId.substring(0,6)} - ₹${orderData.finalTotal} - ${orderData.customer.name} - ${orderData.customer.phone} - ${orderData.items.map(i=>i.name).join(', ')}`,
+      body: `Order #${orderId.substring(0,6)} - ₹${orderData.finalTotal} - ${orderData.customer.name} - ${orderData.customer.phone} - ${orderData.customer.district}, ${orderData.customer.state} - ${orderData.items.map(i=>i.name).join(', ')}`,
       orderId: orderId,
       customerName: orderData.customer.name,
       customerPhone: orderData.customer.phone,
       total: orderData.finalTotal,
       items: orderData.items.map(i=>({name:i.name, qty:i.qty, price:i.price})),
+      state: orderData.customer.state,
       district: orderData.customer.district,
+      pincode: orderData.customer.pincode,
       createdAt: serverTimestamp(),
       read: false,
-      delivery: "Delivery all over Kerala"
+      delivery: "Delivery all over India"
     });
-
-    console.log('✅ Auto notification sent to admin - Owner will get push instantly');
-
-    // 2. Optional: If you have FCM Cloud Function deployed, it will auto send FCM push from admin_notifications collection
-    // Cloud Function watches admin_notifications and sends FCM to all admin_tokens
-
+    console.log('✅ Auto notification sent');
   } catch(e) {
-    console.error('Auto notify error (order still placed):', e);
-    // Don't block order if notification fails
+    console.error('Auto notify error:', e);
   }
 }
 
@@ -196,12 +270,13 @@ window.placeOrder = async function() {
   const name = document.getElementById('custName').value.trim();
   const phone = document.getElementById('custPhone').value.trim();
   const street = document.getElementById('custAddress').value.trim();
-  const district = document.getElementById('custDistrict').value;
+  const state = document.getElementById('custState').value.trim();
+  const district = document.getElementById('custDistrict').value.trim();
   const pincode = document.getElementById('custPincode').value.trim();
   const landmark = document.getElementById('custLandmark').value.trim();
 
-  if(!name || !phone || !street || !district || !pincode){
-    return alert('Please fill all required fields *');
+  if(!name || !phone || !street || !state || !district || !pincode){
+    return alert('Please fill all required fields * - Tip: Enter pincode to auto-fill state/district');
   }
   if(cart.length === 0) return alert('Cart empty');
 
@@ -222,6 +297,7 @@ window.placeOrder = async function() {
         name: name,
         phone: phone,
         street: street,
+        state: state,
         district: district,
         pincode: pincode,
         landmark: landmark
@@ -231,19 +307,16 @@ window.placeOrder = async function() {
       trackingStatus: "Order Received",
       paymentMethod: "COD",
       createdAt: serverTimestamp(),
-      deliveryInfo: "Delivery all over Kerala"
+      deliveryInfo: "Delivery all over India"
     };
 
-    // 1. Create order
     const orderRef = await addDoc(collection(db, "orders"), orderData);
     const orderId = orderRef.id;
 
-    // 2. AUTOMATIC PUSH NOTIFICATION TO YOU - No manual work needed!
     await sendAutoNotificationToAdmin(orderId, orderData);
 
-    // 3. Clear cart and redirect
     localStorage.removeItem('cart');
-    alert(`✅ Order Placed Successfully! Order ID: #${orderId.substring(0,8)}\n\nYou can cancel within 24 hours if ordered wrongly. Delivery all over Kerala.`);
+    alert(`✅ Order Placed! Order ID: #${orderId.substring(0,8)}\n\nDelivery: ${district}, ${state} - ${pincode}\nAll over India. You can cancel within 24 hours.`);
     
     window.location.href = `order.html?id=${orderId}`;
 
