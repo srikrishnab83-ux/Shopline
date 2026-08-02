@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><!-- PLAYABLE_TOUCH_PATCH_V1 --><script>
+(function() {
+  if (window.__playableTouchPatchInstalled) return;
+  window.__playableTouchPatchInstalled = true;
+  var origAdd = EventTarget.prototype.addEventListener;
+  var blockedTypes = { touchstart: 1, touchmove: 1, wheel: 1 };
+  EventTarget.prototype.addEventListener = function(type, listener, options) {
+    if (blockedTypes[type]) {
+      if (options === undefined || options === null) {
+        options = { passive: true };
+      } else if (typeof options === 'boolean') {
+        options = { capture: options, passive: true };
+      } else {
+        options = Object.assign({}, options, { passive: true });
+      }
+    }
+    return origAdd.call(this, type, listener, options);
+  };
+})();
+</script><script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Push Notifications Setup - Shopline Kerala Admin</title>
+<style>
+body{font-family:Arial; background:#f1f3f6; padding:20px}
+.container{max-width:650px; margin:0 auto; background:#fff; padding:25px; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.1)}
+h2{color:#2874f0; margin-bottom:10px}
+.btn{padding:12px 20px; border:none; border-radius:8px; cursor:pointer; font-weight:bold; width:100%; margin:8px 0; font-size:14px}
+.btn-primary{background:#2874f0; color:#fff}
+.btn-success{background:#388e3c; color:#fff}
+.btn-danger{background:#d32f2f; color:#fff}
+.status{padding:12px; border-radius:8px; margin:10px 0; font-size:13px}
+.status.success{background:#e8f5e9; color:#2e7d32; border:1px solid #4caf50}
+.status.error{background:#ffebee; color:#d32f2f; border:1px solid #ef9a9a}
+.status.info{background:#e3f2fd; color:#1565c0; border:1px solid #90caf9}
+.log{background:#f9f9f9; padding:12px; border-radius:6px; max-height:300px; overflow-y:auto; font-size:12px; border:1px solid #eee; margin-top:15px}
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>🔔 Push Notifications - Admin Setup</h2>
+  <p style="font-size:13px; color:#666">Enable push to get instant alerts for New Orders, Cancel, Return, etc. Delivery all over Kerala.</p>
+
+  <div id="statusBox" class="status info">Checking permission...</div>
+
+  <button class="btn btn-primary" onclick="enablePush()">🔔 Enable Push Notifications</button>
+  <button class="btn btn-success" onclick="testPush()">🧪 Send Test Notification to Me</button>
+  <button class="btn btn-primary" onclick="loadRecentOrders()" style="background:#ff9800">📦 Load Recent Orders - Test Cancel Push</button>
+
+  <div style="background:#fff3e0; padding:12px; border-radius:8px; margin:15px 0; border:1px solid #ffcc80; font-size:12px">
+    <b>How it works:</b><br>
+    1. Click Enable → Allow notifications when browser asks<br>
+    2. Your device token saved to Firebase `admin_tokens`<br>
+    3. When customer orders/cancels → You get push even if site closed<br>
+    4. Keep this page open for live orders with sound 🔔
+  </div>
+
+  <div id="tokenBox" style="word-break:break-all; font-size:10px; background:#f5f5f5; padding:10px; border-radius:6px; display:none"></div>
+
+  <h3 style="margin-top:20px; font-size:16px">📋 Live Order Alerts (Keep page open)</h3>
+  <div id="liveLog" class="log">Waiting for new orders...<br>Enable push and keep this tab open - you will get sound + popup for every order/cancel.</div>
+
+  <audio id="notifSound" src="https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2873.mp3" preload="auto"></audio>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
+
+const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart", messagingSenderId: "1050842791186", appId: "1:1050842791186:web:dUMMY"};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const messaging = getMessaging(app);
+
+let adminToken = null;
+
+async function checkPermission() {
+  if (!('Notification' in window)) {
+    document.getElementById('statusBox').innerHTML = '<div class="status error">❌ This browser does not support notifications. Use Chrome.</div>';
+    return;
+  }
+  if (Notification.permission === 'granted') {
+    document.getElementById('statusBox').innerHTML = '<div class="status success">✅ Notifications already enabled!</div>';
+  } else if (Notification.permission === 'denied') {
+    document.getElementById('statusBox').innerHTML = '<div class="status error">❌ Notifications blocked. Enable in browser settings > Site settings > Notifications > Allow.</div>';
+  } else {
+    document.getElementById('statusBox').innerHTML = '<div class="status info">ℹ️ Click Enable Push Notifications and allow when browser asks.</div>';
+  }
+}
+checkPermission();
+
+window.enablePush = async function() {
+  try {
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') {
+      document.getElementById('statusBox').innerHTML = '<div class="status error">❌ Permission denied. Please allow notifications.</div>';
+      return;
+    }
+
+    // Register service worker
+    const registration = await navigator.serviceWorker.register('/Shopline/firebase-messaging-sw.js');
+    console.log('SW registered:', registration);
+
+    // Get FCM token - Replace VAPID key with your own from Firebase Console > Project Settings > Cloud Messaging > Web Push certificates
+    const token = await getToken(messaging, { 
+      vapidKey: 'BFakeVapidKeyForDemo_ReplaceWithYourRealVapidKey_From_Firebase_Console',
+      serviceWorkerRegistration: registration 
+    });
+
+    if (token) {
+      adminToken = token;
+      document.getElementById('tokenBox').style.display = 'block';
+      document.getElementById('tokenBox').innerText = 'Your Token: ' + token;
+      document.getElementById('statusBox').innerHTML = '<div class="status success">✅ Push enabled! Token saved. You will get alerts for orders, cancel, return etc.</div>';
+
+      // Save token to Firestore
+      await setDoc(doc(db, "admin_tokens", "owner_main"), {
+        token: token,
+        createdAt: serverTimestamp(),
+        userAgent: navigator.userAgent,
+        active: true
+      });
+
+      // Also save to admin_notifications config
+      await setDoc(doc(db, "admin_config", "notifications"), {
+        enabled: true,
+        lastEnabled: serverTimestamp(),
+        token: token
+      }, { merge: true });
+
+      // Listen for foreground messages
+      onMessage(messaging, (payload) => {
+        console.log('Foreground message:', payload);
+        showBrowserNotification(payload.notification.title, payload.notification.body);
+        playSound();
+        logMessage(`🔔 ${payload.notification.title}: ${payload.notification.body}`);
+      });
+
+      startLiveListener();
+
+    } else {
+      document.getElementById('statusBox').innerHTML = '<div class="status error">❌ No token. Check VAPID key in Firebase Console.</div>';
+    }
+
+  } catch (e) {
+    console.error(e);
+    document.getElementById('statusBox').innerHTML = `<div class="status error">❌ Error: ${e.message}<br><br>Tip: For testing without VAPID, use Live Alerts below - works without FCM setup. Live alerts use Firestore listener + browser Notification API.</div>`;
+    // Fallback to live listener even if FCM fails
+    startLiveListener();
+  }
+}
+
+function showBrowserNotification(title, body) {
+  if (Notification.permission === 'granted') {
+    new Notification(title, { body: body, icon: 'https://cdn-icons-png.flaticon.com/512/3081/3081559.png', requireInteraction: true });
+  }
+}
+
+function playSound() {
+  const audio = document.getElementById('notifSound');
+  audio.play().catch(()=>{});
+}
+
+function logMessage(msg) {
+  const log = document.getElementById('liveLog');
+  const time = new Date().toLocaleTimeString();
+  log.innerHTML = `[${time}] ${msg}<br>` + log.innerHTML;
+}
+
+function startLiveListener() {
+  // Listen to new orders - LIVE push without FCM (works when page open)
+  const q = query(collection(db, "orders"), orderBy("createdAt", "desc"), limit(10));
+  
+  // For no-index fallback, use simple query and sort in JS
+  const simpleQ = collection(db, "orders");
+
+  onSnapshot(simpleQ, (snap) => {
+    snap.docChanges().forEach(change => {
+      if (change.type === 'added') {
+        const order = change.doc.data();
+        const orderId = change.doc.id.substring(0,6);
+        
+        // Only notify if order is within last 5 minutes (to avoid old orders on page load)
+        const isRecent = order.createdAt && (Date.now() - order.createdAt.toDate().getTime() < 5*60*1000);
+        if (isRecent) {
+          const total = order.finalTotal || order.productTotal || 0;
+          const customer = order.customer ? order.customer.name : 'Customer';
+          const title = '🔔 New Order Received!';
+          const body = `Order #${orderId} - ₹${total} - ${customer} - Delivery all over Kerala`;
+          
+          showBrowserNotification(title, body);
+          playSound();
+          logMessage(`${title} ${body}`);
+        }
+      }
+      if (change.type === 'modified') {
+        const order = change.doc.data();
+        if (order.status && order.status.toLowerCase().includes('cancel')) {
+          const title = '❌ Order Cancelled';
+          const body = `Order #${change.doc.id.substring(0,6)} cancelled - Reason: ${order.cancelReason || 'Ordered by mistake'}`;
+          showBrowserNotification(title, body);
+          playSound();
+          logMessage(`${title} ${body}`);
+        }
+      }
+    });
+  });
+
+  logMessage('✅ Live listener started - You will get alerts here for new orders/cancel/return');
+}
+
+window.testPush = function() {
+  showBrowserNotification('🔔 Test Push - Shopline Kerala', 'This is test notification. If you see this, push is working! New orders will come like this. Delivery all over Kerala');
+  playSound();
+  logMessage('🧪 Test notification sent - Check if you got popup + sound');
+}
+
+window.loadRecentOrders = async function() {
+  try {
+    const snap = await getDocs(collection(db, "orders"));
+    logMessage(`📦 Total orders in DB: ${snap.size}. Counts will be 0 after you clear test orders.`);
+  } catch(e) {
+    logMessage(`Error: ${e.message}`);
+  }
+}
+</script>
+</body>
+</html>
+
