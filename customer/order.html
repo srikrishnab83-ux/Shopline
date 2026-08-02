@@ -20,356 +20,224 @@
   };
 })();
 </script><script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Orders - Shopline Kerala - FIXED LOGIN PATH</title>
-  <link rel="stylesheet" href="../css/style.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <style>
-    body{background:#f5f5f5; padding-bottom:70px}
-    .order-container{max-width:900px; margin:20px auto; padding:15px}
-    .order-card{background:#fff; border-radius:8px; padding:15px; margin-bottom:20px; box-shadow:0 2px 5px rgba(0,0,0,0.1)}
-    .order-head{display:flex; justify-content:space-between; border-bottom:1px solid #eee; padding-bottom:10px; flex-wrap:wrap; gap:10px}
-    .timeline{display:flex; justify-content:space-between; margin:20px 0; position:relative}
-    .timeline::before{content:''; position:absolute; top:15px; left:10px; right:10px; height:2px; background:#ddd; z-index:0}
-    .step{text-align:center; z-index:1; position:relative; flex:1}
-    .step .dot{width:30px; height:30px; border-radius:50%; background:#ddd; margin:0 auto 5px; line-height:30px; color:#fff; font-size:14px}
-    .step.active .dot{background:#388e3c}
-    .step.current .dot{background:#2874f0}
-    .step p{font-size:11px; color:#666}
-    .step.active p{color:#388e3c; font-weight:bold}
-    .step.current p{color:#2874f0; font-weight:bold}
-    .item-row{display:flex; gap:15px; padding:12px 0; border-bottom:1px dashed #eee; align-items:center}
-    .item-row img{width:80px; height:80px; object-fit:cover; border-radius:4px; border:1px solid #eee}
-    .item-actions{margin-top:8px; display:flex; gap:8px; flex-wrap:wrap}
-    .review-box{margin-top:15px; padding:15px; background:#f9f9f9; border-radius:8px; border:1px solid #e0e0e0; display:none}
-    .review-box.show{display:block}
-    .stars-review span{font-size:28px; color:#ccc; cursor:pointer; transition:0.2s}
-    .stars-review span.active{color:#ffa500}
-    .btn-rate{background:#2874f0; color:#fff; border:none; padding:8px 15px; border-radius:4px; cursor:pointer; margin-top:10px; font-weight:bold}
-    .btn-invoice{background:#9c27b0; color:#fff; border:none; padding:8px 15px; border-radius:4px; cursor:pointer; margin-right:5px}
-    .btn-return{background:#fff; color:#ff9800; border:1px solid #ff9800; padding:8px 15px; border-radius:4px; cursor:pointer}
-    .btn-track{background:#fff; color:#2874f0; border:1px solid #2874f0; padding:8px 15px; border-radius:4px; cursor:pointer}
-    .badge{padding:4px 10px; border-radius:12px; font-size:12px; font-weight:bold}
-    .badge-delivered{background:#c8e6c9; color:#2e7d32}
-    .badge-shipped{background:#e1bee7; color:#6a1b9a}
-    .badge-cancelled{background:#ffcdd2; color:#c62828}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Orders - Shopline Kerala - Cancel Order Added</title>
+<style>
+*{box-sizing:border-box; margin:0; padding:0; font-family:Arial, sans-serif}
+body{background:#f1f3f6}
+header{background:#2874f0; color:#fff; padding:12px 20px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:10}
+header a{color:#fff; text-decoration:none; font-weight:bold}
+.container{max-width:1000px; margin:20px auto; padding:0 15px}
+.order-card{background:#fff; border-radius:8px; padding:15px; margin:15px 0; box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+.order-header{display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:10px}
+.order-id{font-weight:bold; color:#2874f0}
+.status{padding:4px 10px; border-radius:12px; font-size:11px; font-weight:bold; display:inline-block}
+.status.new{background:#e3f2fd; color:#1976d2; border:1px solid #90caf9}
+.status.shipped{background:#fff3e0; color:#f57c00; border:1px solid #ffcc80}
+.status.delivered{background:#e8f5e9; color:#388e3c; border:1px solid #a5d6a7}
+.status.cancelled{background:#ffebee; color:#d32f2f; border:1px solid #ef9a9a}
+.status.returned{background:#f3e5f5; color:#7b1fa2; border:1px solid #ce93d8}
+.order-item{display:flex; gap:12px; padding:10px 0; border-bottom:1px solid #f5f5f5}
+.order-item img{width:70px; height:70px; object-fit:cover; border:1px solid #eee; border-radius:4px}
+.order-item-info{flex:1}
+.order-total{font-weight:bold; font-size:16px; margin-top:10px; display:flex; justify-content:space-between}
+.btn-cancel{background:#fff; color:#d32f2f; border:1px solid #d32f2f; padding:8px 16px; border-radius:4px; cursor:pointer; font-weight:bold; font-size:13px; margin-top:10px}
+.btn-cancel:hover{background:#ffebee}
+.btn-cancel:disabled{background:#eee; color:#999; border-color:#ccc; cursor:not-allowed}
+.cancel-reason-box{background:#fff3e0; padding:10px; border-radius:6px; margin:10px 0; border:1px solid #ffcc80; display:none}
+.cancel-reason-box select, .cancel-reason-box textarea{width:100%; padding:8px; margin:5px 0; border:1px solid #ddd; border-radius:4px}
+.cancel-info{font-size:11px; color:#666; background:#f9f9f9; padding:8px; border-radius:4px; margin-top:8px}
+@media(max-width:768px){.order-header{flex-direction:column}}
+</style>
 </head>
 <body>
-  <header class="navbar" style="background:#2874f0; padding:12px; display:flex; justify-content:space-between; align-items:center; color:#fff">
-    <div class="logo" onclick="location.href='../index.html'" style="cursor:pointer; font-weight:bold; font-size:20px">Shopline<span style="color:#ffe500">Kerala</span></div>
-    <div><a href="../index.html" style="color:#fff; text-decoration:none">⬅ Home</a></div>
-  </header>
 
-  <div class="order-container">
-    <h2>📦 My Orders - Order History</h2>
-    <p style="color:#666; font-size:13px; margin-bottom:15px">Track courier, return product, download invoice & give review only for purchased items</p>
-    <div id="myOrdersList">Loading your orders...</div>
+<header>
+  <div><a href="../index.html">Shopline<span style="color:#ffe500">Kerala</span></a></div>
+  <div><a href="cart.html">🛒 Cart</a> | <a href="../index.html">Home</a></div>
+</header>
+
+<div class="container">
+  <h2 style="margin:15px 0">📦 My Orders</h2>
+  <p style="font-size:13px; color:#666">You can cancel order within 24 hours if placed wrongly - Delivery all over Kerala</p>
+  <div id="ordersList">Loading your orders...</div>
+</div>
+
+<!-- Cancel Modal -->
+<div id="cancelModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center; padding:15px">
+  <div style="background:#fff; border-radius:8px; padding:20px; max-width:400px; width:100%">
+    <h3>Cancel Order?</h3>
+    <p style="font-size:13px; color:#666; margin:10px 0">Are you sure you want to cancel this order? Select reason:</p>
+    <select id="cancelReason">
+      <option value="">Select Reason</option>
+      <option value="Ordered by mistake">Ordered by mistake</option>
+      <option value="Found cheaper elsewhere">Found cheaper elsewhere</option>
+      <option value="Delivery time too long">Delivery time too long</option>
+      <option value="Changed my mind">Changed my mind</option>
+      <option value="Wrong size/color">Wrong size/color selected</option>
+      <option value="Other">Other</option>
+    </select>
+    <textarea id="cancelNote" placeholder="Optional note..." rows="3" style="width:100%; padding:8px; margin:10px 0; border:1px solid #ddd; border-radius:4px"></textarea>
+    <div style="display:flex; gap:10px; margin-top:15px">
+      <button onclick="closeCancelModal()" style="flex:1; padding:10px; background:#fff; border:1px solid #ddd; border-radius:4px; cursor:pointer">Keep Order</button>
+      <button onclick="confirmCancel()" style="flex:1; padding:10px; background:#d32f2f; color:#fff; border:none; border-radius:4px; cursor:pointer; font-weight:bold">Yes, Cancel</button>
+    </div>
   </div>
+</div>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, query, where, orderBy, getDocs, doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
 const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
 
+let currentCancelOrderId = null;
 let currentUser = null;
-let ratingsMap = {};
 
-auth.onAuthStateChanged(user => {
-  if(!user){ 
-    // FIXED 404: Changed ../login.html to ../seller/login.html + absolute path for Shopline repo
-    // Before: ../login.html -> https://srikrishnab83-ux.github.io/Shopline/login.html -> 404
-    // After: ../seller/login.html -> https://srikrishnab83-ux.github.io/Shopline/seller/login.html -> WORKS
-    document.getElementById('myOrdersList').innerHTML = '<div style="background:#fff;padding:30px;text-align:center;border-radius:8px"><h3>Please Login to see your orders</h3><p style="color:#666;margin:10px 0">Your order history, courier tracking, invoices and reviews will appear here.</p><a href="../seller/login.html" onclick="handleLoginClick(event)" style="background:#2874f0;color:#fff;padding:10px 20px;border-radius:4px;text-decoration:none;display:inline-block;margin-top:10px">Login Now</a><p style="font-size:11px;color:#999;margin-top:10px">If button still 404, your login is at: /Shopline/seller/login.html<br>Direct link: <a href="/Shopline/seller/login.html">https://srikrishnab83-ux.github.io/Shopline/seller/login.html</a></p></div>';
-    return; 
+onAuthStateChanged(auth, async (user) => {
+  if(!user){
+    document.getElementById('ordersList').innerHTML = '<p>Please login to see orders. <a href="../seller/login.html">Login</a></p>';
+    return;
   }
   currentUser = user;
-  loadMyOrders();
+  loadOrders(user.uid);
 });
 
-function handleLoginClick(e){
-  e.preventDefault();
-  localStorage.setItem('redirectAfterLogin', 'orders');
-  // FIXED PATH FOR YOUR REPO: Shopline (capital S)
-  // Try seller/login.html first (correct location), fallback to index
-  const correctLoginPath = '../seller/login.html';
-  console.log('Redirecting to:', correctLoginPath, 'Full:', window.location.origin + '/Shopline/seller/login.html');
-  window.location.href = correctLoginPath;
-}
+async function loadOrders(userId) {
+  const ordersList = document.getElementById('ordersList');
+  try {
+    const q = query(collection(db, "orders"), where("userId", "==", userId), orderBy("createdAt", "desc"));
+    const snap = await getDocs(q);
 
-// FIXED: Removed orderBy to avoid "Missing or insufficient permissions" index error
-async function loadMyOrders(){
-  const listEl = document.getElementById('myOrdersList');
-  try{
-    let docs = [];
-
-    // Try userId without orderBy (no index needed)
-    try{
-      const snap1 = await db.collection("orders").where("userId","==",currentUser.uid).get();
-      snap1.forEach(d=>docs.push(d));
-    }catch(e){ console.log("userId query failed", e.message) }
-
-    // Try customer.uid without orderBy
-    if(docs.length===0){
-      try{
-        const snap2 = await db.collection("orders").where("customer.uid","==",currentUser.uid).get();
-        snap2.forEach(d=>docs.push(d));
-      }catch(e){ console.log("customer.uid failed", e.message) }
-    }
-
-    // Fallback by email (old orders) without orderBy
-    if(docs.length===0){
-      try{
-        const all = await db.collection("orders").limit(100).get();
-        all.forEach(d=>{
-          const o=d.data();
-          if(o.customer && (o.customer.email===currentUser.email || o.customer.phone===currentUser.phoneNumber)){
-            docs.push(d);
-          }
-        });
-      }catch(e){ console.log("fallback failed", e.message) }
-    }
-
-    // Sort in JavaScript instead of Firestore (no index needed)
-    docs.sort((a,b)=>{
-      const ta = a.data().createdAt ? a.data().createdAt.seconds : 0;
-      const tb = b.data().createdAt ? b.data().createdAt.seconds : 0;
-      return tb - ta;
-    });
-
-    if(docs.length===0){
-      listEl.innerHTML = '<div style="background:#fff;padding:30px;text-align:center;border-radius:8px"><h3>No orders yet</h3><p style="color:#666">Your purchase history will appear here after you buy.</p><a href="../index.html" style="background:#2874f0;color:#fff;padding:10px 20px;border-radius:4px;text-decoration:none;display:inline-block;margin-top:15px">Start Shopping</a></div>';
+    if(snap.empty){
+      ordersList.innerHTML = '<div style="text-align:center; padding:40px; background:#fff; border-radius:8px"><p>No orders yet</p><a href="../index.html" style="display:inline-block; margin-top:10px; background:#2874f0; color:#fff; padding:10px 20px; border-radius:4px; text-decoration:none">Start Shopping</a><p style="font-size:11px; color:#666; margin-top:10px">Delivery all over Kerala</p></div>';
       return;
     }
 
-    renderOrders(docs);
-  }catch(e){
-    console.error(e);
-    // FIXED: Show friendly message instead of red permission error
-    listEl.innerHTML = `
-      <div style="background:#fff;padding:20px;border-radius:8px;border-left:4px solid #ff9800">
-        <p style="font-weight:bold">Could not load orders</p>
-        <p style="font-size:13px;margin:8px 0">This is a Firestore permission/index issue. Fix:</p>
-        <p style="font-size:12px;background:#f5f5f5;padding:10px;border-radius:4px">
-        1. Go to Firebase Console > Firestore > Rules and allow read if request.auth != null<br>
-        2. Or create index: Collection: orders, Fields: userId ASC, createdAt DESC<br>
-        Error: ${e.message}
-        </p>
-      </div>`;
-  }
-}
-
-function renderOrders(docs){
-  const listEl = document.getElementById('myOrdersList');
-  if(docs.length===0){ listEl.innerHTML='<p>You have no orders yet</p>'; return; }
-  let html='';
-  docs.forEach(doc=>{
-    const o = doc.data();
-    const orderId = doc.id;
-    const tracking = o.trackingStatus || 'Order Received';
-    const isDelivered = tracking==='Delivered';
-    const isCancelled = o.status==='Cancelled';
-    const canReturn = isDelivered && o.canReturnTill && o.canReturnTill.toDate() > new Date() && o.returnStatus!=='requested';
-
-    const steps = ['Order Received','Approved','Packed','Shipped','Out for Delivery','Delivered'];
-    let trackIndex = steps.indexOf(tracking);
-    if(trackIndex===-1 && tracking==='Order Received') trackIndex=0;
-
-    let timelineHTML = '<div class="timeline">';
-    steps.forEach((s,i)=>{
-      let cls='';
-      if(i < trackIndex) cls='active';
-      else if(i===trackIndex) cls='current';
-      timelineHTML += `<div class="step ${cls}"><div class="dot">${i < trackIndex ? '✓' : i+1}</div><p>${s}</p></div>`;
-    });
-    timelineHTML += '</div>';
-
-    let itemsHTML='';
-    o.items.forEach((item, idx)=>{
-      const productId = item.productId || item.id || '';
-      const alreadyReviewed = (o.reviewedItems||[]).includes(productId);
-      const uniqueKey = `${orderId}_${productId}_${idx}`;
+    let html = '';
+    snap.forEach(docSnap => {
+      const order = docSnap.data();
+      const orderId = docSnap.id;
+      const date = order.createdAt ? new Date(order.createdAt.toDate()).toLocaleDateString() : 'N/A';
+      const status = order.status || order.orderStatus || 'New Order';
+      const isCancellable = (status === 'New Order' || status === 'Order Received' || status === 'new') && status !== 'Cancelled' && status !== 'Delivered';
       
-      itemsHTML += `
-      <div class="item-row">
-        <img src="${item.image || item.images?.[0] || 'https://via.placeholder.com/80'}">
-        <div style="flex:1">
-          <h4>${item.name}</h4>
-          <p style="font-size:13px;color:#666">Qty: ${item.qty} ${item.size?`| Size: ${item.size}`:''} ${item.color?`| Color: ${item.color}`:''}</p>
-          <p><b>₹${item.price}</b> ${item.gstPercent? `<small style="color:#388e3c">+ GST ${item.gstPercent}%</small>`:''}</p>
-          <div class="item-actions">
-            ${isDelivered && !alreadyReviewed ? `<button class="btn-rate" onclick="toggleReviewBox('${uniqueKey}')">⭐ Rate & Review</button>` : ''}
-            ${alreadyReviewed ? `<span style="font-size:12px;color:#388e3c">✓ You reviewed this</span>` : ''}
-          </div>
-          <div class="review-box" id="review-${uniqueKey}">
-            <h4>Rate ${item.name.substring(0,30)}</h4>
-            <div class="stars-review" id="stars-${uniqueKey}">
-              <span onclick="setRating('${uniqueKey}',1)">★</span>
-              <span onclick="setRating('${uniqueKey}',2)">★</span>
-              <span onclick="setRating('${uniqueKey}',3)">★</span>
-              <span onclick="setRating('${uniqueKey}',4)">★</span>
-              <span onclick="setRating('${uniqueKey}',5)">★</span>
+      // Check if within 24 hours
+      let canCancel = isCancellable;
+      let hoursLeft = 24;
+      if(order.createdAt){
+        const diffHours = (Date.now() - order.createdAt.toDate().getTime()) / (1000*60*60);
+        hoursLeft = Math.max(0, 24 - diffHours);
+        if(diffHours > 24) canCancel = false;
+      }
+
+      let statusClass = 'new';
+      if(status.toLowerCase().includes('cancel')) statusClass = 'cancelled';
+      else if(status.toLowerCase().includes('ship')) statusClass = 'shipped';
+      else if(status.toLowerCase().includes('deliver')) statusClass = 'delivered';
+
+      let itemsHtml = '';
+      (order.items || []).forEach(item => {
+        itemsHtml += `
+          <div class="order-item">
+            <img src="${item.image}" onerror="this.src='https://via.placeholder.com/70?text=No+Image'">
+            <div class="order-item-info">
+              <b style="font-size:13px">${item.name}</b><br>
+              <span style="font-size:12px; color:#666">Size: ${item.size || 'N/A'} | Color: ${item.color || 'N/A'} | Qty: ${item.qty}</span><br>
+              <span style="font-size:13px; font-weight:bold">₹${item.price}</span>
             </div>
-            <textarea id="reviewText-${uniqueKey}" placeholder="What did you like? Quality, fit, delivery?" rows="3" style="width:100%; margin-top:10px; padding:8px; border:1px solid #ddd; border-radius:4px"></textarea>
-            <button class="btn-rate" onclick="submitReview('${orderId}','${productId}','${item.name.replace(/'/g,"")}','${uniqueKey}')">Submit Review</button>
-            <button class="btn-track" style="margin-left:5px" onclick="toggleReviewBox('${uniqueKey}')">Cancel</button>
           </div>
-        </div>
-      </div>`;
-    });
-
-    html += `
-    <div class="order-card">
-      <div class="order-head">
-        <div><b>Order #${orderId.substring(0,6).toUpperCase()}</b><br><small>${o.createdAt ? o.createdAt.toDate().toLocaleString("en-IN") : ''}</small></div>
-        <div><b>Total: ₹${o.finalTotal||0}</b><br><span class="badge ${isCancelled?'badge-cancelled': isDelivered?'badge-delivered':'badge-shipped'}">${isCancelled?'Cancelled':tracking}</span></div>
-      </div>
-      ${isCancelled ? `<p style="color:#c62828; padding:10px 0">Reason: ${o.cancelReason||'Cancelled'}</p>` : timelineHTML}
-      ${itemsHTML}
-      <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap">
-        <button class="btn-invoice" onclick="downloadInvoice('${orderId}')">🧾 Download Invoice</button>
-        <button class="btn-track" onclick="trackCourier('${orderId}')">📦 Track Courier</button>
-        ${canReturn ? `<button class="btn-return" onclick="returnProduct('${orderId}')">↩ Return Product</button>` : ''}
-        ${isDelivered && o.returnStatus==='requested' ? '<span style="font-size:12px;color:#ff9800">Return Requested</span>' : ''}
-      </div>
-    </div>`;
-  });
-  listEl.innerHTML = html;
-}
-
-function toggleReviewBox(key){
-  const box = document.getElementById(`review-${key}`);
-  box.classList.toggle('show');
-}
-
-function setRating(key, rating){
-  ratingsMap[key]=rating;
-  document.querySelectorAll(`#stars-${key} span`).forEach((s,i)=>{
-    s.classList.toggle('active', i < rating);
-  });
-}
-
-async function submitReview(orderId, productId, productName, uniqueKey){
-  const rating = ratingsMap[uniqueKey]||0;
-  if(rating===0) return alert("Please select stars");
-  const reviewText = document.getElementById(`reviewText-${uniqueKey}`).value.trim();
-  if(!reviewText) return alert("Please write review");
-
-  const orderDoc = await db.collection("orders").doc(orderId).get();
-  const order = orderDoc.data();
-  if(order.trackingStatus!=='Delivered') return alert("You can review only after delivery");
-  
-  const isOwner = order.userId===currentUser.uid || order.customer?.uid===currentUser.uid || order.customer?.email===currentUser.email;
-  if(!isOwner) return alert("You can review only items you purchased");
-
-  try{
-    await db.collection("reviews").add({
-      productId: productId,
-      productName: productName,
-      orderId: orderId,
-      userId: currentUser.uid,
-      userEmail: currentUser.email,
-      userName: currentUser.displayName || order.customer?.name || 'Customer',
-      rating: rating,
-      comment: reviewText,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      verifiedPurchase: true
-    });
-
-    await db.collection("orders").doc(orderId).update({
-      reviewedItems: firebase.firestore.FieldValue.arrayUnion(productId)
-    });
-
-    const prodRef = db.collection("products").doc(productId);
-    const prodDoc = await prodRef.get();
-    if(prodDoc.exists){
-      const p = prodDoc.data();
-      const totalRatings = (p.totalRatings||0)+1;
-      const sumRatings = (p.sumRatings||0)+rating;
-      await prodRef.update({ 
-        totalRatings, 
-        sumRatings, 
-        avgRating: Number((sumRatings/totalRatings).toFixed(1)),
-        reviewsCount: totalRatings
+        `;
       });
-    }
 
-    alert("✅ Thank you! Your verified review is posted.");
-    document.getElementById(`review-${uniqueKey}`).classList.remove('show');
-    loadMyOrders();
-  }catch(e){
-    alert("Review failed: "+e.message);
+      html += `
+        <div class="order-card">
+          <div class="order-header">
+            <div>
+              <span class="order-id">Order #${orderId.substring(0,8)}</span> - ${date}<br>
+              <span style="font-size:12px; color:#666">Delivery all over Kerala</span>
+            </div>
+            <div>
+              <span class="status ${statusClass}">${status}</span>
+            </div>
+          </div>
+          ${itemsHtml}
+          <div class="order-total">
+            <span>Total:</span>
+            <span>₹${(order.finalTotal || order.productTotal || 0).toLocaleString()}</span>
+          </div>
+          <div style="font-size:12px; color:#666; margin-top:5px">
+            📍 ${order.customer ? `${order.customer.street}, ${order.customer.district}, ${order.customer.pincode}` : 'Address N/A'}<br>
+            📞 ${order.customer ? order.customer.phone : ''}
+          </div>
+          ${canCancel ? `
+            <button class="btn-cancel" onclick="openCancelModal('${orderId}')">❌ Cancel Order</button>
+            <div class="cancel-info">⏰ You can cancel within 24 hours. ${hoursLeft.toFixed(1)} hours left. If ordered wrongly, cancel now.</div>
+          ` : status.toLowerCase().includes('cancel') ? `
+            <div class="cancel-info" style="background:#ffebee; color:#d32f2f">❌ This order was cancelled. ${order.cancelReason ? 'Reason: ' + order.cancelReason : ''}</div>
+          ` : status.toLowerCase().includes('ship') || status.toLowerCase().includes('deliver') ? `
+            <div class="cancel-info">✅ Order ${status} - Cannot cancel now. Contact support via Contact Us page.</div>
+          ` : `
+            <div class="cancel-info">Cancel period expired (24 hours). Contact support for help.</div>
+          `}
+        </div>
+      `;
+    });
+
+    ordersList.innerHTML = html;
+
+  } catch(e) {
+    console.error(e);
+    ordersList.innerHTML = `<p style="color:#d32f2f">Error loading orders: ${e.message}</p>`;
   }
 }
 
-function trackCourier(orderId){
-  db.collection("orders").doc(orderId).get().then(doc=>{
-    const o=doc.data();
-    alert(`📦 Courier Tracking\n\nOrder: #${orderId.substring(0,8).toUpperCase()}\nStatus: ${o.trackingStatus}\nCourier Partner: ${o.courierName||'Shopline Logistics'}\nAWB: ${o.awb||'Will be updated after shipping'}\n\nCurrent Location: ${o.courierLocation||'At seller warehouse'}`);
-  });
+window.openCancelModal = function(orderId) {
+  currentCancelOrderId = orderId;
+  document.getElementById('cancelModal').style.display = 'flex';
+}
+window.closeCancelModal = function() {
+  document.getElementById('cancelModal').style.display = 'none';
+  currentCancelOrderId = null;
+  document.getElementById('cancelReason').value = '';
+  document.getElementById('cancelNote').value = '';
 }
 
-function returnProduct(orderId){
-  let reason = prompt("Why do you want to return? (Damaged, Wrong size, etc)");
-  if(!reason) return;
-  db.collection("orders").doc(orderId).update({
-    returnStatus:'requested',
-    returnReason:reason,
-    returnRequestedAt: firebase.firestore.FieldValue.serverTimestamp()
-  }).then(()=>{
-    alert("↩ Return request sent. Seller will approve in 24 hours.");
-    loadMyOrders();
-  });
-}
+window.confirmCancel = async function() {
+  const reason = document.getElementById('cancelReason').value;
+  const note = document.getElementById('cancelNote').value;
 
-function downloadInvoice(orderId){
-  db.collection("orders").doc(orderId).get().then(doc=>{
-    const o = doc.data();
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF();
-    let y=12;
-    pdf.setFillColor(40,116,240); pdf.rect(0,0,210,16,'F');
-    pdf.setTextColor(255,255,255); pdf.setFontSize(14); pdf.setFont("helvetica","bold");
-    pdf.text("Shopline Kerala - Tax Invoice",105,10,{align:"center"});
-    pdf.setTextColor(0,0,0); y=22;
-    pdf.setFontSize(10); pdf.setFont("helvetica","bold");
-    pdf.text("Sold By (Shipper):",14,y); pdf.text("Billing Address:",110,y); y+=5;
-    pdf.setFont("helvetica","normal"); pdf.setFontSize(8.5);
-    pdf.text("Shopline Kerala Pvt Ltd, KINFRA Park, Calicut - 673001",14,y); pdf.text(o.customer?.name||'Customer',110,y); y+=4;
-    pdf.text("GSTIN: 32ABCDE1234F1Z5 | support@shoplinekerala.com",14,y); 
-    pdf.text((o.customer?.street||'')+', '+(o.customer?.district||''),110,y,{maxWidth:85}); y+=4;
-    pdf.text(`Order: #${orderId.substring(0,8).toUpperCase()} | AWB: ${o.awb||''} | Courier: ${o.courierName||''}`,14,y); pdf.text(`Phone: ${o.customer?.phone||''}`,110,y); y+=7;
-    pdf.setDrawColor(200); pdf.line(14,y,196,y); y+=6;
-    pdf.setFillColor(245,245,245); pdf.rect(14,y-4,182,8,'F');
-    pdf.setFont("helvetica","bold"); pdf.setFontSize(8);
-    pdf.text("Product",15,y); pdf.text("HSN",75,y); pdf.text("Qty",90,y); pdf.text("Taxable",105,y); pdf.text("CGST",130,y); pdf.text("SGST",155,y); pdf.text("Total",175,y); y+=5;
-    pdf.setFont("helvetica","normal");
-    let subtotal=0,totalCgst=0,totalSgst=0,grand=0;
-    o.items.forEach(item=>{
-      const qty=item.qty||1; const base=item.price||0; const taxable=base*qty;
-      const gstP=item.gstPercent||18; const gstAmt=taxable*gstP/100;
-      subtotal+=taxable; totalCgst+=gstAmt/2; totalSgst+=gstAmt/2; grand+=taxable+gstAmt;
-      if(y>265){ pdf.addPage(); y=15; }
-      pdf.text((item.name||'Product').substring(0,22),15,y);
-      pdf.text(item.hsn||'9999',75,y); pdf.text(String(qty),90,y);
-      pdf.text(`Rs.${taxable.toFixed(0)}`,105,y);
-      pdf.text(`Rs.${(gstAmt/2).toFixed(0)}`,130,y);
-      pdf.text(`Rs.${(gstAmt/2).toFixed(0)}`,155,y);
-      pdf.text(`Rs.${(taxable+gstAmt).toFixed(0)}`,175,y); y+=6;
+  if(!reason) return alert('Please select cancel reason');
+
+  if(!currentCancelOrderId) return;
+
+  try {
+    const orderRef = doc(db, "orders", currentCancelOrderId);
+    await updateDoc(orderRef, {
+      status: "Cancelled",
+      orderStatus: "cancelled",
+      trackingStatus: "Cancelled by Customer",
+      cancelReason: reason,
+      cancelNote: note,
+      cancelledAt: serverTimestamp(),
+      cancelledBy: currentUser ? currentUser.uid : 'customer'
     });
-    y+=2; pdf.line(14,y,196,y); y+=7;
-    pdf.setFont("helvetica","bold");
-    pdf.text(`Taxable: Rs.${subtotal.toFixed(2)}`,120,y); y+=5;
-    pdf.text(`CGST: Rs.${totalCgst.toFixed(2)} | SGST: Rs.${totalSgst.toFixed(2)}`,120,y); y+=6;
-    pdf.setFontSize(11); pdf.text(`Grand Total: Rs.${grand.toFixed(2)}`,120,y);
-    pdf.save(`Shopline-Invoice-${orderId.substring(0,8).toUpperCase()}.pdf`);
-  });
+
+    alert('✅ Order Cancelled Successfully. Refund (if paid online) will be processed within 2-3 days.');
+    closeCancelModal();
+    loadOrders(currentUser.uid);
+
+  } catch(e) {
+    console.error(e);
+    alert('Cancel failed: ' + e.message);
+  }
 }
 </script>
 </body>
 </html>
+
