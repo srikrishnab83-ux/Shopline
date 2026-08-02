@@ -1,36 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><!-- PLAYABLE_TOUCH_PATCH_V1 --><script>
-(function() {
-  if (window.__playableTouchPatchInstalled) return;
-  window.__playableTouchPatchInstalled = true;
-  var origAdd = EventTarget.prototype.addEventListener;
-  var blockedTypes = { touchstart: 1, touchmove: 1, wheel: 1 };
-  EventTarget.prototype.addEventListener = function(type, listener, options) {
-    if (blockedTypes[type]) {
-      if (options === undefined || options === null) {
-        options = { passive: true };
-      } else if (typeof options === 'boolean') {
-        options = { capture: options, passive: true };
-      } else {
-        options = Object.assign({}, options, { passive: true });
-      }
-    }
-    return origAdd.call(this, type, listener, options);
-  };
-})();
-</script><script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>About Us - Shopline Kerala</title>
-  <style>body{font-family:Arial; line-height:1.6; max-width:800px; margin:0 auto; padding:20px} h1{color:#2874f0}</style>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About Us - Shopline India - India's Own Shopping Place</title>
+<style>
+body{font-family:Arial, sans-serif; margin:0; background:#f1f3f6; color:#333; line-height:1.7}
+header{background:#2874f0; color:#fff; padding:12px 20px}
+header a{color:#fff; text-decoration:none; font-weight:bold}
+.container{max-width:900px; margin:20px auto; padding:0 15px}
+.box{background:#fff; padding:30px; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+h1{color:#2874f0; margin-bottom:10px}
+h2{color:#212121; margin:20px 0 10px}
+.highlight{background:#e3f2fd; padding:15px; border-radius:8px; border-left:4px solid #2874f0; margin:15px 0}
+p, li{font-size:14px}
+</style>
 </head>
 <body>
-  <a href="../index.html">← Back to Home</a>
-  <h1>About Us - Shopline Kerala</h1>
-  <p>Shopline Kerala is Kerala's Own Marketplace - Made for Kerala .</p>
-  <p>We deliver products all over Kerala across all 14 districts. Our mission is to bring quality products to every corner of Kerala with fast and reliable delivery.</p>
-  <p>Delivery all over Kerala. Support available 9AM - 9PM.</p>
+<header><a href="../index.html">← Shopline India - India's Own Shopping Place</a></header>
+<div class="container">
+<div class="box">
+<h1>About Shopline India</h1>
+<div class="highlight">🚚 Delivery all over India - India's Own Shopping Place - Made for India, by India</div>
+
+<h2>Who We Are</h2>
+<p>Shopline India is <b>India's Own Shopping Place</b> — an online shopping destination built for every Indian. We started with a vision to make quality products accessible to every corner of India at affordable prices.</p>
+
+<p>From mobiles, fashion, electronics to home, grocery, beauty, furniture, toys, sports and books — we bring everything you need under one roof.</p>
+
+<h2>Our Mission</h2>
+<p>To be India's most trusted shopping place — where every Indian can shop with confidence, get genuine products, fast delivery all over India, and excellent support.</p>
+
+<h2>Why Shop With Us?</h2>
+<ul>
+<li>✅ <b>Pan India Delivery</b> — Delivery all over India - From Kashmir to Kanyakumari</li>
+<li>✅ <b>India's Own Shopping Place</b> — Made for India, by India</li>
+<li>✅ Best prices & daily deals</li>
+<li>✅ Secure payments & COD available</li>
+<li>✅ Easy returns & 24-hour cancellation if ordered wrongly</li>
+<li>✅ Support available - All India service</li>
+</ul>
+
+<h2>Delivery</h2>
+<p>We deliver all over India — All states and union territories — 3 to 5 days delivery. Track your order in My Orders page.</p>
+
+<h2>Contact</h2>
+<p>Email: support@shoplineindia.com<br>Website: Shopline India - India's Own Shopping Place</p>
+
+<p style="margin-top:30px; font-size:12px; color:#777; text-align:center">© 2026 Shopline India - India's Own Shopping Place - Delivery all over India</p>
+</div>
+</div>
 </body>
 </html>
-
