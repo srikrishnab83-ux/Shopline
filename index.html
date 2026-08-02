@@ -1,12 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><!-- PLAYABLE_TOUCH_PATCH_V1 --><script>
+(function() {
+  if (window.__playableTouchPatchInstalled) return;
+  window.__playableTouchPatchInstalled = true;
+  var origAdd = EventTarget.prototype.addEventListener;
+  var blockedTypes = { touchstart: 1, touchmove: 1, wheel: 1 };
+  EventTarget.prototype.addEventListener = function(type, listener, options) {
+    if (blockedTypes[type]) {
+      if (options === undefined || options === null) {
+        options = { passive: true };
+      } else if (typeof options === 'boolean') {
+        options = { capture: options, passive: true };
+      } else {
+        options = Object.assign({}, options, { passive: true });
+      }
+    }
+    return origAdd.call(this, type, listener, options);
+  };
+})();
+</script><script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Shopline Kerala - Kerala's Own Marketplace. Buy and Sell products only inside Kerala. Fast delivery in all 14 districts.">
-  <title>Shopline Kerala - Buy & Sell in Kerala | Kerala's Own Marketplace</title>
+  <title>Shopline Kerala - Final Clean 100% - Banner Fixed No Spam</title>
   <link rel="stylesheet" href="css/style.css">
-  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3081/3081559.png">
   <style>
   .add-cart-btn{background:#fb641b; color:#fff; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; width:100%; margin-top:8px; font-weight:bold}
   .add-cart-btn:hover{background:#e55a0f}
@@ -14,23 +31,33 @@
   .search-wrap input{padding:8px; border-radius:4px; border:none; width:300px}
   .search-wrap button{padding:8px 12px; border:none; border-radius:4px; background:#fff; cursor:pointer}
   .product-grid-4{display:grid; grid-template-columns:repeat(4,1fr); gap:15px}
-  .product-card{background:#fff; padding:10px; border:1px solid #eee; border-radius:8px; text-align:center}
+  .product-card{background:#fff; padding:10px; border:1px solid #eee; border-radius:8px; text-align:center; cursor:pointer}
+  .product-card:hover{box-shadow:0 2px 10px rgba(0,0,0,0.1)}
   .product-card img{width:100%; height:200px; object-fit:cover; border-radius:4px; background:#f5f5f5}
   .product-card h3{font-size:14px; margin:8px 0; height:40px; overflow:hidden}
-  .price{font-weight:bold; color:#388e3c}
+  .price{font-weight:bold; color:#212121; font-size:15px}
   .oldPrice{text-decoration:line-through; color:#878787; font-size:12px; margin-left:5px}
   .discount{color:#388e3c; font-size:12px; font-weight:bold}
-    @media(max-width:768px){.search-wrap input{width:150px}.product-grid-4{grid-template-columns:repeat(2,1fr)} }
+  /* BANNER FIXED TO FIT */
+  .main-banner{width:100%; background:#fff; overflow:hidden; margin:0; padding:0; line-height:0}
+  .main-banner img{width:100%; height:auto; max-height:380px; object-fit:cover; object-position:center; display:block}
+  @media(max-width:768px){.search-wrap input{width:150px}.product-grid-4{grid-template-columns:repeat(2,1fr)} .main-banner img{max-height:200px}}
+  /* FOOTER CLEAN */
+  footer{background:#172337; color:#fff; padding:30px 20px 20px}
+  .footer-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:20px; max-width:1200px; margin:0 auto}
+  .footer-grid h4{color:#878787; font-size:12px; margin-bottom:15px; letter-spacing:1px}
+  .footer-grid a{color:#fff; text-decoration:none; display:block; margin:8px 0; font-size:13px}
+  .footer-grid a:hover{text-decoration:underline}
+  .footer-bottom{text-align:center; padding:20px; border-top:1px solid #454d5e; margin-top:20px; font-size:12px; color:#aaa}
+  @media(max-width:768px){.footer-grid{grid-template-columns:repeat(2,1fr)}}
   </style>
 </head>
 <body>
 
-  <!-- ========== 1. TOP INFO BAR ========== -->
   <div class="top-bar">
-    <p>Delivering across all 14 districts of Kerala | COD Available | Malayalam Support</p>
+    <p>Delivering all over Kerala | Support Available</p>
   </div>
 
-  <!-- ========== 2. MAIN HEADER ========== -->
   <header class="navbar">
     <div class="logo" onclick="location.href='index.html'" style="cursor:pointer;">Shopline<span>Kerala</span></div>
    <div class="search-wrap">
@@ -38,13 +65,12 @@
     <button type="button" onclick="searchProducts()">🔍</button>
   </div>
     <div class="nav-icons">
-      <a href="seller/login.html" id="authLink">Login / Sell</a>
+      <a href="seller/login.html" id="authLink">Login</a>
       <a href="customer/wishlist.html">♡ Wishlist</a>
       <a href="customer/cart.html" id="cartLink" style="color:#fff; text-decoration:none; font-weight:bold; background:#fb641b; padding:8px 15px; border-radius:4px">🛒 Cart(0)</a>
     </div>
   </header>
 
-  <!-- ========== 3. CATEGORY NAVBAR ========== -->
 <nav class="category-nav">
   <a href="customer/products.html?category=Mobiles">Mobiles</a>
   <a href="customer/products.html?category=Fashion">Fashion</a>
@@ -58,13 +84,11 @@
   <a href="customer/products.html?category=Books">Books</a>
 </nav>
 
-  <!-- ========== 4. MAIN BANNER SLIDER ========== -->
+  <!-- BANNER FIXED: ONLY 1 IMAGE - ONAM MAHA SALE - FIT TO SCREEN -->
   <section class="main-banner">
-    <img src="images/banner.png" alt="Onam Mahasale">
-    <img src="images/onam-special.png" alt="Onam Special">
+    <img src="images/banner.png" alt="Onam Maha Sale - Shopline Kerala" onerror="this.src='https://via.placeholder.com/1200x350?text=Onam+Maha+Sale+-+Shopline+Kerala'">
   </section>
 
-  <!-- ========== 5. 10 CATEGORY GRID ========== -->
  <section class="categories">
   <h2>Shop by Category</h2>
   <div class="cat-grid">
@@ -81,10 +105,9 @@
   </div>
  </section>
 
-  <!-- ========== 6. FLASH SALE - NOW DYNAMIC FROM FIREBASE ========== -->
   <section class="flash-sale">
     <div class="section-header">
-      <h2>⚡ Latest Products from Kerala Sellers</h2>
+      <h2>Latest Products</h2>
       <a href="customer/products.html">View All ></a>
     </div>
     <div class="product-grid-4" id="homeProductGrid">
@@ -92,21 +115,35 @@
     </div>
   </section>
 
-  <!-- ========== 7. ONAM SPECIAL BANNER ========== -->
-  <section class="festive-banner">
-    <img src="https://rukminim2.flixcart.com/fk-p-flap/1600/270/image/onam-special-kerala.jpg?q=20" alt="Onam Special">
-  </section>
-
+<!-- FOOTER CLEAN - NO FREE SHIPPING SPAM, NO ADDRESS, NO KASARAGOD -->
 <footer>
   <div class="footer-grid">
-    <div><h4>ABOUT</h4><a href="#">About Us</a><a href="#">Contact Us</a></div>
-    <div><h4>HELP</h4><a href="#">Payments</a><a href="#">Shipping</a></div>
-    <div><h4>POLICY</h4><a href="#">Terms Of Use</a><a href="#">Privacy</a></div>
-    <div><h4>SELL ON SHOPlINE</h4><a href="seller/login.html">Become a Seller</a></div>
+    <div>
+      <h4>ABOUT</h4>
+      <a href="customer/about.html">About Us</a>
+      <a href="customer/contact.html">Contact Us</a>
+    </div>
+    <div>
+      <h4>HELP</h4>
+      <a href="customer/payments.html">Payments</a>
+      <a href="customer/shipping.html">Shipping</a>
+    </div>
+    <div>
+      <h4>POLICY</h4>
+      <a href="customer/terms.html">Terms Of Use</a>
+      <a href="customer/privacy.html">Privacy</a>
+      <a href="customer/return.html">Return Policy</a>
+    </div>
+    <div>
+      <h4>SHOPlINE KERALA</h4>
+      <a href="#">Kerala's Own Marketplace</a>
+      <a href="#">Made for Kerala, by Kerala</a>
+      <a href="#" style="color:#aaa; font-size:11px; margin-top:10px">Delivery all over Kerala</a>
+    </div>
   </div>
   <div class="footer-bottom">
-    <p>Mail Us: Shopline Internet Pvt Ltd, Calicut, Kerala, 673001</p>
     <p>© 2026 Shopline Kerala. All rights reserved. Made for Kerala, by Kerala.</p>
+    <p style="margin-top:5px">support@shoplinekerala.com | Delivery all over Kerala</p>
   </div>
 </footer>
 
@@ -117,41 +154,41 @@
     <a href="customer/profile.html">👤<br>Account</a>
   </div>
 
-<!-- FIREBASE SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <script>
-// FIREBASE CONFIG
 const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// LOAD PRODUCTS FROM FIREBASE + CLOUDINARY
+function getProductUrl(productId) {
+  return `customer/product.html?id=${productId}`;
+}
+function openProduct(productId) {
+  window.location.href = getProductUrl(productId);
+}
+
 db.collection("products").orderBy("createdAt","desc").limit(8).get().then(snap => {
   let html = '';
-  if(snap.empty){ html = '<p style="text-align:center; grid-column:1/-1">No products yet. Be the first seller!</p>'; }
-
+  if(snap.empty){ html = '<p style="text-align:center; grid-column:1/-1">No products yet.</p>'; }
   snap.forEach(doc => {
     const p = doc.data();
-    // FIX: Check new images array, then old image field, then fallback
-    const img = p.images && p.images[0]? p.images[0] : p.image? p.image : 'img/no-image.jpg';
+    const img = p.images && p.images[0]? p.images[0] : p.image? p.image : 'https://via.placeholder.com/200?text=No+Image';
     const oldPrice = p.oldPrice? `<span class="oldPrice">₹${p.oldPrice}</span>` : '';
     const discount = p.oldPrice? `<p class="discount">${Math.round((1 - p.customerPrice/p.oldPrice)*100)}% off</p>` : '';
-
     html += `
-    <div class="product-card" data-name="${p.name}">
-      <a href="customer/product.html?id=${doc.id}"><img src="${img}" alt="${p.name}" onerror="this.src='img/no-image.jpg'"><h3>${p.name}</h3></a>
+    <div class="product-card" data-name="${p.name}" onclick="openProduct('${doc.id}')">
+      <img src="${img}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/200?text=No+Image'">
+      <h3>${p.name}</h3>
       <p class="price">₹${p.customerPrice} ${oldPrice}</p>${discount}
-      <p style="font-size:12px; color:#878787">📍 ${p.district || 'Kerala'}</p>
-      <button class="add-cart-btn" onclick="quickAddToCart('${doc.id}', '${p.name}', '${img}', ${p.customerPrice}, '${p.sellerId || ''}')">Add to Cart</button>
+      <button class="add-cart-btn" onclick="event.stopPropagation(); quickAddToCart('${doc.id}', '${p.name.replace(/'/g, "\\'")}', '${img}', ${p.customerPrice}, '${p.sellerId || ''}')">Add to Cart</button>
     </div>
     `;
   });
   document.getElementById('homeProductGrid').innerHTML = html;
 })
 
-// 1. UPDATE CART COUNT
 function updateCartCount(){
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
   let totalQty = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
@@ -160,7 +197,6 @@ function updateCartCount(){
 }
 updateCartCount();
 
-// 2. ADD TO CART FROM HOME - NOW WITH sellerId
 function quickAddToCart(id, name, image, price, sellerId){
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
   const cartItem = { id, name, image, price, sellerId, qty: 1, variant: 'Default' }
@@ -171,7 +207,6 @@ function quickAddToCart(id, name, image, price, sellerId){
   updateCartCount();
 }
 
-// 3. SEARCH FUNCTION
 function searchProducts(){
   const query = document.getElementById('searchInput').value.toLowerCase();
   const products = document.querySelectorAll('.product-card');
@@ -182,5 +217,6 @@ function searchProducts(){
 }
 </script>
   <script type="module" src="js/app.js"></script>
+  <a href="customer/order.html" style="position:fixed; bottom:80px; right:15px; background:#2874f0; color:#fff; padding:12px 18px; border-radius:30px; box-shadow:0 4px 12px rgba(0,0,0,0.3); z-index:999; font-weight:bold; text-decoration:none;">📦 My Orders</a>
 </body>
 </html>
