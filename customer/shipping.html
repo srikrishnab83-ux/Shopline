@@ -1,61 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><!-- PLAYABLE_TOUCH_PATCH_V1 --><script>
-(function() {
-  if (window.__playableTouchPatchInstalled) return;
-  window.__playableTouchPatchInstalled = true;
-  var origAdd = EventTarget.prototype.addEventListener;
-  var blockedTypes = { touchstart: 1, touchmove: 1, wheel: 1 };
-  EventTarget.prototype.addEventListener = function(type, listener, options) {
-    if (blockedTypes[type]) {
-      if (options === undefined || options === null) {
-        options = { passive: true };
-      } else if (typeof options === 'boolean') {
-        options = { capture: options, passive: true };
-      } else {
-        options = Object.assign({}, options, { passive: true });
-      }
-    }
-    return origAdd.call(this, type, listener, options);
-  };
-})();
-</script><script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shipping - Shopline Kerala</title>
-<style>body{font-family:Arial; line-height:1.7; max-width:850px; margin:0 auto; padding:20px; background:#f9f9f9; color:#333} .box{background:#fff; padding:25px; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,0.1)} h1{color:#2874f0; margin-bottom:15px} h3{margin:18px 0 8px} a{color:#2874f0; text-decoration:none} p{margin:8px 0; font-size:14px} li{font-size:14px; margin:5px 0} .highlight{background:#e3f2fd; padding:12px; border-radius:6px; border-left:4px solid #2874f0; margin:10px 0}</style>
+<title>Shipping Policy - All India Delivery - Shopline India</title>
+<style>
+body{font-family:Arial, sans-serif; margin:0; background:#f1f3f6; color:#333; line-height:1.7}
+header{background:#2874f0; color:#fff; padding:12px 20px}
+header a{color:#fff; text-decoration:none; font-weight:bold}
+.container{max-width:900px; margin:20px auto; padding:0 15px}
+.box{background:#fff; padding:30px; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+h1{color:#2874f0}
+.highlight{background:#e3f2fd; padding:12px; border-radius:6px; border-left:4px solid #2874f0; margin:12px 0; font-weight:bold; color:#1565c0}
+p, li{font-size:14px}
+</style>
 </head>
 <body>
+<header><a href="../index.html">← Shopline India - India's Own Shopping Place</a></header>
+<div class="container">
 <div class="box">
-<a href="../index.html">← Back to Home</a>
-<h1>Shipping Policy</h1>
-
-<div class="highlight">📦 Delivery all over Kerala - All 14 districts covered - 2-3 Days Delivery</div>
+<h1>Shipping Policy - Pan India</h1>
+<div class="highlight">📦 Delivery all over India - Pan India Delivery - 3-5 Days - India's Own Shopping Place</div>
 
 <h3>Where We Deliver?</h3>
-<p>We deliver all over Kerala including all 14 districts. No remote area charges.</p>
+<p>Shopline India - India's Own Shopping Place delivers <b>all over India</b> covering all 28 states and 8 union territories. From metros to small towns — we reach you.</p>
 
 <h3>Delivery Time</h3>
 <ul>
-<li>2-3 working days for all Kerala deliveries</li>
-<li>Orders placed before 3PM processed same day</li>
-<li>Delivery time may vary during festival season (Onam, etc)</li>
+<li>All India: 3-5 working days</li>
+<li>Metro cities: 2-3 days</li>
+<li>Remote areas: 4-5 days</li>
+<li>Orders before 3PM processed same day</li>
 </ul>
 
 <h3>Delivery Charges</h3>
-<p>Delivery charges depend on product and distance. Shown at checkout. Free delivery offers during sale.</p>
+<p>FREE delivery on many products. Delivery charge shown at checkout. Offers during sale.</p>
 
-<h3>Order Tracking</h3>
-<p>Track your order in My Orders page. Status updates: Order Received → Confirmed → Shipped → Delivered. You will also get updates via Contact Us chatbot.</p>
+<h3>Tracking</h3>
+<p>Track in My Orders: Order Received → Confirmed → Shipped → Delivered. You get updates and you can cancel within 24 hours if ordered wrongly.</p>
 
-<h3>Delayed Delivery?</h3>
-<p>If delivery delayed beyond 3 days, contact us via <a href="contact.html">Contact Us - AI Chatbot</a>. We will check and update you.</p>
+<h3>Contact</h3>
+<p>For shipping queries: Contact Us page or support@shoplineindia.com with Order ID.</p>
 
-<h3>Contact for Shipping Queries</h3>
-<p>Use <a href="contact.html">Contact Us</a> AI chatbot or email support@shoplinekerala.com with Order ID.</p>
-
-<p style="margin-top:20px; font-size:12px; color:#777">Shopline Kerala - Kerala's Own Marketplace - Delivery all over Kerala</p>
+<p style="margin-top:20px; font-size:12px; color:#777; text-align:center">Shopline India - India's Own Shopping Place - Delivery all over India</p>
+</div>
 </div>
 </body>
 </html>
-
