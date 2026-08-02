@@ -1,159 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><!-- PLAYABLE_TOUCH_PATCH_V1 --><script>
-(function() {
-  if (window.__playableTouchPatchInstalled) return;
-  window.__playableTouchPatchInstalled = true;
-  var origAdd = EventTarget.prototype.addEventListener;
-  var blockedTypes = { touchstart: 1, touchmove: 1, wheel: 1 };
-  EventTarget.prototype.addEventListener = function(type, listener, options) {
-    if (blockedTypes[type]) {
-      if (options === undefined || options === null) {
-        options = { passive: true };
-      } else if (typeof options === 'boolean') {
-        options = { capture: options, passive: true };
-      } else {
-        options = Object.assign({}, options, { passive: true });
-      }
-    }
-    return origAdd.call(this, type, listener, options);
-  };
-})();
-</script><script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Contact Us - Shopline Kerala - AI Support Chat</title>
+<title>Contact Us - Shopline India - India's Own Shopping Place</title>
 <style>
-*{box-sizing:border-box; margin:0; padding:0; font-family:Arial, sans-serif}
-body{background:#f1f3f6}
-header{background:#2874f0; color:#fff; padding:12px 20px; display:flex; justify-content:space-between; align-items:center}
+body{font-family:Arial; margin:0; background:#f1f3f6}
+header{background:#2874f0; color:#fff; padding:12px 20px}
 header a{color:#fff; text-decoration:none; font-weight:bold}
-.container{max-width:800px; margin:20px auto; padding:0 15px}
-.chat-box{background:#fff; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.1); overflow:hidden; height:600px; display:flex; flex-direction:column}
-.chat-header{background:#2874f0; color:#fff; padding:15px; display:flex; align-items:center; gap:10px}
-.chat-header img{width:40px; height:40px; border-radius:50%; background:#fff; padding:5px}
-.chat-messages{flex:1; overflow-y:auto; padding:20px; background:#e5ddd5}
-.msg{max-width:75%; padding:10px 14px; border-radius:12px; margin:8px 0; font-size:14px; line-height:1.4}
-.msg.bot{background:#fff; align-self:flex-start; border-bottom-left-radius:2px}
-.msg.user{background:#dcf8c6; align-self:flex-end; border-bottom-right-radius:2px; margin-left:auto}
-.chat-input{display:flex; padding:10px; background:#f0f0f0; gap:10px}
-.chat-input input{flex:1; padding:12px; border:1px solid #ddd; border-radius:25px; outline:none}
-.chat-input button{background:#2874f0; color:#fff; border:none; padding:12px 20px; border-radius:25px; cursor:pointer; font-weight:bold}
-.quick-btns{display:flex; gap:8px; flex-wrap:wrap; margin:10px 0}
-.quick-btn{background:#fff; border:1px solid #2874f0; color:#2874f0; padding:6px 12px; border-radius:20px; font-size:12px; cursor:pointer}
-.info-box{background:#fff; padding:15px; border-radius:8px; margin-bottom:15px}
+.container{max-width:600px; margin:20px auto; padding:0 15px}
+.box{background:#fff; padding:25px; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+input, textarea{width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:6px; box-sizing:border-box; font-size:14px}
+button{width:100%; padding:12px; background:#2874f0; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer}
+h1{color:#2874f0}
+p{font-size:14px}
 </style>
 </head>
 <body>
-
-<header>
-  <div><a href="../index.html">Shopline<span style="color:#ffe500">Kerala</span></a></div>
-  <div><a href="../index.html">Home</a></div>
-</header>
-
+<header><a href="../index.html">← Shopline India - India's Own Shopping Place</a></header>
 <div class="container">
-  <div class="info-box">
-    <h2>Contact Us - AI Assistant</h2>
-    <p style="font-size:13px; color:#666; margin-top:5px">Our AI assistant will help you and your messages will be sent directly to owner. Delivery all over Kerala.</p>
-  </div>
+<div class="box">
+<h1>Contact Us</h1>
+<p style="background:#e3f2fd; padding:10px; border-radius:6px; border-left:4px solid #2874f0"><b>Shopline India - India's Own Shopping Place</b><br>🚚 Delivery all over India - Made for India, by India</p>
 
-  <div class="chat-box">
-    <div class="chat-header">
-      <img src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png" alt="AI">
-      <div>
-        <b>Shopline Kerala Support</b><br>
-        <span style="font-size:11px">Online • Replies instantly • Delivery all over Kerala</span>
-      </div>
-    </div>
+<p><b>Email:</b> support@shoplineindia.com<br><b>Delivery:</b> All over India - Pan India<br><b>Hours:</b> 9AM - 9PM, All days</p>
 
-    <div class="chat-messages" id="chatMessages">
-      <div class="msg bot">Hi! 👋 Welcome to Shopline Kerala - Kerala's Own Marketplace<br><br>I'm here to help you. How can I assist you today?<br><br>Delivery available all over Kerala.</div>
-      <div class="quick-btns" id="quickBtns">
-        <button class="quick-btn" onclick="sendQuick('Track my order')">📦 Track Order</button>
-        <button class="quick-btn" onclick="sendQuick('Return policy')">↩️ Return Policy</button>
-        <button class="quick-btn" onclick="sendQuick('Payment methods')">💳 Payments</button>
-        <button class="quick-btn" onclick="sendQuick('Delivery all over Kerala')">🚚 Delivery Info</button>
-      </div>
-    </div>
+<h3 style="margin-top:20px">Send Message</h3>
+<input type="text" id="name" placeholder="Your Name *">
+<input type="email" id="email" placeholder="Your Email *">
+<textarea id="msg" rows="4" placeholder="Your Message *"></textarea>
+<button onclick="sendMsg()">Send Message</button>
+<p id="status" style="margin-top:10px; font-size:12px"></p>
 
-    <div class="chat-input">
-      <input type="text" id="userInput" placeholder="Type your message..." onkeypress="if(event.key==='Enter') sendMessage()">
-      <button onclick="sendMessage()">Send</button>
-    </div>
-  </div>
-
-  <div class="info-box" style="margin-top:15px; font-size:12px; color:#666">
-    <b>Other ways to contact:</b><br>
-    Email: support@shoplinekerala.com<br>
-    Delivery: All over Kerala<br>
-    Hours: 9AM - 9PM, All days
-  </div>
+<p style="margin-top:20px; font-size:12px; color:#777; text-align:center">© 2026 Shopline India - India's Own Shopping Place</p>
 </div>
-
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script>
+</div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-// Bot responses
-const botResponses = {
-  "track": "To track your order, go to My Orders page or share your order ID here. We'll help you track it. Delivery all over Kerala - 2-3 days.",
-  "return": "Return Policy: 7 days return available for eligible products. Product should be unused. Contact us here with order ID for return request.",
-  "payment": "We accept: COD (Cash on Delivery), UPI, Cards, Net Banking. All payments are secure.",
-  "delivery": "Delivery all over Kerala - All 14 districts. Delivery in 2-3 days. No extra charges. COD available.",
-  "order": "For order related queries, please share your order ID and phone number. Our team will check and reply within 2 hours.",
-  "default": "Thanks for your message! 🙏 Our team has received it. We will reply within 2 hours on your email/phone. Delivery all over Kerala. Is there anything else?"
-};
-
-function addMessage(text, isUser) {
-  const msgDiv = document.createElement('div');
-  msgDiv.className = 'msg ' + (isUser ? 'user' : 'bot');
-  msgDiv.innerHTML = text;
-  document.getElementById('chatMessages').appendChild(msgDiv);
-  document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
-}
-
-function getBotReply(userText) {
-  const lower = userText.toLowerCase();
-  if(lower.includes('track') || lower.includes('order status')) return botResponses.track;
-  if(lower.includes('return') || lower.includes('exchange')) return botResponses.return;
-  if(lower.includes('payment') || lower.includes('cod') || lower.includes('upi')) return botResponses.payment;
-  if(lower.includes('delivery') || lower.includes('shipping')) return botResponses.delivery;
-  if(lower.includes('order')) return botResponses.order;
-  return botResponses.default;
-}
-
-async function sendMessage() {
-  const input = document.getElementById('userInput');
-  const text = input.value.trim();
-  if(!text) return;
-
-  addMessage(text, true);
-  input.value = '';
-
-  // Save to Firebase for owner to see
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+window.sendMsg = async function(){
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const msg = document.getElementById('msg').value.trim();
+  if(!name || !email || !msg) return alert('Fill all fields');
   try {
-    await db.collection("visitor_messages").add({
-      message: text,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-      page: "Contact Us Chat",
-      userAgent: navigator.userAgent,
-      read: false
-    });
-  } catch(e) { console.log("Save error", e); }
-
-  // Bot reply after 1 sec
-  setTimeout(() => {
-    const reply = getBotReply(text);
-    addMessage(reply, false);
-  }, 1000);
-}
-
-function sendQuick(text) {
-  document.getElementById('userInput').value = text;
-  sendMessage();
+    await addDoc(collection(db, "contacts"), {name, email, message: msg, createdAt: serverTimestamp()});
+    document.getElementById('status').innerText = '✅ Message sent! We will contact you soon - Shopline India';
+    document.getElementById('name').value=''; document.getElementById('email').value=''; document.getElementById('msg').value='';
+  } catch(e){ document.getElementById('status').innerText = 'Error: '+e.message; }
 }
 </script>
 </body>
