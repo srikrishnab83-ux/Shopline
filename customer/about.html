@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><!-- PLAYABLE_TOUCH_PATCH_V1 --><script>
+(function() {
+  if (window.__playableTouchPatchInstalled) return;
+  window.__playableTouchPatchInstalled = true;
+  var origAdd = EventTarget.prototype.addEventListener;
+  var blockedTypes = { touchstart: 1, touchmove: 1, wheel: 1 };
+  EventTarget.prototype.addEventListener = function(type, listener, options) {
+    if (blockedTypes[type]) {
+      if (options === undefined || options === null) {
+        options = { passive: true };
+      } else if (typeof options === 'boolean') {
+        options = { capture: options, passive: true };
+      } else {
+        options = Object.assign({}, options, { passive: true });
+      }
+    }
+    return origAdd.call(this, type, listener, options);
+  };
+})();
+</script><script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us - Shopline Kerala</title>
+  <style>body{font-family:Arial; line-height:1.6; max-width:800px; margin:0 auto; padding:20px} h1{color:#2874f0}</style>
+</head>
+<body>
+  <a href="../index.html">← Back to Home</a>
+  <h1>About Us - Shopline Kerala</h1>
+  <p>Shopline Kerala is Kerala's Own Marketplace - Made for Kerala .</p>
+  <p>We deliver products all over Kerala across all 14 districts. Our mission is to bring quality products to every corner of Kerala with fast and reliable delivery.</p>
+  <p>Delivery all over Kerala. Support available 9AM - 9PM.</p>
+</body>
+</html>
+
