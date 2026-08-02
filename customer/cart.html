@@ -20,97 +20,72 @@
   };
 })();
 </script><script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your Cart - Shopline Kerala - FREE Shipping Always - No Limit</title>
-  <link rel="stylesheet" href="../css/style.css">
-  <style>
-.container-cart{max-width:1100px; margin:20px auto; display:flex; gap:20px; padding:0 20px}
-.cart-items{flex:2; background:#fff; padding:15px; border-radius:4px}
-.price-box{flex:1; background:#fff; padding:15px; border-radius:4px; height:fit-content; position:sticky; top:20px}
-.cart-item{display:flex; gap:15px; border-bottom:1px solid #eee; padding:15px 0}
-.cart-item img{width:100px; height:100px; object-fit:cover; border:1px solid #eee; border-radius:4px}
-.qty-box{display:flex; align-items:center; gap:8px; margin:8px 0}
-.qty-btn{width:30px; height:30px; border:1px solid #ddd; background:#fff; cursor:pointer; font-size:18px}
-.qty-input{width:40px; text-align:center; border:1px solid #ddd; height:28px}
-.remove-btn{color:#2874f0; border:none; background:none; cursor:pointer; font-weight:bold}
-.checkout-btn{width:100%; padding:12px; background:#fb641b; color:#fff; border:none; font-size:16px; cursor:pointer; border-radius:4px; margin-top:10px; font-weight:bold}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cart - Shopline Kerala - Auto Push Added</title>
+<style>
+*{box-sizing:border-box; margin:0; padding:0; font-family:Arial, sans-serif}
+body{background:#f1f3f6}
+header{background:#2874f0; color:#fff; padding:12px 20px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:10}
+header a{color:#fff; text-decoration:none; font-weight:bold}
+.container{max-width:1000px; margin:15px auto; padding:0 10px; display:flex; gap:15px; flex-wrap:wrap}
+.cart-left{flex:2; min-width:300px}
+.cart-right{flex:1; min-width:280px; background:#fff; padding:15px; border-radius:8px; height:fit-content; position:sticky; top:70px}
+.cart-item{background:#fff; padding:12px; border-radius:8px; margin-bottom:10px; display:flex; gap:12px; box-shadow:0 1px 2px rgba(0,0,0,0.08)}
+.cart-item img{width:80px; height:80px; object-fit:cover; border-radius:6px; border:1px solid #eee}
+.qty-box{display:flex; align-items:center; gap:8px; margin-top:8px}
+.qty-btn{width:28px; height:28px; border:1px solid #ccc; background:#fff; border-radius:50%; cursor:pointer; font-weight:bold}
 .form-group{margin:10px 0}
-.form-group label{font-size:13px; font-weight:bold}
-.form-group input,.form-group textarea{padding:10px; margin-top:5px; border:1px solid #ccc; border-radius:4px; width:95%}
-.req{color:red}
-.free-tag{color:#2e7d32; font-weight:bold; background:#e8f5e9; padding:4px 8px; border-radius:12px; border:1px solid #4caf50}
-.badge-no-return{background:#ffebee; color:#d32f2f; padding:4px 8px; border-radius:12px; font-size:10px; font-weight:bold; border:1px solid #ffcdd2; display:inline-block; margin:2px}
-.badge-return-ok{background:#e8f5e9; color:#2e7d32; padding:4px 8px; border-radius:12px; font-size:10px; font-weight:bold; border:1px solid #c8e6c9; display:inline-block; margin:2px}
-.return-info-box{padding:8px; border-radius:6px; margin-top:8px; font-size:11px; line-height:1.4}
-.return-info-box.no-return{background:#ffebee; border:1px solid #ffcdd2; color:#c62828}
-.return-info-box.has-return{background:#e8f5e9; border:1px solid #c8e6c9; color:#2e7d32}
-.free-ship-banner{background:#e8f5e9; border:2px solid #4caf50; padding:10px; border-radius:8px; text-align:center; margin:10px 0; color:#2e7d32; font-weight:bold}
-  @media (max-width: 768px){
-   .container-cart{flex-direction: column; padding: 0 10px}
-   .cart-items,.price-box{flex: 1; width: 100%}
-   .price-box{position: static; margin-top: 20px}
-   .cart-item{flex-direction: column}
-   .cart-item img{width: 100%; height: 200px}
-  }
-  </style>
+.form-group input, .form-group textarea, .form-group select{width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; font-size:14px}
+.btn-place{width:100%; padding:14px; background:#fb641b; color:#fff; border:none; border-radius:6px; font-weight:bold; font-size:16px; cursor:pointer; margin-top:10px}
+.btn-place:disabled{background:#ccc; cursor:not-allowed}
+.price-row{display:flex; justify-content:space-between; margin:8px 0; font-size:14px}
+.price-row.total{font-weight:bold; font-size:16px; border-top:1px dashed #ddd; padding-top:10px}
+</style>
 </head>
 <body>
-  <div class="top-bar"><p>🚚 FREE Shipping on ALL orders - No minimum - Delivering across all 14 districts of Kerala | COD Available</p></div>
-  <header class="navbar">
-    <div class="container">
-      <div class="logo" onclick="location.href='../index.html'" style="cursor:pointer;">Shopline<span>Kerala</span></div>
-      <a href="../index.html" style="color:#fff">Home</a>
-    </div>
-  </header>
 
-  <div class="container-cart">
-    <div class="cart-items">
-      <a href="../index.html" class="back-btn" style="display:inline-block; margin-bottom:15px; text-decoration:none; color:#2874f0; font-weight:bold">← Continue Shopping</a>
-      <h2>Shopping Cart (<span id="cartCount">0</span> items)</h2>
-      <div class="free-ship-banner">🎉 FREE Shipping on ALL orders - No minimum amount! - All Kerala Delivery</div>
-      <div id="cartList">Loading...</div>
+<header>
+  <div><a href="../index.html">Shopline<span style="color:#ffe500">Kerala</span></a></div>
+  <div><a href="order.html">My Orders</a></div>
+</header>
 
-      <h3 style="margin-top:20px">Customer Details <span class="req">*</span></h3>
-      <div class="form-group"><label>Full Name <span class="req">*</span></label><input id="custName" placeholder="Enter Full Name" required></div>
-      <div class="form-group"><label>WhatsApp/Mobile Number <span class="req">*</span></label><input id="custPhone" type="tel" placeholder="10 Digit Number" required></div>
-      <div class="form-group"><label>Street / House No <span class="req">*</span></label><input id="custStreet" placeholder="House No, Street Name" required></div>
-      <div class="form-group" style="display:flex; gap:10px">
-        <div style="flex:1"><label>District <span class="req">*</span></label><input id="custDistrict" placeholder="Eg: Kozhikode"></div>
-        <div style="flex:1"><label>State</label><input id="custState" value="Kerala"></div>
-      </div>
-      <div class="form-group" style="display:flex; gap:10px">
-        <div style="flex:1"><label>Pincode <span class="req">*</span></label><input id="custPincode" placeholder="6 Digit Pincode"></div>
-        <div style="flex:1"><label>Landmark</label><input id="custLandmark" placeholder="Near Bus Stand"></div>
-      </div>
-    </div>
-
-    <div class="price-box">
-      <h3>PRICE DETAILS</h3>
-      <p>Price (<span id="itemCount">0</span> items) <span id="totalPrice" style="float:right">₹0</span></p>
-      
-      <div style="background:#e8f5e9; padding:12px; border-radius:8px; margin:10px 0; border:1px solid #4caf50">
-        <b>🚚 Shipping:</b>
-        <label style="display:block; border:2px solid #4caf50; padding:10px; margin:8px 0; border-radius:8px; background:#fff; cursor:pointer">
-          <input type="radio" name="shipping" value="0" checked onchange="updateTotal()" style="accent-color:#4caf50"> 
-          <b>FREE Shipping - All Orders</b> - 2-3 Days - No minimum amount
-          <span style="float:right; color:#2e7d32; font-weight:bold">FREE</span>
-        </label>
-        <p style="font-size:11px; color:#2e7d32; margin-top:5px">✅ No ₹60, No ₹40 - FREE for all Kerala - No limit!</p>
-      </div>
-
-      <p>Shipping Charges <span id="shipCharge" style="float:right"><span class="free-tag">FREE</span></span></p>
-      <hr>
-      <h3>Total Amount <span id="finalTotal" style="float:right">₹0</span></h3>
-      <p id="freeShipMsg" style="font-size:11px; color:#2e7d32; background:#e8f5e9; padding:8px; border-radius:4px; margin-top:8px">🎉 You got FREE Shipping - No minimum amount required!</p>
-      <button class="checkout-btn" onclick="checkout()">Place Order - FREE Shipping</button>
-      <p style="font-size:11px; color:#666; margin-top:8px; text-align:center">Secure checkout | 100% safe | FREE Delivery</p>
-    </div>
+<div class="container">
+  <div class="cart-left">
+    <h3 style="margin:10px 0">🛒 My Cart</h3>
+    <div id="cartItems">Loading...</div>
   </div>
+
+  <div class="cart-right">
+    <h3>Delivery Address</h3>
+    <p style="font-size:11px; color:#666">Delivery all over Kerala</p>
+    
+    <div class="form-group"><input type="text" id="custName" placeholder="Full Name *" required></div>
+    <div class="form-group"><input type="tel" id="custPhone" placeholder="Phone Number *" required></div>
+    <div class="form-group"><textarea id="custAddress" placeholder="Street, House No *" rows="2" required></textarea></div>
+    <div class="form-group">
+      <select id="custDistrict">
+        <option value="">Select District *</option>
+        <option>Thiruvananthapuram</option><option>Kollam</option><option>Pathanamthitta</option><option>Alappuzha</option><option>Kottayam</option><option>Idukki</option><option>Ernakulam</option><option>Thrissur</option><option>Palakkad</option><option>Malappuram</option><option>Kozhikode</option><option>Wayanad</option><option>Kannur</option><option>Kasaragod</option>
+      </select>
+    </div>
+    <div class="form-group"><input type="text" id="custPincode" placeholder="Pincode *" required></div>
+    <div class="form-group"><textarea id="custLandmark" placeholder="Landmark (Optional)" rows="1"></textarea></div>
+
+    <div style="margin:15px 0; background:#f9f9f9; padding:10px; border-radius:6px">
+      <div class="price-row"><span>Items Total:</span><span id="itemsTotal">₹0</span></div>
+      <div class="price-row"><span>Delivery:</span><span style="color:#388e3c">FREE - Delivery all over Kerala</span></div>
+      <div class="price-row total"><span>Total Payable:</span><span id="finalTotal">₹0</span></div>
+    </div>
+
+    <button id="placeOrderBtn" class="btn-place" onclick="placeOrder()">Place Order</button>
+    <p style="font-size:10px; color:#666; margin-top:8px; text-align:center">You can cancel order within 24 hours if ordered wrongly</p>
+  </div>
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp, Timestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
@@ -118,205 +93,167 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+let currentUser = null;
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
-let productTotal = 0;
-let currentUserId = null;
-let currentUserEmail = null;
 
-const ADMIN_UID = "c3yryIVuoCWpHHEUNAYZAV9pwVq1";
-
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user)=>{
   if(user){
-    currentUserId = user.uid;
-    currentUserEmail = user.email;
-  } else {
-    currentUserId = null;
+    currentUser = user;
+    // Auto-fill name if available
+    try {
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if(userDoc.exists()){
+        const data = userDoc.data();
+        if(data.name) document.getElementById('custName').value = data.name;
+        if(data.phone) document.getElementById('custPhone').value = data.phone;
+      }
+    } catch(e){}
   }
 });
 
-function loadCart() {
-  const cartList = document.getElementById('cartList');
-  
+function renderCart() {
+  const container = document.getElementById('cartItems');
   if(cart.length === 0){
-    cartList.innerHTML = '<p>Your cart is empty. <a href="../index.html">Shop Now</a></p>';
-    document.getElementById('cartCount').innerText = 0;
-    document.getElementById('itemCount').innerText = 0;
-    document.getElementById('totalPrice').innerText = '₹0';
+    container.innerHTML = '<div style="background:#fff; padding:30px; border-radius:8px; text-align:center"><p>Your cart is empty</p><a href="../index.html" style="display:inline-block; margin-top:10px; background:#2874f0; color:#fff; padding:8px 16px; border-radius:6px; text-decoration:none">Shop Now</a></div>';
+    document.getElementById('itemsTotal').innerText = '₹0';
     document.getElementById('finalTotal').innerText = '₹0';
+    document.getElementById('placeOrderBtn').disabled = true;
     return;
   }
-  cartList.innerHTML = '';
-  productTotal = 0;
-  let totalQty = 0;
 
-  for (let i = 0; i < cart.length; i++) {
-    let item = cart[i];
-    item.qty = item.qty || 1;
-    const itemTotal = Number(item.price) * item.qty;
-    productTotal += itemTotal;
-    totalQty += item.qty;
-
-    const isReturnable = item.returnAvailable || false;
-    const isExchangeable = item.exchangeAvailable || false;
-    const returnDays = item.returnDays || 0;
-    const exchangeDays = item.exchangeDays || 0;
-
-    let returnBadges = '';
-    let returnInfoText = '';
-
-    if(isReturnable && isExchangeable) {
-      returnBadges = `<span class="badge-return-ok">✅ ${returnDays} Days Return</span> <span class="badge-return-ok">✅ ${exchangeDays} Days Exchange</span>`;
-      returnInfoText = `↩️ ${returnDays} Days Return & ${exchangeDays} Days Exchange available`;
-    } else if(isReturnable) {
-      returnBadges = `<span class="badge-return-ok">✅ ${returnDays} Days Return Available</span>`;
-      returnInfoText = `↩️ ${returnDays} Days Return available`;
-    } else if(isExchangeable) {
-      returnBadges = `<span class="badge-return-ok">✅ ${exchangeDays} Days Exchange Available</span>`;
-      returnInfoText = `🔄 ${exchangeDays} Days Exchange available`;
-    } else {
-      returnBadges = `<span class="badge-no-return">❌ No Return & Exchange</span>`;
-      returnInfoText = `❌ No Return, No Exchange - Final Sale`;
-    }
-
-    let returnInfoClass = (isReturnable || isExchangeable) ? 'has-return' : 'no-return';
-
-    cartList.innerHTML += `
+  let html = '';
+  let total = 0;
+  cart.forEach((item, idx)=>{
+    total += item.price * item.qty;
+    html += `
       <div class="cart-item">
-        <img src="${item.image}" onerror="this.src='https://via.placeholder.com/100?text=No+Image'">
+        <img src="${item.image}" onerror="this.src='https://via.placeholder.com/80?text=No+Image'">
         <div style="flex:1">
-          <h4>${item.name}</h4>
-          <p style="font-size:12px; color:#555">Size: <b>${item.size || 'N/A'}</b> | Color: <b>${item.color || 'N/A'}</b></p>
-          <p><b>₹${Number(item.price).toLocaleString()}</b> x ${item.qty} = <b>₹${itemTotal.toLocaleString()}</b></p>
-          <div style="margin:6px 0">${returnBadges}</div>
-          <div class="return-info-box ${returnInfoClass}">${returnInfoText}</div>
+          <b style="font-size:14px">${item.name}</b><br>
+          <span style="font-size:12px; color:#666">${item.size || ''} ${item.color || ''}</span><br>
+          <b>₹${item.price}</b>
           <div class="qty-box">
-            <button class="qty-btn" onclick="updateQty(${i}, -1)">-</button>
-            <input class="qty-input" value="${item.qty}" readonly>
-            <button class="qty-btn" onclick="updateQty(${i}, 1)">+</button>
+            <button class="qty-btn" onclick="changeQty(${idx}, -1)">-</button>
+            <span>${item.qty}</span>
+            <button class="qty-btn" onclick="changeQty(${idx}, 1)">+</button>
+            <button onclick="removeItem(${idx})" style="margin-left:15px; background:none; border:none; color:#d32f2f; cursor:pointer; font-size:12px">Remove</button>
           </div>
-          <button class="remove-btn" onclick="removeItem(${i})">Remove</button>
         </div>
       </div>
     `;
+  });
+
+  container.innerHTML = html;
+  document.getElementById('itemsTotal').innerText = '₹' + total.toLocaleString();
+  document.getElementById('finalTotal').innerText = '₹' + total.toLocaleString();
+}
+
+window.changeQty = function(idx, delta){
+  cart[idx].qty += delta;
+  if(cart[idx].qty <= 0) cart.splice(idx, 1);
+  localStorage.setItem('cart', JSON.stringify(cart));
+  renderCart();
+}
+window.removeItem = function(idx){
+  cart.splice(idx, 1);
+  localStorage.setItem('cart', JSON.stringify(cart));
+  renderCart();
+}
+
+renderCart();
+
+// ===== AUTOMATIC PUSH NOTIFICATION LOGIC - ADDED =====
+async function sendAutoNotificationToAdmin(orderId, orderData) {
+  try {
+    // 1. Create admin notification - Admin push page listens to this collection automatically
+    await addDoc(collection(db, "admin_notifications"), {
+      type: "new_order",
+      title: "🔔 New Order Received!",
+      body: `Order #${orderId.substring(0,6)} - ₹${orderData.finalTotal} - ${orderData.customer.name} - ${orderData.customer.phone} - ${orderData.items.map(i=>i.name).join(', ')}`,
+      orderId: orderId,
+      customerName: orderData.customer.name,
+      customerPhone: orderData.customer.phone,
+      total: orderData.finalTotal,
+      items: orderData.items.map(i=>({name:i.name, qty:i.qty, price:i.price})),
+      district: orderData.customer.district,
+      createdAt: serverTimestamp(),
+      read: false,
+      delivery: "Delivery all over Kerala"
+    });
+
+    console.log('✅ Auto notification sent to admin - Owner will get push instantly');
+
+    // 2. Optional: If you have FCM Cloud Function deployed, it will auto send FCM push from admin_notifications collection
+    // Cloud Function watches admin_notifications and sends FCM to all admin_tokens
+
+  } catch(e) {
+    console.error('Auto notify error (order still placed):', e);
+    // Don't block order if notification fails
   }
-
-  document.getElementById('cartCount').innerText = totalQty;
-  document.getElementById('itemCount').innerText = totalQty;
-  updateTotal();
 }
 
-window.updateQty = function(index, change){
-  cart[index].qty = (cart[index].qty || 1) + change;
-  if(cart[index].qty < 1) cart[index].qty = 1;
-  localStorage.setItem('cart', JSON.stringify(cart));
-  loadCart();
-}
-
-window.updateTotal = function(){
-  // FIXED: FREE SHIPPING ALWAYS - NO LIMIT, NO ₹60, NO ₹40
-  const shippingCharge = 0; // ALWAYS 0 - FREE FOR ALL
-  
-  document.getElementById('shipCharge').innerHTML = '<span class="free-tag">FREE</span>';
-  document.getElementById('totalPrice').innerText = '₹' + productTotal.toLocaleString();
-  document.getElementById('finalTotal').innerText = '₹' + productTotal.toLocaleString(); // Total = Product total only
-}
-
-window.removeItem = function(index){
-  cart.splice(index, 1);
-  localStorage.setItem('cart', JSON.stringify(cart));
-  loadCart();
-}
-
-window.checkout = async function(){
+window.placeOrder = async function() {
   const name = document.getElementById('custName').value.trim();
   const phone = document.getElementById('custPhone').value.trim();
-  const street = document.getElementById('custStreet').value.trim();
-  const district = document.getElementById('custDistrict').value.trim();
-  const state = document.getElementById('custState').value.trim();
+  const street = document.getElementById('custAddress').value.trim();
+  const district = document.getElementById('custDistrict').value;
   const pincode = document.getElementById('custPincode').value.trim();
   const landmark = document.getElementById('custLandmark').value.trim();
 
-  if(!name ||!phone ||!street ||!district ||!pincode) return alert('Please fill all * required fields');
-  if(phone.length!== 10) return alert('Enter 10 digit mobile number');
-  if(pincode.length!== 6) return alert('Enter 6 digit pincode');
-  if(cart.length === 0) return alert('Cart is empty');
-  
-  if(!currentUserId) {
-    alert("Please login to place order");
-    localStorage.setItem('redirectAfterLogin', 'cart');
-    window.location.href = '../seller/login.html';
-    return;
+  if(!name || !phone || !street || !district || !pincode){
+    return alert('Please fill all required fields *');
   }
+  if(cart.length === 0) return alert('Cart empty');
 
-  const btn = document.querySelector('.checkout-btn');
-  btn.innerText = 'Placing Order...';
+  const btn = document.getElementById('placeOrderBtn');
   btn.disabled = true;
+  btn.innerText = 'Placing Order...';
 
   try {
-    // FIXED: FREE SHIPPING ALWAYS - NO CHARGE
-    let shippingCharge = 0; // ALWAYS FREE
+    const itemsTotal = cart.reduce((sum, i)=> sum + i.price * i.qty, 0);
     
-    let originalSellerIds = [...new Set(cart.map(item => item.sellerId || item.originalSellerId).filter(id => id && id !== "unknown" && id !== undefined))];
-    if(originalSellerIds.length === 0) originalSellerIds = [ADMIN_UID];
-    
-    let enhancedItems = cart.map(item => ({
-      name: item.name,
-      price: Number(item.price),
-      qty: item.qty,
-      image: item.image,
-      size: item.size || 'N/A',
-      color: item.color || 'N/A',
-      productId: item.id || item.productId || "",
-      sellerId: item.sellerId || item.originalSellerId || ADMIN_UID,
-      originalSellerId: item.sellerId || item.originalSellerId || ADMIN_UID,
-      returnAvailable: item.returnAvailable || false,
-      returnDays: item.returnDays || 0,
-      exchangeAvailable: item.exchangeAvailable || false,
-      exchangeDays: item.exchangeDays || 0,
-      returnPolicy: item.returnPolicy || 'No Return, No Exchange'
-    }));
-
-    let returnDate = new Date();
-    let maxReturnDays = Math.max(...enhancedItems.map(i => i.returnAvailable ? (i.returnDays||0) : 0), 3);
-    returnDate.setDate(returnDate.getDate() + maxReturnDays);
-
-    let orderData = {
-      userId: currentUserId,
-      customerId: currentUserId,
-      customerEmail: currentUserEmail || "",
-      customer: {name, phone, street, district, state, pincode, landmark},
-      items: enhancedItems,
-      sellerIds: [ADMIN_UID],
-      originalSellerIds: originalSellerIds,
-      productTotal, 
-      shippingCharge: 0, // FREE
-      finalTotal: productTotal, // No shipping added - FREE SHIPPING
-      hasReturnableItems: enhancedItems.some(i => i.returnAvailable),
-      status: "New Order", 
+    const orderData = {
+      userId: currentUser ? currentUser.uid : 'guest_' + Date.now(),
+      items: cart,
+      productTotal: itemsTotal,
+      finalTotal: itemsTotal,
+      deliveryCharge: 0,
+      customer: {
+        name: name,
+        phone: phone,
+        street: street,
+        district: district,
+        pincode: pincode,
+        landmark: landmark
+      },
+      status: "New Order",
       orderStatus: "new",
       trackingStatus: "Order Received",
-      returnStatus: "none",
-      canReturnTill: Timestamp.fromDate(returnDate),
-      createdAt: serverTimestamp()
+      paymentMethod: "COD",
+      createdAt: serverTimestamp(),
+      deliveryInfo: "Delivery all over Kerala"
     };
 
-    const { collection: col, addDoc: add } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
-    const docRef = await addDoc(collection(db, "orders"), orderData);
+    // 1. Create order
+    const orderRef = await addDoc(collection(db, "orders"), orderData);
+    const orderId = orderRef.id;
 
-    alert(`Order Placed Successfully! Order ID: #${docRef.id.substring(0,6)} Total: ₹${productTotal} with FREE Shipping!`);
-    
+    // 2. AUTOMATIC PUSH NOTIFICATION TO YOU - No manual work needed!
+    await sendAutoNotificationToAdmin(orderId, orderData);
+
+    // 3. Clear cart and redirect
     localStorage.removeItem('cart');
-    window.location.href = '../customer/order.html';
+    alert(`✅ Order Placed Successfully! Order ID: #${orderId.substring(0,8)}\n\nYou can cancel within 24 hours if ordered wrongly. Delivery all over Kerala.`);
     
-  } catch(error) {
-    console.error("Order error:", error);
-    alert("Order failed: " + error.message);
-    btn.innerText = 'Place Order - FREE Shipping';
+    window.location.href = `order.html?id=${orderId}`;
+
+  } catch(e) {
+    console.error(e);
+    alert('Order failed: ' + e.message);
     btn.disabled = false;
+    btn.innerText = 'Place Order';
   }
 }
-
-loadCart();
 </script>
 </body>
 </html>
