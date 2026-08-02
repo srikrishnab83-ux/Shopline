@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><!-- PLAYABLE_TOUCH_PATCH_V1 --><script>
+(function() {
+  if (window.__playableTouchPatchInstalled) return;
+  window.__playableTouchPatchInstalled = true;
+  var origAdd = EventTarget.prototype.addEventListener;
+  var blockedTypes = { touchstart: 1, touchmove: 1, wheel: 1 };
+  EventTarget.prototype.addEventListener = function(type, listener, options) {
+    if (blockedTypes[type]) {
+      if (options === undefined || options === null) {
+        options = { passive: true };
+      } else if (typeof options === 'boolean') {
+        options = { capture: options, passive: true };
+      } else {
+        options = Object.assign({}, options, { passive: true });
+      }
+    }
+    return origAdd.call(this, type, listener, options);
+  };
+})();
+</script><script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shipping - Shopline Kerala</title>
+<style>body{font-family:Arial; line-height:1.7; max-width:850px; margin:0 auto; padding:20px; background:#f9f9f9; color:#333} .box{background:#fff; padding:25px; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,0.1)} h1{color:#2874f0; margin-bottom:15px} h3{margin:18px 0 8px} a{color:#2874f0; text-decoration:none} p{margin:8px 0; font-size:14px} li{font-size:14px; margin:5px 0} .highlight{background:#e3f2fd; padding:12px; border-radius:6px; border-left:4px solid #2874f0; margin:10px 0}</style>
+</head>
+<body>
+<div class="box">
+<a href="../index.html">← Back to Home</a>
+<h1>Shipping Policy</h1>
+
+<div class="highlight">📦 Delivery all over Kerala - All 14 districts covered - 2-3 Days Delivery</div>
+
+<h3>Where We Deliver?</h3>
+<p>We deliver all over Kerala including all 14 districts. No remote area charges.</p>
+
+<h3>Delivery Time</h3>
+<ul>
+<li>2-3 working days for all Kerala deliveries</li>
+<li>Orders placed before 3PM processed same day</li>
+<li>Delivery time may vary during festival season (Onam, etc)</li>
+</ul>
+
+<h3>Delivery Charges</h3>
+<p>Delivery charges depend on product and distance. Shown at checkout. Free delivery offers during sale.</p>
+
+<h3>Order Tracking</h3>
+<p>Track your order in My Orders page. Status updates: Order Received → Confirmed → Shipped → Delivered. You will also get updates via Contact Us chatbot.</p>
+
+<h3>Delayed Delivery?</h3>
+<p>If delivery delayed beyond 3 days, contact us via <a href="contact.html">Contact Us - AI Chatbot</a>. We will check and update you.</p>
+
+<h3>Contact for Shipping Queries</h3>
+<p>Use <a href="contact.html">Contact Us</a> AI chatbot or email support@shoplinekerala.com with Order ID.</p>
+
+<p style="margin-top:20px; font-size:12px; color:#777">Shopline Kerala - Kerala's Own Marketplace - Delivery all over Kerala</p>
+</div>
+</body>
+</html>
+
