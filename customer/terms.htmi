@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><!-- PLAYABLE_TOUCH_PATCH_V1 --><script>
+(function() {
+  if (window.__playableTouchPatchInstalled) return;
+  window.__playableTouchPatchInstalled = true;
+  var origAdd = EventTarget.prototype.addEventListener;
+  var blockedTypes = { touchstart: 1, touchmove: 1, wheel: 1 };
+  EventTarget.prototype.addEventListener = function(type, listener, options) {
+    if (blockedTypes[type]) {
+      if (options === undefined || options === null) {
+        options = { passive: true };
+      } else if (typeof options === 'boolean') {
+        options = { capture: options, passive: true };
+      } else {
+        options = Object.assign({}, options, { passive: true });
+      }
+    }
+    return origAdd.call(this, type, listener, options);
+  };
+})();
+</script><script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms of Use - Shopline Kerala</title>
+<style>body{font-family:Arial; line-height:1.7; max-width:850px; margin:0 auto; padding:20px; background:#f9f9f9; color:#333} .box{background:#fff; padding:25px; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,0.1)} h1{color:#2874f0; margin-bottom:15px} h3{margin:18px 0 8px; color:#212121} a{color:#2874f0; text-decoration:none} p{margin:8px 0; font-size:14px}</style>
+</head>
+<body>
+<div class="box">
+<a href="../index.html">← Back to Home</a>
+<h1>Terms of Use</h1>
+<p><b>Last Updated: August 2026</b></p>
+
+<h3>1. Welcome to Shopline Kerala</h3>
+<p>Shopline Kerala is Kerala's own marketplace, made for Kerala, by Kerala. By using our website, you agree to these Terms of Use.</p>
+
+<h3>2. Services</h3>
+<p>We provide an online platform to purchase products. Delivery available all over Kerala across all 14 districts.</p>
+
+<h3>3. User Account</h3>
+<p>You are responsible for maintaining confidentiality of your account. You must provide accurate information during registration.</p>
+
+<h3>4. Orders & Pricing</h3>
+<p>All prices are in Indian Rupees (INR). We reserve the right to cancel orders in case of pricing errors or stock unavailability. You can cancel order within 24 hours if ordered wrongly.</p>
+
+<h3>5. Prohibited Use</h3>
+<p>You shall not misuse our platform, attempt hacking, or place fake orders.</p>
+
+<h3>6. Intellectual Property</h3>
+<p>All content, logos, and images are property of Shopline Kerala.</p>
+
+<h3>7. Limitation of Liability</h3>
+<p>We are not liable for indirect damages. Our liability is limited to order value.</p>
+
+<h3>8. Contact</h3>
+<p>For any queries, contact us via <a href="contact.html">Contact Us</a> page (AI chatbot). Email: support@shoplinekerala.com</p>
+
+<p style="margin-top:20px; font-size:12px; color:#777">Delivery all over Kerala | Made for Kerala, by Kerala</p>
+</div>
+</body>
+</html>
+
