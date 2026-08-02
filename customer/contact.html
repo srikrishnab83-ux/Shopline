@@ -1,57 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><!-- PLAYABLE_TOUCH_PATCH_V1 --><script>
+(function() {
+  if (window.__playableTouchPatchInstalled) return;
+  window.__playableTouchPatchInstalled = true;
+  var origAdd = EventTarget.prototype.addEventListener;
+  var blockedTypes = { touchstart: 1, touchmove: 1, wheel: 1 };
+  EventTarget.prototype.addEventListener = function(type, listener, options) {
+    if (blockedTypes[type]) {
+      if (options === undefined || options === null) {
+        options = { passive: true };
+      } else if (typeof options === 'boolean') {
+        options = { capture: options, passive: true };
+      } else {
+        options = Object.assign({}, options, { passive: true });
+      }
+    }
+    return origAdd.call(this, type, listener, options);
+  };
+})();
+</script><script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Contact Us - Shopline India - India's Own Shopping Place</title>
 <style>
-body{font-family:Arial; margin:0; background:#f1f3f6}
-header{background:#2874f0; color:#fff; padding:12px 20px}
-header a{color:#fff; text-decoration:none; font-weight:bold}
-.container{max-width:600px; margin:20px auto; padding:0 15px}
-.box{background:#fff; padding:25px; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,0.1)}
-input, textarea{width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:6px; box-sizing:border-box; font-size:14px}
-button{width:100%; padding:12px; background:#2874f0; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer}
-h1{color:#2874f0}
-p{font-size:14px}
+body{font-family:Arial,sans-serif;margin:0;background:#f1f3f6;color:#212121}
+header{background:#2874f0;color:#fff;padding:12px 20px;position:sticky;top:0;z-index:10}
+header a{color:#fff;text-decoration:none;font-weight:bold}
+.container{max-width:700px;margin:15px auto;padding:0 12px}
+.box{background:#fff;padding:25px;border-radius:12px;box-shadow:0 1px 6px rgba(0,0,0,0.1)}
+h1{color:#2874f0;margin:0 0 10px;font-size:28px}
+.highlight{background:#e3f2fd;padding:14px;border-radius:8px;border-left:4px solid #2874f0;margin:12px 0;line-height:1.5}
+.highlight b{font-size:15px}
+.info p{margin:6px 0;font-size:14px}
+.info b{color:#000}
+h2{margin:20px 0 12px;font-size:20px}
+input,textarea{width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;font-family:Arial}
+textarea{min-height:100px;resize:vertical}
+.btn{width:100%;background:#2874f0;color:#fff;border:none;padding:14px;border-radius:8px;font-size:16px;font-weight:bold;cursor:pointer;margin-top:10px}
+.btn:disabled{background:#9bb8f5;cursor:not-allowed}
+.btn:hover{background:#1a66d6}
+.status{margin-top:12px;padding:12px;border-radius:8px;font-size:14px;display:none}
+.status.success{display:block;background:#e8f5e9;color:#2e7d32;border:1px solid #c8e6c9}
+.status.error{display:block;background:#ffebee;color:#c62828;border:1px solid #ffcdd2}
+.footer-note{text-align:center;margin-top:20px;font-size:12px;color:#777}
+.wa-btn{display:block;text-align:center;margin-top:12px;background:#25D366;color:#fff;padding:12px;border-radius:8px;text-decoration:none;font-weight:bold}
 </style>
 </head>
 <body>
-<header><a href="../index.html">← Shopline India - India's Own Shopping Place</a></header>
+<header><a href="../index.html">← Back to Home - Shopline India</a></header>
 <div class="container">
 <div class="box">
-<h1>Contact Us</h1>
-<p style="background:#e3f2fd; padding:10px; border-radius:6px; border-left:4px solid #2874f0"><b>Shopline India - India's Own Shopping Place</b><br>🚚 Delivery all over India - Made for India, by India</p>
+<h1 style="color:#2874f0">Contact Us</h1>
+<div class="highlight">
+<b>Shopline India - India's Own Shopping Place</b><br>
+🚚 Delivery all over India - Made for India, by India
+</div>
+<div class="info">
+<p><b>Email:</b> support@shoplineindia.com</p>
+<p><b>Delivery:</b> All over India - Pan India</p>
+<p><b>Hours:</b> 9AM - 9PM, All days</p>
+</div>
 
-<p><b>Email:</b> support@shoplineindia.com<br><b>Delivery:</b> All over India - Pan India<br><b>Hours:</b> 9AM - 9PM, All days</p>
+<h2>Send Message</h2>
+<form id="contactForm">
+<input type="text" id="name" placeholder="Your Name" required>
+<input type="email" id="email" placeholder="Your Email (e.g. you@gmail.com)" required>
+<textarea id="message" placeholder="Your Message - Order ID, Query, Feedback..." required></textarea>
+<button type="submit" id="sendBtn" class="btn">Send Message</button>
+<div id="status" class="status"></div>
+</form>
 
-<h3 style="margin-top:20px">Send Message</h3>
-<input type="text" id="name" placeholder="Your Name *">
-<input type="email" id="email" placeholder="Your Email *">
-<textarea id="msg" rows="4" placeholder="Your Message *"></textarea>
-<button onclick="sendMsg()">Send Message</button>
-<p id="status" style="margin-top:10px; font-size:12px"></p>
+<a href="https://wa.me/919999999999?text=Hi%20Shopline%20India%20-%20I%20need%20help" target="_blank" class="wa-btn">💬 Chat on WhatsApp</a>
 
-<p style="margin-top:20px; font-size:12px; color:#777; text-align:center">© 2026 Shopline India - India's Own Shopping Place</p>
+<p class="footer-note">© 2026 Shopline India - India's Own Shopping Place<br>We reply within 2 hours - 9AM to 9PM</p>
 </div>
 </div>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
 const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-window.sendMsg = async function(){
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+const form = document.getElementById('contactForm');
+const statusEl = document.getElementById('status');
+const btn = document.getElementById('sendBtn');
+
+function showStatus(msg, type){
+  statusEl.textContent = msg;
+  statusEl.className = 'status ' + type;
+  statusEl.style.display = 'block';
+}
+
+form.addEventListener('submit', async (e)=>{
+  e.preventDefault();
   const name = document.getElementById('name').value.trim();
   const email = document.getElementById('email').value.trim();
-  const msg = document.getElementById('msg').value.trim();
-  if(!name || !email || !msg) return alert('Fill all fields');
-  try {
-    await addDoc(collection(db, "contacts"), {name, email, message: msg, createdAt: serverTimestamp()});
-    document.getElementById('status').innerText = '✅ Message sent! We will contact you soon - Shopline India';
-    document.getElementById('name').value=''; document.getElementById('email').value=''; document.getElementById('msg').value='';
-  } catch(e){ document.getElementById('status').innerText = 'Error: '+e.message; }
-}
+  const message = document.getElementById('message').value.trim();
+  if(!name || !email || !message){ showStatus('Please fill all fields', 'error'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+  showStatus('Sending your message...', 'success');
+
+  try{
+    // 1. Save to Firebase Firestore (contacts collection)
+    await db.collection('contacts').add({
+      name: name,
+      email: email,
+      message: message,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      status: 'new',
+      source: 'Shopline India Website'
+    });
+
+    // 2. Also send to your Gmail via FormSubmit (free)
+    try{
+      await fetch('https://formsubmit.co/ajax/srikrishnab83@gmail.com', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json','Accept': 'application/json'},
+        body: JSON.stringify({
+          name: name,
+          email: email,
+          message: message,
+          _subject: `New Message from Shopline India - ${name}`,
+          _template: 'table',
+          _captcha: 'false'
+        })
+      });
+    }catch(emailErr){ console.log('Email backup failed but Firebase saved', emailErr); }
+
+    showStatus('✅ Message Sent Successfully! We will reply within 2 hours to '+email+' . Also saved in Firebase.', 'success');
+    form.reset();
+
+  }catch(err){
+    console.error(err);
+    if(err.code === 'permission-denied'){
+      showStatus('❌ Error: Missing or insufficient permissions. Go to Firebase Console > Firestore Database > Rules > Set allow read, write: if true; and Publish. Then try again.', 'error');
+    }else{
+      showStatus('❌ Error: '+err.message, 'error');
+    }
+  }
+  btn.disabled = false;
+  btn.textContent = 'Send Message';
+});
 </script>
 </body>
 </html>
