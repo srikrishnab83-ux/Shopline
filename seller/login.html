@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Shopline India - Login">
+<meta name="description" content="Shopline India - Login - India's Own Shopping Place">
 <title>Login - Shopline India</title>
 <style>
 body{background:#f5f7fb;margin:0;font-family:Arial,sans-serif}
@@ -19,6 +19,8 @@ body{background:#f5f7fb;margin:0;font-family:Arial,sans-serif}
 .group label{font-size:13px;font-weight:bold;display:block;margin-bottom:6px;color:#333}
 .group input{width:100%;padding:12px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box}
 .btn{width:100%;padding:12px;background:#fb641b;color:#fff;border:none;border-radius:6px;font-size:15px;font-weight:bold;cursor:pointer;margin-top:10px}
+.btn-google{background:#fff;color:#333;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-blue{background:#2874f0}
 .link{margin-top:15px;font-size:13px;color:#2874f0;cursor:pointer;display:inline-block;text-decoration:none}
 .div{margin:15px 0;border-top:1px solid #eee;position:relative}
 .div span{position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:#fff;padding:0 10px;font-size:11px;color:#999}
@@ -34,69 +36,102 @@ body{background:#f5f7fb;margin:0;font-family:Arial,sans-serif}
 <div class="card">
 <div class="logo">Shopline India</div>
 <div class="sub">🇮🇳 India's Own Shopping Place<br>🚚 Delivery all over India</div>
+
 <div class="tabs" id="mainTabs">
 <button class="tab active" id="buyTab" onclick="switchTab('buy')">I want to Buy</button>
 <button class="tab" id="sellTab" onclick="switchTab('sell')">I want to Sell</button>
 </div>
+
 <div id="err" class="err"></div>
 <div id="ok" class="ok"></div>
+
+<!-- BUYER LOGIN - NO PASSWORD - SAFE ON GITHUB.IO -->
 <div id="buyLogin" class="sw active">
-<div class="group"><label>Email</label><input type="email" id="buyEmail" placeholder="Enter your email"></div>
-<div class="group"><label>Password</label><input type="password" id="buyPass" placeholder="Enter password"></div>
-<button class="btn" onclick="loginBuy()">Login</button>
-<div style="margin-top:14px"><a class="link" onclick="showBuySignup()">New customer? Create Account</a></div>
-<div class="div"><span>OR</span></div>
-<a class="link" href="../index.html">← Continue as Guest</a>
+<p style="font-size:13px;color:#333;margin-bottom:10px;text-align:left">Login securely with Google - No password needed</p>
+<button class="btn btn-google" onclick="googleLoginBuy()">
+  <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Continue with Google
+</button>
+<button class="btn" style="background:#2874f0;margin-top:12px" onclick="continueGuest()">Continue as Guest</button>
+<div style="margin-top:14px"><a class="link" href="../index.html">← Back to Home</a></div>
+<div class="div"><span>SECURE</span></div>
+<p style="font-size:11px;color:#666">🔒 No password on github.io = No Chrome warning<br>100% Safe & Secure Login</p>
 </div>
-<div id="buySignup" class="sw">
-<div class="group"><label>Full Name</label><input type="text" id="suName" placeholder="Full name"></div>
-<div class="group"><label>Email</label><input type="email" id="suEmail" placeholder="Email"></div>
-<div class="group"><label>Password</label><input type="password" id="suPass" placeholder="Min 6 chars"></div>
-<div class="group"><label>Confirm Password</label><input type="password" id="suConfirm" placeholder="Confirm"></div>
-<button class="btn" onclick="signupBuy()">Create Account</button>
-<div style="margin-top:14px"><a class="link" onclick="showBuyLogin()">Already have account? Login</a></div>
-</div>
+
+<!-- SELLER LOGIN - ONLY VISIBLE WITH ?seller=1 or ?admin=1 -->
 <div id="sellLogin" class="sw">
-<div class="group"><label>Email</label><input type="email" id="sellEmail" placeholder="Email"></div>
+<div class="group"><label>Email</label><input type="email" id="sellEmail" placeholder="Seller Email"></div>
 <div class="group"><label>Password</label><input type="password" id="sellPass" placeholder="Password"></div>
-<button class="btn" style="background:#2874f0" onclick="loginSell()">Login as Seller</button>
-<div style="margin-top:12px"><a class="link" onclick="showSellSignup()">Create Seller Account</a></div>
-<div style="margin-top:10px"><a class="link" onclick="switchTab('buy')">← Back</a></div>
+<button class="btn btn-blue" onclick="loginSell()">Login as Seller</button>
+<p style="font-size:11px;color:#c00;margin-top:8px">⚠️ Seller login works best on custom domain. On github.io Chrome may show password check.</p>
+<div style="margin-top:12px"><a class="link" onclick="switchTab('buy')">← Back to Buyer</a></div>
 </div>
-<div id="sellSignup" class="sw">
-<div class="group"><label>Full Name</label><input type="text" id="sellSuName" placeholder="Full name"></div>
-<div class="group"><label>Email</label><input type="email" id="sellSuEmail" placeholder="Email"></div>
-<div class="group"><label>Password</label><input type="password" id="sellSuPass" placeholder="Min 6 chars"></div>
-<div class="group"><label>Confirm Password</label><input type="password" id="sellSuConfirm" placeholder="Confirm"></div>
-<button class="btn" style="background:#2874f0" onclick="signupSell()">Create Seller Account</button>
-<div style="margin-top:12px"><a class="link" onclick="showSellLogin()">Already seller? Login</a></div>
-</div>
-<div class="foot">© 2026 Shopline India<br>Made for India, by India</div>
+
+<div class="foot">© 2026 Shopline India<br>Made for India, by India - Delivery all over India</div>
 </div>
 </div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
 const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const ADMIN = ["srikrishnab83@gmail.com"];
+
 const p = new URLSearchParams(window.location.search);
-if(p.get('admin')==='1' || p.get('seller')==='1' || p.get('mode')==='seller'){ document.getElementById('mainTabs').classList.add('show'); document.getElementById('sellTab').style.display='block'; }
-window.switchTab=function(t){ document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); document.querySelectorAll('.sw').forEach(x=>x.classList.remove('active')); if(t==='buy'){ document.getElementById('buyTab').classList.add('active'); document.getElementById('buyLogin').classList.add('active'); } else { document.getElementById('sellTab').classList.add('active'); document.getElementById('sellLogin').classList.add('active'); } }
-window.showBuyLogin=function(){ document.querySelectorAll('.sw').forEach(x=>x.classList.remove('active')); document.getElementById('buyLogin').classList.add('active'); clr(); }
-window.showBuySignup=function(){ document.querySelectorAll('.sw').forEach(x=>x.classList.remove('active')); document.getElementById('buySignup').classList.add('active'); clr(); }
-window.showSellLogin=function(){ document.querySelectorAll('.sw').forEach(x=>x.classList.remove('active')); document.getElementById('sellLogin').classList.add('active'); clr(); }
-window.showSellSignup=function(){ document.querySelectorAll('.sw').forEach(x=>x.classList.remove('active')); document.getElementById('sellSignup').classList.add('active'); clr(); }
+if(p.get('admin')==='1' || p.get('seller')==='1' || p.get('mode')==='seller'){
+  document.getElementById('mainTabs').classList.add('show');
+}
+
+window.switchTab=function(t){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.sw').forEach(x=>x.classList.remove('active'));
+  if(t==='buy'){
+    document.getElementById('buyTab').classList.add('active');
+    document.getElementById('buyLogin').classList.add('active');
+  } else {
+    document.getElementById('sellTab').classList.add('active');
+    document.getElementById('sellLogin').classList.add('active');
+  }
+}
+
 function err(m){ const e=document.getElementById('err'); e.innerText=m; e.style.display='block'; document.getElementById('ok').style.display='none'; setTimeout(()=>e.style.display='none',4000); }
 function ok(m){ const e=document.getElementById('ok'); e.innerText=m; e.style.display='block'; document.getElementById('err').style.display='none'; }
 function clr(){ document.getElementById('err').style.display='none'; document.getElementById('ok').style.display='none'; }
-window.loginBuy=async function(){ const email=document.getElementById('buyEmail').value.trim(); const pass=document.getElementById('buyPass').value; if(!email||!pass) return err("Enter email and password"); try{ await signInWithEmailAndPassword(auth,email,pass); ok("Login successful!"); const r=localStorage.getItem('redirectAfterLogin'); if(r==='cart') setTimeout(()=>location.href='../buyer/cart.html',800); else if(r==='orders') setTimeout(()=>location.href='../customer/order.html',800); else setTimeout(()=>location.href='../index.html',800); }catch(e){ err(e.message); } }
-window.signupBuy=async function(){ const name=document.getElementById('suName').value.trim(); const email=document.getElementById('suEmail').value.trim(); const pass=document.getElementById('suPass').value; const c=document.getElementById('suConfirm').value; if(!name) return err("Enter name"); if(!email) return err("Enter email"); if(pass.length<6) return err("Min 6 chars"); if(pass!==c) return err("Passwords mismatch"); try{ const cred=await createUserWithEmailAndPassword(auth,email,pass); await setDoc(doc(db,"buyers",cred.user.uid),{name,email,uid:cred.user.uid,role:"buyer",createdAt:serverTimestamp()}); ok("Account created!"); setTimeout(()=>location.href='../index.html',1000); }catch(e){ err(e.message); } }
-window.loginSell=async function(){ const email=document.getElementById('sellEmail').value.trim(); const pass=document.getElementById('sellPass').value; if(!email||!pass) return err("Enter email/pass"); if(!ADMIN.includes(email.toLowerCase())) return err("Access denied"); try{ await signInWithEmailAndPassword(auth,email,pass); ok("Login success!"); setTimeout(()=>location.href='dashboard.html',800); }catch(e){ err(e.message); } }
-window.signupSell=async function(){ const name=document.getElementById('sellSuName').value.trim(); const email=document.getElementById('sellSuEmail').value.trim(); const pass=document.getElementById('sellSuPass').value; const c=document.getElementById('sellSuConfirm').value; if(!name) return err("Enter name"); if(!email) return err("Enter email"); if(pass.length<6) return err("Min 6 chars"); if(pass!==c) return err("Mismatch"); if(!ADMIN.includes(email.toLowerCase())) return err("Registration closed"); try{ const cred=await createUserWithEmailAndPassword(auth,email,pass); await setDoc(doc(db,"sellers",cred.user.uid),{sellerName:name,email,name,uid:cred.user.uid,role:"seller",createdAt:serverTimestamp()}); ok("Seller created!"); setTimeout(()=>location.href='dashboard.html',1000); }catch(e){ err(e.message); } }
+
+window.googleLoginBuy = async function(){
+  try{
+    const provider = new GoogleAuthProvider();
+    const cred = await signInWithPopup(auth, provider);
+    await setDoc(doc(db,"buyers",cred.user.uid),{name:cred.user.displayName,email:cred.user.email,uid:cred.user.uid,role:"buyer",createdAt:serverTimestamp()},{merge:true});
+    ok("Login successful!");
+    const r=localStorage.getItem('redirectAfterLogin');
+    setTimeout(()=>{
+      if(r==='cart') location.href='cart.html';
+      else if(r==='orders') location.href='order.html';
+      else location.href='../index.html';
+    },800);
+  }catch(e){ err(e.message); }
+}
+
+window.continueGuest = function(){
+  location.href='../index.html';
+}
+
+window.loginSell=async function(){
+  const email=document.getElementById('sellEmail').value.trim();
+  const pass=document.getElementById('sellPass').value;
+  if(!email||!pass) return err("Enter email/pass");
+  if(!ADMIN.includes(email.toLowerCase())) return err("Access denied - Seller registration closed");
+  try{
+    await signInWithEmailAndPassword(auth,email,pass);
+    ok("Seller Login success!");
+    setTimeout(()=>location.href='dashboard.html',800);
+  }catch(e){ err(e.message); }
+}
 </script>
 </body>
 </html>
