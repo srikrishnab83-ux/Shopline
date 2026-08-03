@@ -1,28 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><!-- PLAYABLE_TOUCH_PATCH_V1 --><script>
-(function() {
-  if (window.__playableTouchPatchInstalled) return;
-  window.__playableTouchPatchInstalled = true;
-  var origAdd = EventTarget.prototype.addEventListener;
-  var blockedTypes = { touchstart: 1, touchmove: 1, wheel: 1 };
-  EventTarget.prototype.addEventListener = function(type, listener, options) {
-    if (blockedTypes[type]) {
-      if (options === undefined || options === null) {
-        options = { passive: true };
-      } else if (typeof options === 'boolean') {
-        options = { capture: options, passive: true };
-      } else {
-        options = Object.assign({}, options, { passive: true });
-      }
-    }
-    return origAdd.call(this, type, listener, options);
-  };
-})();
-</script><script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Privacy Policy - Shopline Kerala</title>
+<title>Privacy Policy - Shopline India</title>
 <style>body{font-family:Arial; line-height:1.7; max-width:850px; margin:0 auto; padding:20px; background:#f9f9f9; color:#333} .box{background:#fff; padding:25px; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,0.1)} h1{color:#2874f0; margin-bottom:15px} h3{margin:18px 0 8px; color:#212121} a{color:#2874f0; text-decoration:none} p{margin:8px 0; font-size:14px} li{font-size:14px; margin:5px 0}</style>
 </head>
 <body>
@@ -32,33 +13,10 @@
 <p><b>Last Updated: August 2026</b></p>
 
 <h3>1. Information We Collect</h3>
-<p>We collect name, phone number, email, delivery address, and order details to process your orders. Delivery all over Kerala.</p>
+<p>We collect name, phone number, email, delivery address, and order details to process your orders. Delivery all over India.</p>
 
 <h3>2. How We Use Information</h3>
 <ul>
 <li>To process and deliver orders</li>
 <li>To communicate order status, cancellation, shipping, delivery</li>
-<li>To improve our services</li>
-<li>To prevent fraud</li>
-</ul>
-
-<h3>3. Data Security</h3>
-<p>We use Firebase secure servers. Your data is encrypted and never sold to third parties.</p>
-
-<h3>4. Cookies</h3>
-<p>We use cookies to improve user experience and cart functionality.</p>
-
-<h3>5. Third Party Sharing</h3>
-<p>We share data only with delivery partners to deliver your order all over Kerala. No other sharing.</p>
-
-<h3>6. Your Rights</h3>
-<p>You can request to delete your account and data via Contact Us page.</p>
-
-<h3>7. Contact</h3>
-<p>For privacy concerns, use <a href="contact.html">Contact Us - AI Chatbot</a> or email support@shoplinekerala.com</p>
-
-<p style="margin-top:20px; font-size:12px; color:#777">Shopline Kerala - Delivery all over Kerala | Kerala's Own Marketplace</p>
-</div>
-</body>
-</html>
-
+<li>
