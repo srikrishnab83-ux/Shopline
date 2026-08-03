@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Admin Orders - Shopline Kerala</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> <!-- NEW -->
+  <title>Admin Orders - Shopline India - All India Delivery</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     body{font-family:Arial; background:#f5f5f5; padding:20px}
     h1{background:#2874f0; color:#fff; padding:15px; border-radius:4px}
@@ -19,18 +19,18 @@
   </style>
 </head>
 <body>
-  <h1>📦 Shopline Kerala - All Orders - ADMIN</h1>
+  <h1>📦 Shopline India - All Orders - ADMIN - Delivery all over India</h1>
   <button class="refresh-btn" onclick="loadOrders()">🔄 Refresh Orders</button>
   <div id="ordersList">Loading orders...</div>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script> <!-- CHANGED to compat for update -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <script>
-const { jsPDF } = window.jspdf; // NEW
+const { jsPDF } = window.jspdf;
 const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
-firebase.initializeApp(firebaseConfig); // CHANGED to compat
-const db = firebase.firestore(); // CHANGED to compat
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
 async function loadOrders() {
   document.getElementById('ordersList').innerHTML = "Loading orders...";
@@ -68,7 +68,6 @@ async function loadOrders() {
         <h4 style="margin-top:10px">Items:</h4>
         ${itemsHTML}
         
-        <!-- NEW: TRACKING FOR ADMIN -->
         <p><b>Tracking:</b> 
           <select class="tracking-select" onchange="adminUpdateTracking('${doc.id}', this.value)">
             <option ${tracking==='Order Received'?'selected':''}>Order Received</option>
@@ -83,7 +82,6 @@ async function loadOrders() {
 
         <p class="total">Product: ₹${o.productTotal} + Shipping: ₹${o.shippingCharge} = ₹${o.finalTotal}</p>
 
-        <!-- NEW: ADMIN ACTIONS -->
         <div>
           <button class="admin-btn" onclick="adminApprove('${doc.id}')">Approve</button>
           <button class="admin-btn" style="background:#ff9800" onclick="adminCancel('${doc.id}')">Cancel</button>
@@ -96,7 +94,6 @@ async function loadOrders() {
 }
 loadOrders();
 
-// NEW: ADMIN FUNCTIONS
 function adminUpdateTracking(id, status){
   db.collection("orders").doc(id).update({
     trackingStatus: status,
@@ -118,13 +115,12 @@ function adminCancel(id){
   }
 }
 
-// NEW: INVOICE
 function generateInvoice(orderId){
   db.collection("orders").doc(orderId).get().then(doc=>{
     const o = doc.data();
     const docPDF = new jsPDF();
     docPDF.setFontSize(18);
-    docPDF.text("Shopline Kerala - Tax Invoice", 105, 20, {align: "center"});
+    docPDF.text("Shopline India - Tax Invoice - Delivery all over India", 105, 20, {align: "center"});
     docPDF.setFontSize(12);
     docPDF.text(`Order ID: #${orderId.substring(0,6)}`, 14, 40);
     docPDF.text(`Customer: ${o.customer.name}`, 14, 50);
