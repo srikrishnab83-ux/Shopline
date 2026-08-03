@@ -3,77 +3,68 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Shopline India - Login - India's Own Shopping Place">
 <title>Login - Shopline India</title>
 <style>
 body{background:#f5f7fb;margin:0;font-family:Arial,sans-serif}
-.wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.card{background:#fff;width:100%;max-width:400px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.08);padding:30px 25px;text-align:center}
-.logo{color:#2874f0;font-size:24px;font-weight:bold;margin-bottom:6px}
-.sub{color:#666;font-size:12px;margin-bottom:20px;line-height:1.4}
-.tabs{display:none}
-.tabs.show{display:flex;gap:0;margin-bottom:20px;border-bottom:1px solid #eee}
-.tab{flex:1;padding:12px;cursor:pointer;font-size:14px;font-weight:bold;color:#666;border-bottom:3px solid transparent;background:none;border:none}
-.tab.active{color:#2874f0;border-bottom:3px solid #2874f0}
-.group{text-align:left;margin-bottom:15px}
-.group label{font-size:13px;font-weight:bold;display:block;margin-bottom:6px;color:#333}
-.group input{width:100%;padding:12px;border:1px solid #ddd;border-radius:6px;font-size:14px;box-sizing:border-box}
-.btn{width:100%;padding:12px;background:#fb641b;color:#fff;border:none;border-radius:6px;font-size:15px;font-weight:bold;cursor:pointer;margin-top:10px}
-.btn-google{background:#fff;color:#333;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;gap:8px}
-.btn-blue{background:#2874f0}
-.link{margin-top:15px;font-size:13px;color:#2874f0;cursor:pointer;display:inline-block;text-decoration:none}
-.div{margin:15px 0;border-top:1px solid #eee;position:relative}
-.div span{position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:#fff;padding:0 10px;font-size:11px;color:#999}
+.wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:15px}
+.card{background:#fff;width:100%;max-width:380px;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,0.08);padding:28px 24px;text-align:center}
+.logo{color:#2874f0;font-size:26px;font-weight:bold}
+.sub{color:#666;font-size:12px;margin:6px 0 22px;line-height:1.4}
+.btn{width:100%;padding:13px;border-radius:10px;font-size:15px;font-weight:bold;cursor:pointer;border:none}
+.btn-google{background:#fff;color:#222;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;gap:10px}
+.btn-guest{background:#2874f0;color:#fff;margin-top:12px}
+.btn-blue{background:#2874f0;color:#fff}
+.group{text-align:left;margin-bottom:14px}
+.group label{font-size:12px;font-weight:bold;color:#333;display:block;margin-bottom:5px}
+.group input{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box}
+.link{color:#2874f0;font-size:13px;text-decoration:none;font-weight:bold;margin-top:16px;display:inline-block}
+.foot{font-size:11px;color:#999;margin-top:22px}
+.tabs{display:none;margin-bottom:18px;border-bottom:1px solid #eee}
+.tabs.show{display:flex}
+.tab{flex:1;padding:10px;background:none;border:none;font-weight:bold;color:#888;border-bottom:3px solid transparent;cursor:pointer}
+.tab.active{color:#2874f0;border-bottom-color:#2874f0}
 .sw{display:none}
 .sw.active{display:block}
-.foot{font-size:11px;color:#888;margin-top:25px}
-.err{background:#ffebee;color:#d32f2f;padding:10px;border-radius:6px;font-size:12px;margin-bottom:15px;display:none;text-align:left}
-.ok{background:#e8f5e9;color:#2e7d32;padding:10px;border-radius:6px;font-size:12px;margin-bottom:15px;display:none;text-align:left}
+.err{background:#ffebee;color:#d32f2f;padding:8px;border-radius:6px;font-size:12px;margin-bottom:10px;display:none}
 </style>
 </head>
 <body>
 <div class="wrap">
 <div class="card">
 <div class="logo">Shopline India</div>
-<div class="sub">🇮🇳 India's Own Shopping Place<br>🚚 Delivery all over India</div>
+<div class="sub">🇮🇳 India's Own Shopping Place<br>Delivery all over India</div>
 
-<div class="tabs" id="mainTabs">
-<button class="tab active" id="buyTab" onclick="switchTab('buy')">I want to Buy</button>
-<button class="tab" id="sellTab" onclick="switchTab('sell')">I want to Sell</button>
+<div class="tabs" id="tabs">
+<button class="tab active" id="bTab" onclick="switchT('buy')">Buyer</button>
+<button class="tab" id="sTab" onclick="switchT('sell')">Seller</button>
 </div>
 
 <div id="err" class="err"></div>
-<div id="ok" class="ok"></div>
 
-<!-- BUYER LOGIN - NO PASSWORD - SAFE ON GITHUB.IO -->
-<div id="buyLogin" class="sw active">
-<p style="font-size:13px;color:#333;margin-bottom:10px;text-align:left">Login securely with Google - No password needed</p>
-<button class="btn btn-google" onclick="googleLoginBuy()">
-  <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Continue with Google
+<!-- BUYER - CLEAN FOR CUSTOMER - NO TECH TEXT -->
+<div id="buyBox" class="sw active">
+<button class="btn btn-google" onclick="googleLogin()">
+  <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Continue with Google
 </button>
-<button class="btn" style="background:#2874f0;margin-top:12px" onclick="continueGuest()">Continue as Guest</button>
-<div style="margin-top:14px"><a class="link" href="../index.html">← Back to Home</a></div>
-<div class="div"><span>SECURE</span></div>
-<p style="font-size:11px;color:#666">🔒 No password on github.io = No Chrome warning<br>100% Safe & Secure Login</p>
+<button class="btn btn-guest" onclick="location.href='../index.html'">Continue as Guest</button>
 </div>
 
-<!-- SELLER LOGIN - ONLY VISIBLE WITH ?seller=1 or ?admin=1 -->
-<div id="sellLogin" class="sw">
-<div class="group"><label>Email</label><input type="email" id="sellEmail" placeholder="Seller Email"></div>
-<div class="group"><label>Password</label><input type="password" id="sellPass" placeholder="Password"></div>
-<button class="btn btn-blue" onclick="loginSell()">Login as Seller</button>
-<p style="font-size:11px;color:#c00;margin-top:8px">⚠️ Seller login works best on custom domain. On github.io Chrome may show password check.</p>
-<div style="margin-top:12px"><a class="link" onclick="switchTab('buy')">← Back to Buyer</a></div>
+<!-- SELLER - ONLY FOR YOU -->
+<div id="sellBox" class="sw">
+<div class="group"><label>Seller Email</label><input type="email" id="sEmail" placeholder="Seller email"></div>
+<div class="group"><label>Password</label><input type="password" id="sPass" placeholder="Password"></div>
+<button class="btn btn-blue" onclick="sellerLogin()">Login as Seller</button>
 </div>
 
-<div class="foot">© 2026 Shopline India<br>Made for India, by India - Delivery all over India</div>
+<a class="link" href="../index.html">← Back to Home</a>
+<div class="foot">© 2026 Shopline India</div>
 </div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
 const app = initializeApp(firebaseConfig);
@@ -81,56 +72,51 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const ADMIN = ["srikrishnab83@gmail.com"];
 
+// Show seller tab only when ?seller=1 or ?admin=1 - So customer never sees seller or password
 const p = new URLSearchParams(window.location.search);
-if(p.get('admin')==='1' || p.get('seller')==='1' || p.get('mode')==='seller'){
-  document.getElementById('mainTabs').classList.add('show');
+if(p.get('seller')==='1' || p.get('admin')==='1' || p.get('mode')==='seller'){
+  document.getElementById('tabs').classList.add('show');
 }
 
-window.switchTab=function(t){
-  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-  document.querySelectorAll('.sw').forEach(x=>x.classList.remove('active'));
+window.switchT = function(t){
+  document.getElementById('bTab').classList.remove('active');
+  document.getElementById('sTab').classList.remove('active');
+  document.getElementById('buyBox').classList.remove('active');
+  document.getElementById('sellBox').classList.remove('active');
   if(t==='buy'){
-    document.getElementById('buyTab').classList.add('active');
-    document.getElementById('buyLogin').classList.add('active');
-  } else {
-    document.getElementById('sellTab').classList.add('active');
-    document.getElementById('sellLogin').classList.add('active');
+    document.getElementById('bTab').classList.add('active');
+    document.getElementById('buyBox').classList.add('active');
+  }else{
+    document.getElementById('sTab').classList.add('active');
+    document.getElementById('sellBox').classList.add('active');
   }
 }
 
-function err(m){ const e=document.getElementById('err'); e.innerText=m; e.style.display='block'; document.getElementById('ok').style.display='none'; setTimeout(()=>e.style.display='none',4000); }
-function ok(m){ const e=document.getElementById('ok'); e.innerText=m; e.style.display='block'; document.getElementById('err').style.display='none'; }
-function clr(){ document.getElementById('err').style.display='none'; document.getElementById('ok').style.display='none'; }
+// Google login for Buyer - Redirect works on mobile
+getRedirectResult(auth).then(async (res)=>{
+  if(res && res.user){
+    await setDoc(doc(db,"buyers",res.user.uid),{name:res.user.displayName,email:res.user.email,uid:res.user.uid,role:"buyer",createdAt:serverTimestamp()},{merge:true});
+    location.href='../index.html';
+  }
+});
 
-window.googleLoginBuy = async function(){
-  try{
-    const provider = new GoogleAuthProvider();
-    const cred = await signInWithPopup(auth, provider);
-    await setDoc(doc(db,"buyers",cred.user.uid),{name:cred.user.displayName,email:cred.user.email,uid:cred.user.uid,role:"buyer",createdAt:serverTimestamp()},{merge:true});
-    ok("Login successful!");
-    const r=localStorage.getItem('redirectAfterLogin');
-    setTimeout(()=>{
-      if(r==='cart') location.href='cart.html';
-      else if(r==='orders') location.href='order.html';
-      else location.href='../index.html';
-    },800);
-  }catch(e){ err(e.message); }
+window.googleLogin = function(){
+  const provider = new GoogleAuthProvider();
+  signInWithRedirect(auth, provider);
 }
 
-window.continueGuest = function(){
-  location.href='../index.html';
-}
-
-window.loginSell=async function(){
-  const email=document.getElementById('sellEmail').value.trim();
-  const pass=document.getElementById('sellPass').value;
-  if(!email||!pass) return err("Enter email/pass");
-  if(!ADMIN.includes(email.toLowerCase())) return err("Access denied - Seller registration closed");
+window.sellerLogin = async function(){
+  const email = document.getElementById('sEmail').value.trim();
+  const pass = document.getElementById('sPass').value;
+  const errBox = document.getElementById('err');
+  if(!email||!pass){ errBox.innerText="Enter email and password"; errBox.style.display='block'; return; }
+  if(!ADMIN.includes(email.toLowerCase())){ errBox.innerText="Seller access denied"; errBox.style.display='block'; return; }
   try{
     await signInWithEmailAndPassword(auth,email,pass);
-    ok("Seller Login success!");
-    setTimeout(()=>location.href='dashboard.html',800);
-  }catch(e){ err(e.message); }
+    location.href='dashboard.html';
+  }catch(e){
+    errBox.innerText=e.message; errBox.style.display='block';
+  }
 }
 </script>
 </body>
