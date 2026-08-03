@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://srikrishnab83-ux.github.io/Shopline/sitemap.xml
