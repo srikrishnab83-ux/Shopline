@@ -1,25 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><!-- PLAYABLE_TOUCH_PATCH_V1 --><script>
-(function() {
-  if (window.__playableTouchPatchInstalled) return;
-  window.__playableTouchPatchInstalled = true;
-  var origAdd = EventTarget.prototype.addEventListener;
-  var blockedTypes = { touchstart: 1, touchmove: 1, wheel: 1 };
-  EventTarget.prototype.addEventListener = function(type, listener, options) {
-    if (blockedTypes[type]) {
-      if (options === undefined || options === null) {
-        options = { passive: true };
-      } else if (typeof options === 'boolean') {
-        options = { capture: options, passive: true };
-      } else {
-        options = Object.assign({}, options, { passive: true });
-      }
-    }
-    return origAdd.call(this, type, listener, options);
-  };
-})();
-</script><script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shopline India - Final Clean 100% - Banner Fixed No Spam</title>
@@ -59,7 +40,7 @@
   </div>
 
   <header class="navbar">
-    <div class="logo" onclick="location.href='index.html'" style="cursor:pointer;">Shopline<span>Kerala</span></div>
+    <div class="logo" onclick="location.href='index.html'" style="cursor:pointer;">Shopline<span> India</span></div>
    <div class="search-wrap">
     <input type="text" id="searchInput" placeholder="Search for Mobiles, Fashion..." onkeyup="searchProducts()">
     <button type="button" onclick="searchProducts()">🔍</button>
@@ -86,7 +67,7 @@
 
   <!-- BANNER FIXED: ONLY 1 IMAGE - ONAM MAHA SALE - FIT TO SCREEN -->
   <section class="main-banner">
-    <img src="images/banner.png" alt="Onam Maha Sale - Shopline Kerala" onerror="this.src='https://via.placeholder.com/1200x350?text=Onam+Maha+Sale+-+Shopline+Kerala'">
+    <img src="images/banner.png" alt="Onam Maha Sale - Shopline India" onerror="this.src='https://via.placeholder.com/1200x350?text=Onam+Maha+Sale+-+Shopline+India'">
   </section>
 
  <section class="categories">
@@ -135,7 +116,7 @@
       <a href="customer/return.html">Return Policy</a>
     </div>
     <div>
-      <h4>SHOPlINE INDIA</h4>
+      <h4>SHOPLINE INDIA</h4>
       <a href="#">India's Own Shopping place</a>
       <a href="#">Made for India, by India </a>
       <a href="#" style="color:#aaa; font-size:11px; margin-top:10px">Delivery all over India</a>
