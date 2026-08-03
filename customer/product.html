@@ -1,28 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><!-- PLAYABLE_TOUCH_PATCH_V1 --><script>
-(function() {
-  if (window.__playableTouchPatchInstalled) return;
-  window.__playableTouchPatchInstalled = true;
-  var origAdd = EventTarget.prototype.addEventListener;
-  var blockedTypes = { touchstart: 1, touchmove: 1, wheel: 1 };
-  EventTarget.prototype.addEventListener = function(type, listener, options) {
-    if (blockedTypes[type]) {
-      if (options === undefined || options === null) {
-        options = { passive: true };
-      } else if (typeof options === 'boolean') {
-        options = { capture: options, passive: true };
-      } else {
-        options = Object.assign({}, options, { passive: true });
-      }
-    }
-    return origAdd.call(this, type, listener, options);
-  };
-})();
-</script><script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Product Details - Shopline Kerala</title>
+<title>Product Details - Shopline India</title>
 <style>
 *{box-sizing:border-box; margin:0; padding:0; font-family:Arial, sans-serif}
 body{background:#f1f3f6}
@@ -61,7 +42,7 @@ header a{color:#fff; text-decoration:none; font-weight:bold; font-size:18px}
 <body>
 
 <header>
-  <div><a href="../index.html">Shopline<span style="color:#ffe500">Kerala</span></a></div>
+  <div><a href="../index.html">Shopline<span style="color:#ffe500"> India</span></a></div>
   <div><a href="cart.html" id="cartLink">🛒 Cart(0)</a></div>
 </header>
 
@@ -112,7 +93,7 @@ header a{color:#fff; text-decoration:none; font-weight:bold; font-size:18px}
       </div>
 
       <div class="section">
-        <p style="font-size:13px; color:#555">📦 Delivery all over Kerala | COD Available | Free Delivery</p>
+        <p style="font-size:13px; color:#555">📦 Delivery all over India | COD Available | Free Delivery | Made for India, by India</p>
       </div>
 
       <button id="btnCart" class="btn-cart" onclick="addToCart()">Add to Cart</button>
@@ -126,7 +107,6 @@ header a{color:#fff; text-decoration:none; font-weight:bold; font-size:18px}
   </div>
 </div>
 
-<!-- IMAGE POPUP MODAL - FIX FOR CLICK NOT OPENING IMAGE -->
 <div id="imageModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; justify-content:center; align-items:center" onclick="closeImagePopup()">
   <img id="modalImage" src="" style="max-width:90%; max-height:90%; border-radius:8px">
   <span style="position:absolute; top:20px; right:30px; color:#fff; font-size:30px; cursor:pointer" onclick="closeImagePopup()">✕</span>
@@ -179,9 +159,9 @@ function updateCartCount(){
 function loadProduct(p){
   const mainImg = p.images && p.images[0]? p.images[0] : p.image? p.image : 'https://via.placeholder.com/400?text=No+Image';
   document.getElementById('productImage').src = mainImg;
-  
+
   var thumbHtml = '';
-  let imagesToShow = p.images && p.images.length > 0 ? p.images : [p.image];
+  let imagesToShow = p.images && p.images.length > 0? p.images : [p.image];
   if(imagesToShow){
     imagesToShow.forEach(function(img, i){
       if(img) thumbHtml += '<img src="'+img+'" class="'+(i==0?'active':'')+'" onclick="changeImage(this, \''+img+'\')" onerror="this.style.display=\'none\'">';
@@ -230,15 +210,15 @@ function loadProduct(p){
   document.getElementById('productPattern').innerText = p.pattern || 'N/A';
   document.getElementById('productWeight').innerText = p.weight || 'N/A';
   document.getElementById('productBrand').innerText = p.brand || 'N/A';
-  document.getElementById('productDescription').innerText = p.description || 'Quality product. Delivery all over Kerala.';
+  document.getElementById('productDescription').innerText = p.description || 'Quality product. Delivery all over India.';
 }
 
 function selectSize(el, size){
-  document.querySelectorAll('#productSizes .chip').forEach(function(c){ c.classList.remove('active') });
+  document.querySelectorAll('#productSizes.chip').forEach(function(c){ c.classList.remove('active') });
   el.classList.add('active'); selectedSize = size;
 }
 function selectColor(el, name){
-  document.querySelectorAll('#productColors .chip').forEach(function(c){ c.classList.remove('active') });
+  document.querySelectorAll('#productColors.chip').forEach(function(c){ c.classList.remove('active') });
   el.classList.add('active'); selectedColor = name;
 }
 function changeImage(el, src){
@@ -248,11 +228,11 @@ function changeImage(el, src){
 }
 function addToCart(){
   if(currentProduct.stockQty <= 0) return alert("Out of Stock");
-  if(currentProduct.sizes && currentProduct.sizes.length > 0 && !selectedSize) return alert("Please select a size");
-  if(currentProduct.colors && currentProduct.colors.length > 0 && !selectedColor) return alert("Please select a color");
+  if(currentProduct.sizes && currentProduct.sizes.length > 0 &&!selectedSize) return alert("Please select a size");
+  if(currentProduct.colors && currentProduct.colors.length > 0 &&!selectedColor) return alert("Please select a color");
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
   let variant = selectedSize + ' / ' + selectedColor;
-  let cartItem = { id: productId, name: currentProduct.name, image: currentProduct.images && currentProduct.images[0] ? currentProduct.images[0] : currentProduct.image, price: currentProduct.customerPrice, sellerId: currentProduct.sellerId || '', size: selectedSize || 'NA', color: selectedColor || 'NA', variant: variant, qty: 1 };
+  let cartItem = { id: productId, name: currentProduct.name, image: currentProduct.images && currentProduct.images[0]? currentProduct.images[0] : currentProduct.image, price: currentProduct.customerPrice, sellerId: currentProduct.sellerId || '', size: selectedSize || 'NA', color: selectedColor || 'NA', variant: variant, qty: 1 };
   let existing = cart.find(item => item.id == cartItem.id && item.size == cartItem.size && item.color == cartItem.color);
   if(existing){ existing.qty += 1; } else { cart.push(cartItem); }
   localStorage.setItem('cart', JSON.stringify(cart));
