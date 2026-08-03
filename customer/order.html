@@ -1,28 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><!-- PLAYABLE_TOUCH_PATCH_V1 --><script>
-(function() {
-  if (window.__playableTouchPatchInstalled) return;
-  window.__playableTouchPatchInstalled = true;
-  var origAdd = EventTarget.prototype.addEventListener;
-  var blockedTypes = { touchstart: 1, touchmove: 1, wheel: 1 };
-  EventTarget.prototype.addEventListener = function(type, listener, options) {
-    if (blockedTypes[type]) {
-      if (options === undefined || options === null) {
-        options = { passive: true };
-      } else if (typeof options === 'boolean') {
-        options = { capture: options, passive: true };
-      } else {
-        options = Object.assign({}, options, { passive: true });
-      }
-    }
-    return origAdd.call(this, type, listener, options);
-  };
-})();
-</script><script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Orders - Previous Style + Cancel Only</title>
+<title>My Orders - Shopline India - Delivery all over India</title>
 <style>
 *{box-sizing:border-box; margin:0; padding:0; font-family:Arial, sans-serif}
 body{background:#f1f3f6}
@@ -44,7 +25,6 @@ header a{color:#fff; text-decoration:none; font-weight:bold; font-size:14px}
 .item-qty{font-size:13px; color:#666; margin:3px 0}
 .item-price{font-weight:bold; font-size:15px; margin-top:4px}
 .total-row{display:flex; justify-content:space-between; align-items:center; padding-top:12px; margin-top:5px; font-weight:bold; font-size:18px}
-/* TRACKING TIMELINE - PREVIOUS TYPE */
 .tracking{margin:15px 0 5px; padding:10px 0}
 .tracking-title{font-size:12px; color:#878787; margin-bottom:10px; letter-spacing:0.5px}
 .track-steps{display:flex; justify-content:space-between; position:relative; padding:0 5px}
@@ -56,7 +36,6 @@ header a{color:#fff; text-decoration:none; font-weight:bold; font-size:14px}
 .step-label{font-size:10px; color:#878787; line-height:1.2}
 .step-label.active{color:#388e3c; font-weight:bold}
 .step-label.cancelled{color:#d32f2f; font-weight:bold}
-/* CANCEL BUTTON - ONLY ADDITION */
 .btn-cancel{background:#fff; color:#d32f2f; border:1.5px solid #d32f2f; padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:bold; font-size:13px; margin-top:12px; display:inline-flex; align-items:center; gap:6px}
 .btn-cancel:hover{background:#ffebee}
 .info-text{font-size:11px; color:#666; background:#f9f9f9; padding:8px 10px; border-radius:6px; margin-top:10px}
@@ -65,13 +44,13 @@ header a{color:#fff; text-decoration:none; font-weight:bold; font-size:14px}
 <body>
 
 <header>
-  <div style="font-weight:bold; font-size:18px">Shopline<span style="color:#ffe500">Kerala</span></div>
+  <div style="font-weight:bold; font-size:18px">Shopline<span style="color:#ffe500"> India</span></div>
   <div style="display:flex; gap:15px"><a href="cart.html">🛒 Cart</a> | <a href="../index.html">Home</a></div>
 </header>
 
 <div class="container">
   <div class="page-title">📦 My Orders</div>
-  <div class="sub-title">You can cancel order if placed wrongly - Delivery all over Kerala</div>
+  <div class="sub-title">You can cancel order if placed wrongly - Delivery all over India</div>
   <div id="ordersList">Loading your orders...</div>
 </div>
 
@@ -119,7 +98,6 @@ onAuthStateChanged(auth, async (user) => {
 async function loadOrders(userId) {
   const ordersList = document.getElementById('ordersList');
   try {
-    // NO orderBy to avoid index error - sort in JS
     const q = query(collection(db, "orders"), where("userId", "==", userId));
     const snap = await getDocs(q);
 
@@ -145,14 +123,12 @@ async function loadOrders(userId) {
       const isDelivered = status.toLowerCase().includes('deliver');
       const isShipped = status.toLowerCase().includes('ship');
 
-      // Cancellable only if new order and within 24h
       let canCancel = (status === 'New Order' || status === 'Order Received' || status === 'Pending' || status === 'new') && !isCancelled && !isDelivered;
       if(order.createdAt && canCancel){
         const diffH = (Date.now() - order.createdAt.toDate().getTime())/(1000*60*60);
         if(diffH > 24) canCancel = false;
       }
 
-      // Tracking steps - previous type
       let trackingHtml = '';
       if(!isCancelled){
         trackingHtml = `
@@ -211,7 +187,7 @@ async function loadOrders(userId) {
           <div class="order-top">
             <div>
               <span class="order-id">Order #${orderId.substring(0,8)}</span><span class="order-date"> - ${date}</span>
-              <div class="delivery-text">Delivery all over Kerala</div>
+              <div class="delivery-text">Delivery all over India</div>
               <span class="status-pill">${status}</span>
             </div>
           </div>
