@@ -1,28 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><!-- PLAYABLE_TOUCH_PATCH_V1 --><script>
-(function() {
-  if (window.__playableTouchPatchInstalled) return;
-  window.__playableTouchPatchInstalled = true;
-  var origAdd = EventTarget.prototype.addEventListener;
-  var blockedTypes = { touchstart: 1, touchmove: 1, wheel: 1 };
-  EventTarget.prototype.addEventListener = function(type, listener, options) {
-    if (blockedTypes[type]) {
-      if (options === undefined || options === null) {
-        options = { passive: true };
-      } else if (typeof options === 'boolean') {
-        options = { capture: options, passive: true };
-      } else {
-        options = Object.assign({}, options, { passive: true });
-      }
-    }
-    return origAdd.call(this, type, listener, options);
-  };
-})();
-</script><script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Payments - Shopline Kerala</title>
+<title>Payments - Shopline India - Delivery all over India</title>
 <style>body{font-family:Arial; line-height:1.7; max-width:850px; margin:0 auto; padding:20px; background:#f9f9f9; color:#333} .box{background:#fff; padding:25px; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,0.1)} h1{color:#2874f0; margin-bottom:15px} h3{margin:18px 0 8px} a{color:#2874f0; text-decoration:none} p{margin:8px 0; font-size:14px} li{font-size:14px; margin:5px 0}</style>
 </head>
 <body>
@@ -32,7 +13,7 @@
 
 <h3>Payment Methods Available</h3>
 <ul>
-<li>💵 <b>Cash on Delivery (COD)</b> - Pay when product delivered. Available all over Kerala</li>
+<li>💵 <b>Cash on Delivery (COD)</b> - Pay when product delivered. Available all over India</li>
 <li>📱 <b>UPI</b> - Google Pay, PhonePe, Paytm, BHIM UPI</li>
 <li>👛 <b>Wallets</b> - Paytm, PhonePe wallet</li>
 </ul>
@@ -41,15 +22,15 @@
 <p>All payments are 100% secure. We use encrypted payment gateways. Your card details are never stored.</p>
 
 <h3>COD Charges</h3>
-<p>No extra charges for COD. Delivery all over Kerala with no minimum order.</p>
+<p>No extra charges for COD. Delivery all over India with no minimum order.</p>
 
 <h3>Failed Payments</h3>
 <p>If payment fails, money deducted will be refunded within 2-3 working days automatically.</p>
 
 <h3>Need Help?</h3>
-<p>Contact us via <a href="contact.html">Contact Us - AI Chatbot</a> for any payment issues. Support: support@shoplinekerala.com</p>
+<p>Contact us via <a href="contact.html">Contact Us</a> for any payment issues. Support: support@shoplineindia.com</p>
 
-<p style="margin-top:20px; font-size:12px; color:#777">Shopline Kerala - Delivery all over Kerala | Secure Payments</p>
+<p style="margin-top:20px; font-size:12px; color:#777">Shopline India - Delivery all over India | Secure Payments | Made for India, by India</p>
 </div>
 </body>
 </html>
