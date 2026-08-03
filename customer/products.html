@@ -1,50 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><!-- PLAYABLE_TOUCH_PATCH_V1 --><script>
-(function() {
-  if (window.__playableTouchPatchInstalled) return;
-  window.__playableTouchPatchInstalled = true;
-  var origAdd = EventTarget.prototype.addEventListener;
-  var blockedTypes = { touchstart: 1, touchmove: 1, wheel: 1 };
-  EventTarget.prototype.addEventListener = function(type, listener, options) {
-    if (blockedTypes[type]) {
-      if (options === undefined || options === null) {
-        options = { passive: true };
-      } else if (typeof options === 'boolean') {
-        options = { capture: options, passive: true };
-      } else {
-        options = Object.assign({}, options, { passive: true });
-      }
-    }
-    return origAdd.call(this, type, listener, options);
-  };
-})();
-</script><script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Products - Shopline Kerala - Clean Minimal</title>
+  <title>Products - Shopline India - Delivery all over India</title>
   <link rel="stylesheet" href="../css/style.css">
   <style>
-   .search-wrap{display:flex; gap:5px; flex:1; max-width:400px; margin:0 20px}
-   .search-wrap input{padding:8px; border-radius:4px; border:none; width:100%}
-   .search-wrap button{padding:8px 12px; border:none; border-radius:4px; background:#fff; cursor:pointer}
-   .add-cart-btn{background:#fb641b; color:#fff; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; width:100%; margin-top:8px; font-weight:bold}
-   .product-card{padding:10px; border:1px solid #eee; border-radius:8px; background:#fff; cursor:pointer; text-align:center}
-   .product-card:hover{box-shadow:0 2px 8px rgba(0,0,0,0.1)}
-   .product-card img{width:100%; height:200px; object-fit:cover; border-radius:4px}
-   .oldPrice{text-decoration:line-through; color:#878787; font-size:12px; margin-left:5px}
-   .discount{color:#388e3c; font-size:12px; font-weight:bold}
-   .product-grid-4{display:grid; grid-template-columns:repeat(4,1fr); gap:15px}
-   @media(max-width:768px){.product-grid-4{grid-template-columns:repeat(2,1fr)} .search-wrap{max-width:150px}}
+  .search-wrap{display:flex; gap:5px; flex:1; max-width:400px; margin:0 20px}
+  .search-wrap input{padding:8px; border-radius:4px; border:none; width:100%}
+  .search-wrap button{padding:8px 12px; border:none; border-radius:4px; background:#fff; cursor:pointer}
+  .add-cart-btn{background:#fb641b; color:#fff; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; width:100%; margin-top:8px; font-weight:bold}
+  .product-card{padding:10px; border:1px solid #eee; border-radius:8px; background:#fff; cursor:pointer; text-align:center}
+  .product-card:hover{box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+  .product-card img{width:100%; height:200px; object-fit:cover; border-radius:4px}
+  .oldPrice{text-decoration:line-through; color:#878787; font-size:12px; margin-left:5px}
+  .discount{color:#388e3c; font-size:12px; font-weight:bold}
+  .product-grid-4{display:grid; grid-template-columns:repeat(4,1fr); gap:15px}
+   @media(max-width:768px){.product-grid-4{grid-template-columns:repeat(2,1fr)}.search-wrap{max-width:150px}}
   </style>
 </head>
 <body>
   <div class="top-bar">
-    <p>Delivering across all 14 districts of Kerala | COD Available | Free Delivery All Over Kerala</p>
+    <p>🇮🇳 Delivering all over India | COD Available | Free Delivery All Over India | Made for India, by India</p>
   </div>
   <header class="navbar">
     <div class="container" style="display:flex; align-items:center">
-      <div class="logo" onclick="location.href='../index.html'" style="cursor:pointer;">Shopline<span>Kerala</span></div>
+      <div class="logo" onclick="location.href='../index.html'" style="cursor:pointer;">Shopline<span style="color:#ffe500"> India</span></div>
       <div class="search-wrap">
         <input type="text" placeholder="Search for products..." id="searchInput" onkeyup="searchProducts()">
         <button id="searchBtn" onclick="searchProducts()">🔍</button>
@@ -56,7 +37,6 @@
     </div>
   </header>
 
-  <!-- FILTERS - PREVIOUS STYLE HORIZONTAL -->
   <section class="filters">
     <div class="container" style="display:flex; gap:10px; flex-wrap:wrap; padding:15px; background:#fff">
       <h3>Filters</h3>
@@ -142,9 +122,7 @@ function updateCartCount(){
   document.getElementById('cartLink').innerText = `🛒 Cart(${totalQty})`;
 }
 
-// FIXED CLICK - 404 SOLVED
 window.openProduct = function(productId) {
-  // Fixed path: this file is customer/products.html, product details is customer/product.html
   window.location.href = `product.html?id=${productId}`;
 }
 
@@ -187,7 +165,7 @@ function displayProducts(products) {
   container.innerHTML = '';
   if(products.length == 0){ container.innerHTML = "<p>No products found</p>"; return; }
   products.forEach(p => {
-    const img = p.images && p.images[0]? p.images[0] : p.image ? p.image : 'https://via.placeholder.com/200?text=No+Image';
+    const img = p.images && p.images[0]? p.images[0] : p.image? p.image : 'https://via.placeholder.com/200?text=No+Image';
     const price = p.customerPrice || p.price || 0;
     const oldPrice = p.oldPrice || price;
     const discount = oldPrice > price? Math.round((1 - price/oldPrice)*100) : 0;
@@ -199,7 +177,7 @@ function displayProducts(products) {
           <h3>${p.name}</h3>
           <p>₹${Number(price).toLocaleString()} <span class="oldPrice">${oldPrice > price? '₹'+Number(oldPrice).toLocaleString() : ''}</span></p>
           <p class="discount">${discount > 0? discount+'% off' : ''}</p>
-          <p><small>📍 Delivery all over Kerala | ${p.category || ''}</small></p>
+          <p><small>📦 Delivery all over India | ${p.category || ''}</small></p>
         </div>
         <button class="add-cart-btn" onclick="quickAddToCart('${p.id}', '${p.name.replace(/'/g, "\\'")}', '${img}', ${price})">Add to Cart</button>
       </div>
