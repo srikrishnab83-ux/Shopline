@@ -1,35 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><!-- PLAYABLE_TOUCH_PATCH_V1 --><script>
-(function() {
-  if (window.__playableTouchPatchInstalled) return;
-  window.__playableTouchPatchInstalled = true;
-  var origAdd = EventTarget.prototype.addEventListener;
-  var blockedTypes = { touchstart: 1, touchmove: 1, wheel: 1 };
-  EventTarget.prototype.addEventListener = function(type, listener, options) {
-    if (blockedTypes[type]) {
-      if (options === undefined || options === null) {
-        options = { passive: true };
-      } else if (typeof options === 'boolean') {
-        options = { capture: options, passive: true };
-      } else {
-        options = Object.assign({}, options, { passive: true });
-      }
-    }
-    return origAdd.call(this, type, listener, options);
-  };
-})();
-</script><script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Return Policy - Shopline Kerala</title>
+<title>Return Policy - Shopline India</title>
 <style>body{font-family:Arial; line-height:1.7; max-width:850px; margin:0 auto; padding:20px; background:#f9f9f9; color:#333} .box{background:#fff; padding:25px; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,0.1)} h1{color:#2874f0; margin-bottom:15px} h3{margin:18px 0 8px; color:#212121} a{color:#2874f0; text-decoration:none} p{margin:8px 0; font-size:14px} li{font-size:14px; margin:5px 0} .highlight{background:#e8f5e9; padding:10px; border-radius:6px; border-left:4px solid #4caf50; margin:10px 0}</style>
 </head>
 <body>
 <div class="box">
 <a href="../index.html">← Back to Home</a>
 <h1>Return & Exchange Policy</h1>
-<p><b>Delivery all over Kerala</b></p>
+<p><b>Delivery all over India</b></p>
 
 <div class="highlight">✅ You can cancel order within 24 hours if ordered wrongly - No questions asked!</div>
 
@@ -38,34 +19,34 @@
 <li>Cancel within 24 hours from order placement if ordered by mistake, wrong size/color, etc.</li>
 <li>Go to My Orders → Click Cancel Order → Select reason</li>
 <li>Refund (if prepaid) processed within 2-3 days</li>
-<li>After 24 hours or if shipped, cancellation not possible. Contact support via Contact Us chatbot.</li>
+<li>After 24 hours or if shipped, cancellation not possible. Contact support via Contact Us.</li>
 </ul>
 
-<h3>2. Return Policy - 3 Days</h3>
+<h3>2. Return Policy - 7 Days</h3>
 <ul>
-<li>3 days return available for eligible products (Fashion, damaged, wrong item)</li>
+<li>7 days return available for eligible products (Fashion, damaged, wrong item)</li>
 <li>Product should be unused, with tags, original packaging</li>
 <li>Some products non-returnable: Innerwear, perishable, personal care, custom items</li>
 </ul>
 
 <h3>3. How to Return</h3>
 <ul>
-<li>Go to My Orders → Select Return (if eligible) or contact via Contact Us AI chatbot</li>
+<li>Go to My Orders → Select Return (if eligible) or contact via Contact Us</li>
 <li>Share reason and images if damaged</li>
-<li>Our team will arrange pickup - Delivery all over Kerala</li>
+<li>Our team will arrange pickup - Delivery all over India</li>
 <li>Refund after quality check - 3-5 working days</li>
 </ul>
 
 <h3>4. Exchange</h3>
-<p>Exchange available for size issues in Fashion within 3 days. Contact support via Contact Us page.</p>
+<p>Exchange available for size issues in Fashion within 7 days. Contact support via Contact Us page.</p>
 
 <h3>5. Refund</h3>
 <p>Refund to original payment method or wallet. COD orders refunded via UPI/Bank transfer.</p>
 
 <h3>6. Contact for Return</h3>
-<p>Use <a href="contact.html">Contact Us - AI Chatbot</a> or email support@shoplinekerala.com with Order ID</p>
+<p>Use <a href="contact.html">Contact Us</a> or email support@shoplineindia.com with Order ID</p>
 
-<p style="margin-top:20px; font-size:12px; color:#777">Shopline Kerala - Delivery all over Kerala</p>
+<p style="margin-top:20px; font-size:12px; color:#777">Shopline India - Delivery all over India | Made for India, by India</p>
 </div>
 </body>
 </html>
