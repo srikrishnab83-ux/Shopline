@@ -50,7 +50,7 @@ header a{color:#fff; text-decoration:none; font-weight:bold; font-size:14px}
 
 <div class="container">
   <div class="page-title">📦 My Orders</div>
-  <div class="sub-title">You can cancel order if placed wrongly - Delivery all over India</div>
+  <div class="sub-title">You can cancel order if placed wrongly - Delivery all over India - No login needed</div>
   <div id="ordersList">Loading your orders...</div>
 </div>
 
@@ -75,44 +75,63 @@ header a{color:#fff; text-decoration:none; font-weight:bold; font-size:14px}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, query, where, getDocs, doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, query, where, getDocs, doc, updateDoc, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth(app);
 
 let currentCancelOrderId = null;
-let currentUser = null;
 
-onAuthStateChanged(auth, async (user) => {
-  if(!user){
-    document.getElementById('ordersList').innerHTML = '<p style="padding:20px">Please login to see orders. <a href="../seller/login.html">Login</a></p>';
-    return;
-  }
-  currentUser = user;
-  loadOrders(user.uid);
-});
+// NO LOGIN CHECK - GUEST SUPPORT
+let guestId = localStorage.getItem('guestId');
+if(!guestId){
+  guestId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2,5);
+  localStorage.setItem('guestId', guestId);
+}
 
-async function loadOrders(userId) {
+async function loadOrders() {
   const ordersList = document.getElementById('ordersList');
+  const userId = localStorage.getItem('userId') || guestId;
+  const userEmail = localStorage.getItem('userEmail') || guestId;
+  const buyerPhone = localStorage.getItem('buyerPhone') || localStorage.getItem('userPhone');
+
   try {
-    const q = query(collection(db, "orders"), where("userId", "==", userId));
-    const snap = await getDocs(q);
-
-    if(snap.empty){
-      ordersList.innerHTML = '<div style="text-align:center; padding:40px; background:#fff; border-radius:10px; margin:10px"><p>No orders yet</p><a href="../index.html" style="display:inline-block; margin-top:10px; background:#2874f0; color:#fff; padding:10px 20px; border-radius:6px; text-decoration:none">Start Shopping</a></div>';
-      return;
-    }
-
+    // Try 3 ways: userId, buyerId, phone, email
     let orders = [];
-    snap.forEach(d => orders.push({id:d.id, data:d.data()}));
+    
+    // Query 1: by userId (old method)
+    try{
+      const q1 = query(collection(db, "orders"), where("userId", "==", userId));
+      const snap1 = await getDocs(q1);
+      snap1.forEach(d => orders.push({id:d.id, data:d.data()}));
+    }catch(e){}
+
+    // Query 2: by buyerId (guest)
+    try{
+      const q2 = query(collection(db, "orders"), where("buyerId", "==", guestId));
+      const snap2 = await getDocs(q2);
+      snap2.forEach(d => { if(!orders.find(o=>o.id===d.id)) orders.push({id:d.id, data:d.data()}); });
+    }catch(e){}
+
+    // Query 3: by email/guestId
+    try{
+      const q3 = query(collection(db, "orders"), where("email", "==", userEmail));
+      const snap3 = await getDocs(q3);
+      snap3.forEach(d => { if(!orders.find(o=>o.id===d.id)) orders.push({id:d.id, data:d.data()}); });
+    }catch(e){}
+
+    // Sort
     orders.sort((a,b)=>{
       const ta = a.data.createdAt ? a.data.createdAt.toDate().getTime() : 0;
       const tb = b.data.createdAt ? b.data.createdAt.toDate().getTime() : 0;
       return tb-ta;
     });
+
+    if(orders.length===0){
+      ordersList.innerHTML = '<div style="text-align:center; padding:40px; background:#fff; border-radius:10px; margin:10px"><p style="font-size:18px">📦 No orders yet</p><p style="color:#666; font-size:13px; margin-top:8px">Place an order - Delivery all over India<br>No login required!</p><a href="../index.html" style="display:inline-block; margin-top:15px; background:#2874f0; color:#fff; padding:10px 20px; border-radius:6px; text-decoration:none">Start Shopping</a></div>';
+      return;
+    }
 
     let html = '';
     orders.forEach(({id: orderId, data: order})=>{
@@ -131,73 +150,22 @@ async function loadOrders(userId) {
 
       let trackingHtml = '';
       if(!isCancelled){
-        trackingHtml = `
-          <div class="tracking">
-            <div class="tracking-title">TRACKING</div>
-            <div class="track-steps">
-              <div class="track-step">
-                <div class="dot active">✓</div>
-                <div class="step-label active">Order<br>Received</div>
-              </div>
-              <div class="track-step">
-                <div class="dot ${status !== 'New Order' && status !== 'Pending' ? 'active' : ''}">${status !== 'New Order' && status !== 'Pending' ? '✓' : ''}</div>
-                <div class="step-label ${status !== 'New Order' && status !== 'Pending' ? 'active' : ''}">Confirmed</div>
-              </div>
-              <div class="track-step">
-                <div class="dot ${isShipped || isDelivered ? 'active' : ''}">${isShipped || isDelivered ? '✓' : ''}</div>
-                <div class="step-label ${isShipped || isDelivered ? 'active' : ''}">Shipped</div>
-              </div>
-              <div class="track-step">
-                <div class="dot ${isDelivered ? 'active' : ''}">${isDelivered ? '✓' : ''}</div>
-                <div class="step-label ${isDelivered ? 'active' : ''}">Delivered</div>
-              </div>
-            </div>
-          </div>
-        `;
+        trackingHtml = `<div class="tracking"><div class="tracking-title">TRACKING</div><div class="track-steps">
+          <div class="track-step"><div class="dot active">✓</div><div class="step-label active">Order<br>Received</div></div>
+          <div class="track-step"><div class="dot ${status !== 'New Order' && status !== 'Pending' ? 'active' : ''}">${status !== 'New Order' && status !== 'Pending' ? '✓' : ''}</div><div class="step-label ${status !== 'New Order' && status !== 'Pending' ? 'active' : ''}">Confirmed</div></div>
+          <div class="track-step"><div class="dot ${isShipped || isDelivered ? 'active' : ''}">${isShipped || isDelivered ? '✓' : ''}</div><div class="step-label ${isShipped || isDelivered ? 'active' : ''}">Shipped</div></div>
+          <div class="track-step"><div class="dot ${isDelivered ? 'active' : ''}">${isDelivered ? '✓' : ''}</div><div class="step-label ${isDelivered ? 'active' : ''}">Delivered</div></div>
+        </div></div>`;
       } else {
-        trackingHtml = `
-          <div class="tracking">
-            <div class="tracking-title">TRACKING</div>
-            <div class="track-steps">
-              <div class="track-step">
-                <div class="dot cancelled">✕</div>
-                <div class="step-label cancelled">Cancelled<br>${order.cancelReason ? order.cancelReason : ''}</div>
-              </div>
-            </div>
-          </div>
-        `;
+        trackingHtml = `<div class="tracking"><div class="tracking-title">TRACKING</div><div class="track-steps"><div class="track-step"><div class="dot cancelled">✕</div><div class="step-label cancelled">Cancelled<br>${order.cancelReason || ''}</div></div></div></div>`;
       }
 
       let itemsHtml = '';
       (order.items || []).forEach(item=>{
-        itemsHtml += `
-          <div class="order-item">
-            <img src="${item.image}" onerror="this.src='https://via.placeholder.com/80?text=No+Image'">
-            <div>
-              <div class="item-name">${item.name}</div>
-              <div class="item-qty">Qty: ${item.qty || 1}</div>
-              <div class="item-price">₹${item.price}</div>
-            </div>
-          </div>
-        `;
+        itemsHtml += `<div class="order-item"><img src="${item.image}" onerror="this.src='https://via.placeholder.com/80?text=No+Image'"><div><div class="item-name">${item.name}</div><div class="item-qty">Qty: ${item.qty || 1}</div><div class="item-price">₹${item.price}</div></div></div>`;
       });
 
-      html += `
-        <div class="order-card">
-          <div class="order-top">
-            <div>
-              <span class="order-id">Order #${orderId.substring(0,8)}</span><span class="order-date"> - ${date}</span>
-              <div class="delivery-text">Delivery all over India</div>
-              <span class="status-pill">${status}</span>
-            </div>
-          </div>
-          <hr class="order-divider">
-          ${itemsHtml}
-          ${trackingHtml}
-          <div class="total-row"><span>Total:</span><span>₹${(order.finalTotal || order.productTotal || 0).toLocaleString()}</span></div>
-          ${canCancel ? `<button class="btn-cancel" onclick="openCancelModal('${orderId}')">❌ Cancel Order</button><div class="info-text">If ordered wrongly, you can cancel within 24 hours.</div>` : isCancelled ? `<div class="info-text" style="background:#ffebee; color:#d32f2f">Cancelled: ${order.cancelReason || 'Ordered by mistake'}</div>` : ''}
-        </div>
-      `;
+      html += `<div class="order-card"><div class="order-top"><div><span class="order-id">Order #${orderId.substring(0,8)}</span><span class="order-date"> - ${date}</span><div class="delivery-text">Delivery all over India</div><span class="status-pill">${status}</span></div></div><hr class="order-divider">${itemsHtml}${trackingHtml}<div class="total-row"><span>Total:</span><span>₹${(order.finalTotal || order.productTotal || 0).toLocaleString()}</span></div>${canCancel ? `<button class="btn-cancel" onclick="openCancelModal('${orderId}')">❌ Cancel Order</button><div class="info-text">If ordered wrongly, you can cancel within 24 hours.</div>` : isCancelled ? `<div class="info-text" style="background:#ffebee; color:#d32f2f">Cancelled: ${order.cancelReason || 'Ordered by mistake'}</div>` : ''}</div>`;
     });
 
     ordersList.innerHTML = html;
@@ -209,24 +177,18 @@ async function loadOrders(userId) {
 
 window.openCancelModal = function(id){ currentCancelOrderId=id; document.getElementById('cancelModal').style.display='flex'; }
 window.closeCancelModal = function(){ document.getElementById('cancelModal').style.display='none'; currentCancelOrderId=null; document.getElementById('cancelReason').value=''; }
-
 window.confirmCancel = async function(){
   const reason = document.getElementById('cancelReason').value;
   if(!reason) return alert('Please select reason');
   try{
-    await updateDoc(doc(db,"orders",currentCancelOrderId),{
-      status:"Cancelled",
-      orderStatus:"cancelled",
-      trackingStatus:"Cancelled by Customer",
-      cancelReason:reason,
-      cancelledAt:serverTimestamp(),
-      cancelledBy: currentUser ? currentUser.uid : 'customer'
-    });
+    await updateDoc(doc(db,"orders",currentCancelOrderId),{ status:"Cancelled", orderStatus:"cancelled", trackingStatus:"Cancelled by Customer", cancelReason:reason, cancelledAt:serverTimestamp(), cancelledBy:'guest_customer' });
     alert('✅ Order Cancelled Successfully.');
     closeCancelModal();
-    loadOrders(currentUser.uid);
+    loadOrders();
   }catch(e){ alert('Failed: '+e.message); }
 }
+
+loadOrders();
 </script>
 </body>
 </html>
