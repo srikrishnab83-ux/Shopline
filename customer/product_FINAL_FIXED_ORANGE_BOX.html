@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Details - Shopline India</title>
+<style>
+*{box-sizing:border-box; margin:0; padding:0; font-family:Arial, sans-serif}
+body{background:#f1f3f6}
+header{background:#2874f0; color:#fff; padding:12px 20px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:10}
+header a{color:#fff; text-decoration:none; font-weight:bold; font-size:18px}
+.container{max-width:1200px; margin:20px auto; padding:0 15px}
+.product-box{display:flex; gap:20px; background:#fff; padding:20px; border-radius:8px; flex-wrap:wrap}
+.left{flex:1; min-width:320px}
+.right{flex:1.5; min-width:320px}
+.product-img{width:100%; height:400px; object-fit:contain; border:1px solid #eee; border-radius:8px; background:#fff; cursor:zoom-in}
+.thumbs{display:flex; gap:8px; margin-top:10px; flex-wrap:wrap}
+.thumbs img{width:70px; height:70px; object-fit:cover; border:2px solid #ddd; border-radius:4px; cursor:pointer}
+.thumbs img.active{border-color:#2874f0}
+.product-title{font-size:22px; font-weight:600; margin-bottom:8px; color:#212121}
+.rating{background:#388e3c; color:#fff; padding:3px 8px; border-radius:4px; font-size:13px; display:inline-block; margin-bottom:10px}
+.price-section{margin:15px 0}
+.price{font-size:28px; font-weight:bold; color:#000}
+.old-price{text-decoration:line-through; color:#878787; margin-left:10px; font-size:16px}
+.discount{color:#388e3c; font-weight:bold; margin-left:10px; font-size:16px}
+.stock{color:#388e3c; font-weight:bold; margin:10px 0; font-size:14px}
+.section{margin:15px 0; padding:15px 0; border-bottom:1px solid #f0f0f0}
+.section-title{font-weight:bold; font-size:15px; margin-bottom:10px; color:#212121}
+.chip{padding:8px 16px; border:2px solid #ddd; border-radius:25px; margin:5px; cursor:pointer; display:inline-block; background:#fff; font-size:14px; transition:0.2s}
+.chip.active{border-color:#2874f0; background:#2874f0; color:#fff}
+.attr-grid{display:grid; grid-template-columns:120px 1fr; gap:10px; font-size:14px}
+.attr-grid b{color:#878787; font-weight:500}
+.btn-buy{padding:15px; width:100%; background:#ff9f00; color:#fff; border:none; font-size:18px; font-weight:bold; border-radius:4px; cursor:pointer; margin-top:15px}
+.btn-cart{padding:15px; width:100%; background:#fb641b; color:#fff; border:none; font-size:18px; font-weight:bold; border-radius:4px; cursor:pointer; margin-top:10px}
+.btn-buy:hover,.btn-cart:hover{opacity:0.9}
+.disabled-btn{background:#ccc!important; cursor:not-allowed!important}
+.desc-box{background:#fff; padding:20px; border-radius:8px; margin-top:15px}
+.desc-box h3{margin-bottom:10px; font-size:18px}
+.return-box-customer{background:#fff3e0; border:2px solid #ff9800; border-radius:10px; padding:15px; margin:15px 0; display:block!important}
+.return-badge{display:inline-block; padding:6px 12px; border-radius:20px; font-weight:bold; font-size:12px; margin:3px; border:1px solid}
+.return-yes{background:#e8f5e9; color:#2e7d32; border-color:#4caf50}
+.return-no{background:#ffebee; color:#d32f2f; border-color:#d32f2f}
+.exchange-yes{background:#e0f7fa; color:#00695c; border-color:#00695c}
+.return-policy-text{margin-top:10px; font-weight:bold; color:#212121; font-size:14px}
+.return-note{font-size:11px; color:#666; margin-top:8px; background:#fff; padding:8px; border-radius:6px; border:1px dashed #ff9800}
+@media(max-width:768px){.product-box{flex-direction:column}.product-img{height:300px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div><a href="../index.html">Shopline<span style="color:#ffe500"> India</span></a></div>
+  <div><a href="cart.html" id="cartLink">🛒 Cart(0)</a></div>
+</header>
+
+<div class="container">
+  <div class="product-box">
+    <div class="left">
+      <img id="productImage" class="product-img" src="https://via.placeholder.com/400?text=Loading" onclick="openImagePopup(this.src)" title="Click to zoom">
+      <div class="thumbs" id="productThumbs"></div>
+    </div>
+
+    <div class="right">
+      <div class="product-title" id="productName">Loading...</div>
+      <span class="rating">4.2 ★</span>
+
+      <div class="price-section">
+        <span class="price" id="productPrice">₹0</span>
+        <span class="old-price" id="productOldPrice"></span>
+        <span class="discount" id="productDiscount"></span>
+      </div>
+
+      <div class="stock" id="productStock"></div>
+
+      <div class="section">
+        <div class="section-title">Category</div>
+        <div id="productCategory">N/A</div>
+      </div>
+
+      <div id="returnBox" class="return-box-customer">
+        <div class="section-title" style="color:#e65100; margin-bottom:8px; border:none; padding:0">↩️ Return & Exchange Policy</div>
+        <div id="returnBadges">Loading return policy...</div>
+        <div id="returnPolicyMain" class="return-policy-text"></div>
+        <div class="return-note">
+          <b>Note:</b> Return charges ₹40 courier paid by seller | Exchange Free | Check return option before purchase.
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Available Sizes</div>
+        <div id="productSizes">N/A</div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Available Colors</div>
+        <div id="productColors">N/A</div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Product Details</div>
+        <div class="attr-grid">
+          <b>Fabric:</b> <span id="productFabric">N/A</span>
+          <b>Sleeve:</b> <span id="productSleeve">N/A</span>
+          <b>Fit:</b> <span id="productFit">N/A</span>
+          <b>Pattern:</b> <span id="productPattern">N/A</span>
+          <b>Weight:</b> <span id="productWeight">N/A</span>
+          <b>Brand:</b> <span id="productBrand">N/A</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <p style="font-size:13px; color:#555">📦 Delivery all over India | COD Available | Free Delivery | Made for India, by India</p>
+      </div>
+
+      <button id="btnCart" class="btn-cart" onclick="addToCart()">Add to Cart</button>
+      <button id="btnBuy" class="btn-buy" onclick="buyNow()">Buy Now</button>
+    </div>
+  </div>
+
+  <div class="desc-box">
+    <h3>Product Description</h3>
+    <p id="productDescription" style="line-height:1.7; color:#333">Loading...</p>
+  </div>
+</div>
+
+<div id="imageModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; justify-content:center; align-items:center" onclick="closeImagePopup()">
+  <img id="modalImage" src="" style="max-width:90%; max-height:90%; border-radius:8px">
+  <span style="position:absolute; top:20px; right:30px; color:#fff; font-size:30px; cursor:pointer" onclick="closeImagePopup()">✕</span>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+const urlParams = new URLSearchParams(window.location.search);
+const productId = urlParams.get('id');
+let currentProduct;
+let selectedSize = '';
+let selectedColor = '';
+
+function openImagePopup(src) {
+  document.getElementById('modalImage').src = src;
+  document.getElementById('imageModal').style.display = 'flex';
+}
+function closeImagePopup() {
+  document.getElementById('imageModal').style.display = 'none';
+}
+
+updateCartCount();
+
+if(productId){
+  db.collection("products").doc(productId).get().then(function(doc){
+    if(doc.exists){
+      currentProduct = doc.data();
+      console.log("Product loaded:", currentProduct);
+      loadProduct(currentProduct);
+    } else {
+      alert("Product not found");
+      window.location.href = '../index.html';
+    }
+  }).catch(function(err){ console.log(err); alert("Error loading product"); });
+} else {
+  alert("No Product ID"); window.location.href = '../index.html';
+}
+
+function updateCartCount(){
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  let totalQty = cart.reduce(function(sum, item){ return sum + (item.qty || 1); }, 0);
+  document.getElementById('cartLink').innerText = '🛒 Cart(' + totalQty + ')';
+}
+
+function loadProduct(p){
+  const mainImg = (p.images && p.images[0]) ? p.images[0] : (p.image ? p.image : 'https://via.placeholder.com/400?text=No+Image');
+  document.getElementById('productImage').src = mainImg;
+
+  let thumbHtml = '';
+  let imagesToShow = (p.images && p.images.length > 0) ? p.images : [p.image];
+  if(imagesToShow){
+    imagesToShow.forEach(function(img, i){
+      if(img){
+        thumbHtml += '<img src="' + img + '" class="' + (i==0?'active':'') + '" onclick="changeImage(this, '' + img + '')" onerror="this.style.display='none'">';
+      }
+    });
+  }
+  document.getElementById('productThumbs').innerHTML = thumbHtml;
+
+  let price = p.customerPrice || p.price || 0;
+  let oldPrice = p.oldPrice || price;
+  let discount = oldPrice > price ? Math.round(((oldPrice - price)/oldPrice)*100) : 0;
+
+  document.getElementById('productName').innerText = p.name;
+  document.getElementById('productPrice').innerText = '₹' + Number(price).toLocaleString();
+  document.getElementById('productOldPrice').innerText = oldPrice > price ? '₹' + Number(oldPrice).toLocaleString() : '';
+  document.getElementById('productDiscount').innerText = discount > 0 ? discount + '% off' : '';
+
+  let stockText = p.stockQty > 0 ? p.stockQty + ' left in stock' : 'Out of Stock';
+  document.getElementById('productStock').innerText = stockText;
+  document.getElementById('productStock').style.color = p.stockQty > 0 ? '#388e3c' : '#d32f2f';
+  if(p.stockQty <= 0){
+    document.getElementById('btnCart').classList.add('disabled-btn');
+    document.getElementById('btnBuy').classList.add('disabled-btn');
+    document.getElementById('btnCart').disabled = true;
+    document.getElementById('btnBuy').disabled = true;
+  }
+
+  let catText = (p.category || 'N/A');
+  if(p.subcategory) catText += ' > ' + p.subcategory;
+  if(p.subSubcategory) catText += ' > ' + p.subSubcategory;
+  document.getElementById('productCategory').innerText = catText;
+
+  let sizeHtml = '';
+  if(p.sizes && p.sizes.length > 0){
+    p.sizes.forEach(function(s){
+      sizeHtml += '<span class="chip" onclick="selectSize(this, '' + s + '')">' + s + '</span>';
+    });
+  } else { sizeHtml = '<span style="color:#878787">No sizes</span>'; }
+  document.getElementById('productSizes').innerHTML = sizeHtml;
+
+  let colorHtml = '';
+  if(p.colors && p.colors.length > 0){
+    p.colors.forEach(function(c){
+      colorHtml += '<span class="chip" onclick="selectColor(this, '' + c.name + '')"><span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:' + c.code + '; border:1px solid #ccc; margin-right:6px; vertical-align:middle"></span>' + c.name + '</span>';
+    });
+  } else { colorHtml = '<span style="color:#878787">No colors</span>'; }
+  document.getElementById('productColors').innerHTML = colorHtml;
+
+  document.getElementById('productFabric').innerText = p.fabric || 'N/A';
+  document.getElementById('productSleeve').innerText = p.sleeve || 'N/A';
+  document.getElementById('productFit').innerText = p.fit || 'N/A';
+  document.getElementById('productPattern').innerText = p.pattern || 'N/A';
+  document.getElementById('productWeight').innerText = p.weight || 'N/A';
+  document.getElementById('productBrand').innerText = p.brand || 'N/A';
+  document.getElementById('productDescription').innerText = p.description || 'Quality product. Delivery all over India.';
+
+  showReturnPolicy(p);
+}
+
+function showReturnPolicy(p){
+  console.log("Showing return policy for:", p);
+  const badges = document.getElementById('returnBadges');
+  const mainText = document.getElementById('returnPolicyMain');
+  if(!badges) return;
+  
+  let badgeHtml = '';
+  
+  if(p.returnAvailable === true){
+    badgeHtml += '<span class="return-badge return-yes">✅ ' + (p.returnDays || 7) + ' Days Return</span>';
+  } else {
+    badgeHtml += '<span class="return-badge return-no">❌ No Return</span>';
+  }
+  
+  if(p.exchangeAvailable === true){
+    badgeHtml += '<span class="return-badge exchange-yes">✅ ' + (p.exchangeDays || 7) + ' Days Exchange</span>';
+  } else {
+    badgeHtml += '<span class="return-badge return-no">❌ No Exchange</span>';
+  }
+  
+  badges.innerHTML = badgeHtml;
+  
+  let policy = '';
+  if(p.returnPolicy && p.returnPolicy.length > 2) {
+    policy = p.returnPolicy;
+  } else {
+    if(p.returnAvailable && p.exchangeAvailable) {
+      policy = (p.returnDays || 7) + ' Days Return + ' + (p.exchangeDays || 7) + ' Days Exchange Available';
+    } else if(p.returnAvailable) {
+      policy = (p.returnDays || 7) + ' Days Return Available | No Exchange';
+    } else if(p.exchangeAvailable) {
+      policy = 'No Return | ' + (p.exchangeDays || 7) + ' Days Exchange Available';
+    } else {
+      policy = '❌ No Return, No Exchange - Final Sale';
+    }
+  }
+  mainText.innerText = policy;
+}
+
+function selectSize(el, size){
+  document.querySelectorAll('#productSizes .chip').forEach(function(c){ c.classList.remove('active'); });
+  el.classList.add('active'); selectedSize = size;
+}
+function selectColor(el, name){
+  document.querySelectorAll('#productColors .chip').forEach(function(c){ c.classList.remove('active'); });
+  el.classList.add('active'); selectedColor = name;
+}
+function changeImage(el, src){
+  document.getElementById('productImage').src = src;
+  document.querySelectorAll('.thumbs img').forEach(function(i){ i.classList.remove('active'); });
+  el.classList.add('active');
+}
+function addToCart(){
+  if(currentProduct.stockQty <= 0) return alert("Out of Stock");
+  if(currentProduct.sizes && currentProduct.sizes.length > 0 && !selectedSize) return alert("Please select a size");
+  if(currentProduct.colors && currentProduct.colors.length > 0 && !selectedColor) return alert("Please select a color");
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  let variant = selectedSize + ' / ' + selectedColor;
+  let cartItem = { 
+    id: productId, 
+    name: currentProduct.name, 
+    image: (currentProduct.images && currentProduct.images[0]) ? currentProduct.images[0] : currentProduct.image, 
+    price: currentProduct.customerPrice || currentProduct.price, 
+    sellerId: currentProduct.sellerId || '', 
+    size: selectedSize || 'NA', 
+    color: selectedColor || 'NA', 
+    variant: variant, 
+    qty: 1,
+    returnAvailable: currentProduct.returnAvailable || false,
+    exchangeAvailable: currentProduct.exchangeAvailable || false,
+    returnDays: currentProduct.returnDays || 0,
+    exchangeDays: currentProduct.exchangeDays || 0,
+    returnPolicy: currentProduct.returnPolicy || ''
+  };
+  let existing = cart.find(function(item){ return item.id == cartItem.id && item.size == cartItem.size && item.color == cartItem.color; });
+  if(existing){ existing.qty += 1; } else { cart.push(cartItem); }
+  localStorage.setItem('cart', JSON.stringify(cart));
+  alert('Added to cart'); updateCartCount();
+}
+function buyNow(){ addToCart(); window.location.href = 'cart.html'; }
+</script>
+</body>
+</html>
