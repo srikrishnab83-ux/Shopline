@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auto Add REAL Images - Category > Sub > Sub-Sub</title>
+<style>
+*{box-sizing:border-box; font-family:Arial; margin:0; padding:0}
+body{background:#f5f5f5; padding:15px}
+.container{max-width:1000px; margin:0 auto; background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1)}
+h1{color:#2874f0; font-size:22px}
+label{font-weight:bold; display:block; margin:10px 0 4px; font-size:13px}
+select, input{width:100%; padding:10px; border:1.5px solid #ddd; border-radius:8px; font-size:13px; margin-bottom:8px}
+button{width:100%; padding:14px; background:#2874f0; color:#fff; font-weight:bold; border:none; border-radius:8px; cursor:pointer; font-size:15px; margin:6px 0}
+button:disabled{background:#ccc}
+.btn-green{background:#388e3c}
+.btn-orange{background:#ff9800}
+.row{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px}
+@media(max-width:700px){.row{grid-template-columns:1fr}}
+.card{border:1.5px solid #e0e0e0; border-radius:10px; padding:12px; margin:8px 0; background:#fafafa}
+.progress{background:#eee; height:22px; border-radius:11px; overflow:hidden; margin:10px 0; display:none}
+.bar{background:#388e3c; height:100%; width:0%; color:#fff; text-align:center; line-height:22px; font-weight:bold; font-size:12px}
+.log{background:#000; color:#0f0; padding:10px; border-radius:8px; max-height:280px; overflow:auto; font-family:monospace; font-size:11px; display:none}
+.preview{display:grid; grid-template-columns:repeat(auto-fill, minmax(120px,1fr)); gap:8px; margin:10px 0}
+.preview img{width:100%; height:120px; object-fit:cover; border-radius:8px; border:1px solid #ddd}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>📦 REAL Images - Category > Subcategory > Sub-Subcategory - 50 Products</h1>
+<p style="color:#666; font-size:13px; margin:8px 0">Select exact category level → Get REAL product images (Unsplash free) → Under ₹700 → Auto add → Edit later in admin panel</p>
+
+<div class="row">
+<div><label>Main Category *</label><select id="mainCat" onchange="updateSubCat()"></select></div>
+<div><label>Subcategory *</label><select id="subCat" onchange="updateSubSubCat()"></select></div>
+<div><label>Sub-Subcategory *</label><select id="subSubCat"></select></div>
+</div>
+
+<div class="row">
+<div><label>Price Under ₹700</label><select id="priceRange"><option value="299-699">₹299-₹699 Mixed</option><option value="199-399">₹199-₹399 Low</option><option value="399-599">₹399-₹599 Mid</option><option value="499-699">₹499-₹699 Premium under 700</option></select></div>
+<div><label>How many?</label><select id="count"><option value="50">50 Products</option><option value="20">20 (Test)</option><option value="10">10 (Test)</option><option value="100">100 Products</option></select></div>
+<div><label>Image Type</label><select id="imgType"><option value="real">REAL Images (Unsplash - Free)</option><option value="placeholder">Placeholder (if real slow)</option></select></div>
+</div>
+
+<div class="card">
+<b>Selected Path:</b> <span id="pathShow" style="color:#2874f0">Fashion > Women's Wear > Kurtis > Cotton Kurtis</span><br>
+<b>Real Image Keyword:</b> <span id="keywordShow" style="color:#388e3c">kurti cotton indian ethnic</span><br>
+<b>Preview (Real images will be similar):</b>
+<div class="preview" id="previewImgs"></div>
+</div>
+
+<button onclick="addProducts()">🚀 Add 50 REAL Image Products to Website</button>
+<button class="btn-orange" onclick="addForAllSubSub()">⚡ Add 50 for EACH Sub-Subcategory under Selected Subcategory (Bulk All)</button>
+<p style="font-size:11px; color:#888; margin:5px 0">Bulk All: If subcategory has 4 sub-subcategories, it will add 50x4=200 products (4 batches) under ₹700</p>
+
+<div class="progress" id="progress"><div class="bar" id="bar">0%</div></div>
+<div class="log" id="log"></div>
+
+<div id="done" style="display:none; margin-top:15px; padding:12px; background:#e8f5e9; border:2px solid #4caf50; border-radius:10px">
+<h3>🎉 Done!</h3><p id="doneText"></p>
+<a href="../index.html" style="display:inline-block; margin-top:8px; padding:8px 16px; background:#2874f0; color:#fff; border-radius:6px; text-decoration:none; font-size:13px">View Website</a>
+<a href="products.html" style="display:inline-block; margin-left:8px; padding:8px 16px; background:#ff9800; color:#fff; border-radius:6px; text-decoration:none; font-size:13px">Edit in Admin</a>
+</div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {apiKey: "AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo", authDomain: "willwin-cart.firebaseapp.com", projectId: "willwin-cart"};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// Category Structure - You can edit this as per your website categories
+const categories = {
+  "Fashion": {
+    "Women's Wear": {
+      "Kurtis": ["Cotton Kurtis", "Anarkali Kurtis", "Straight Kurtis", "Rayon Kurtis", "Designer Kurtis", "Office Wear Kurtis"],
+      "Sarees": ["Cotton Sarees", "Georgette Sarees", "Silk Sarees", "Daily Wear Sarees", "Printed Sarees"],
+      "Dresses": ["Maxi Dresses", "Midi Dresses", "Party Dresses", "Casual Dresses"],
+      "Lehengas": ["Bridal Lehengas", "Party Lehengas"],
+      "Salwar Suits": ["Cotton Suits", "Anarkali Suits"]
+    },
+    "Men's Wear": {
+      "T-Shirts": ["Round Neck T-Shirts", "Polo T-Shirts", "Printed T-Shirts", "Oversized T-Shirts"],
+      "Shirts": ["Formal Shirts", "Casual Shirts", "Printed Shirts"],
+      "Jeans": ["Slim Fit Jeans", "Regular Jeans", "Ripped Jeans"],
+      "Kurtas": ["Cotton Kurtas", "Festive Kurtas"]
+    },
+    "Kids Wear": {
+      "Girls Dresses": ["Frocks", "Party Dresses"],
+      "Boys T-Shirts": ["Printed", "Solid"]
+    }
+  },
+  "Home & Kitchen": {
+    "Bedsheets": {
+      "Double Bedsheets": ["Cotton Double", "King Size"],
+      "Single Bedsheets": ["Cotton Single"]
+    },
+    "Curtains": {
+      "Door Curtains": ["Printed", "Solid"],
+      "Window Curtains": ["Sheer", "Blackout"]
+    }
+  },
+  "Beauty": {
+    "Makeup": {
+      "Lipsticks": ["Matte Lipstick", "Liquid Lipstick"],
+      "Kajal": ["Waterproof Kajal"]
+    }
+  }
+};
+
+// Real image keywords for Unsplash - Maps sub-subcategory to real search term
+const imageKeywords = {
+  "Cotton Kurtis": "kurti cotton indian woman ethnic",
+  "Anarkali Kurtis": "anarkali kurti indian dress",
+  "Straight Kurtis": "straight kurti indian woman",
+  "Rayon Kurtis": "rayon kurti indian",
+  "Designer Kurtis": "designer kurti indian ethnic wear",
+  "Office Wear Kurtis": "office kurti indian formal",
+  "Cotton Sarees": "cotton saree indian woman",
+  "Georgette Sarees": "georgette saree indian",
+  "Silk Sarees": "silk saree indian traditional",
+  "Daily Wear Sarees": "daily saree indian woman",
+  "Printed Sarees": "printed saree indian",
+  "Maxi Dresses": "maxi dress woman",
+  "Midi Dresses": "midi dress fashion",
+  "Party Dresses": "party dress woman indian",
+  "Round Neck T-Shirts": "round neck tshirt men",
+  "Polo T-Shirts": "polo tshirt men",
+  "Printed T-Shirts": "printed tshirt men",
+  "Oversized T-Shirts": "oversized tshirt streetwear",
+  "Formal Shirts": "formal shirt men office",
+  "Casual Shirts": "casual shirt men",
+  "Slim Fit Jeans": "slim fit jeans men",
+  "Double Bedsheets": "bedsheet double bed cotton",
+  "Single Bedsheets": "single bedsheet",
+  "Matte Lipstick": "matte lipstick makeup",
+  "default": "fashion indian ethnic wear"
+};
+
+function init(){
+  const main = document.getElementById('mainCat');
+  main.innerHTML = Object.keys(categories).map(c=>`<option value="${c}">${c}</option>`).join('');
+  updateSubCat();
+}
+function updateSubCat(){
+  const main = document.getElementById('mainCat').value;
+  const subSel = document.getElementById('subCat');
+  const subs = categories[main] ? Object.keys(categories[main]) : [];
+  subSel.innerHTML = subs.map(s=>`<option value="${s}">${s}</option>`).join('');
+  updateSubSubCat();
+}
+function updateSubSubCat(){
+  const main = document.getElementById('mainCat').value;
+  const sub = document.getElementById('subCat').value;
+  const subSubSel = document.getElementById('subSubCat');
+  const subSubs = (categories[main] && categories[main][sub]) ? Object.keys(categories[main][sub]).reduce((acc, key)=>{ const arr=categories[main][sub][key]; if(Array.isArray(arr)) acc.push(...arr); else acc.push(key); return acc; }, []) : [];
+  // Simpler: get array for first key if structure is nested deeper
+  let list = [];
+  if(categories[main] && categories[main][sub]){
+    const firstKey = Object.keys(categories[main][sub])[0];
+    if(Array.isArray(categories[main][sub])){ list = categories[main][sub]; }
+    else if(Array.isArray(categories[main][sub][firstKey])){ 
+      // Flatten all sub-subcategories
+      Object.values(categories[main][sub]).forEach(arr=>{ if(Array.isArray(arr)) list.push(...arr); });
+    } else { list = Object.keys(categories[main][sub]); }
+  }
+  // Deduplicate
+  list = [...new Set(list)];
+  if(list.length===0) list = [sub];
+  subSubSel.innerHTML = list.map(s=>`<option value="${s}">${s}</option>`).join('');
+  updatePath();
+}
+function updatePath(){
+  const main=document.getElementById('mainCat').value;
+  const sub=document.getElementById('subCat').value;
+  const subSub=document.getElementById('subSubCat').value;
+  document.getElementById('pathShow').innerText=`${main} > ${sub} > ${subSub}`;
+  const kw = imageKeywords[subSub] || imageKeywords[sub] || `${subSub} ${sub} indian`;
+  document.getElementById('keywordShow').innerText=kw;
+  // Preview images
+  const preview = document.getElementById('previewImgs');
+  preview.innerHTML='';
+  for(let i=1;i<=4;i++){
+    let url = `https://picsum.photos/seed/${subSub.replace(/\s/g,'')}${i}/200/200`;
+    if(document.getElementById('imgType').value==='real'){
+      // Use unsplash source for preview (real)
+      url = `https://source.unsplash.com/200x200/?${encodeURIComponent(kw)},${i}`;
+    }
+    preview.innerHTML+=`<img src="${url}" onerror="this.src='https://via.placeholder.com/200?text=${encodeURIComponent(subSub)}'">`;
+  }
+}
+
+document.getElementById('mainCat').addEventListener('change', ()=>{updateSubCat(); updatePath();});
+document.getElementById('subCat').addEventListener('change', ()=>{updateSubSubCat(); updatePath();});
+document.getElementById('subSubCat').addEventListener('change', updatePath);
+document.getElementById('imgType').addEventListener('change', updatePath);
+
+init(); updatePath();
+
+function getRandom(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
+function getPrice(){ const r=document.getElementById('priceRange').value; if(r==="199-399")return getRandom(199,399); if(r==="399-599")return getRandom(399,599); if(r==="499-699")return getRandom(499,699); return getRandom(299,699); }
+
+async function addProducts(){
+  const main=document.getElementById('mainCat').value;
+  const sub=document.getElementById('subCat').value;
+  const subSub=document.getElementById('subSubCat').value;
+  const count=parseInt(document.getElementById('count').value);
+  const imgType=document.getElementById('imgType').value;
+  await addBatch(main, sub, subSub, count, imgType);
+}
+
+async function addForAllSubSub(){
+  const main=document.getElementById('mainCat').value;
+  const sub=document.getElementById('subCat').value;
+  const subSubSelect=document.getElementById('subSubCat');
+  const allSubSubs=Array.from(subSubSelect.options).map(o=>o.value);
+  const count=parseInt(document.getElementById('count').value);
+  const imgType=document.getElementById('imgType').value;
+  
+  if(!confirm(`This will add ${count} products for EACH sub-subcategory under ${sub}.\nTotal: ${allSubSubs.length} x ${count} = ${allSubSubs.length*count} products!\nContinue?`)) return;
+  
+  for(let ss of allSubSubs){
+    await addBatch(main, sub, ss, count, imgType);
+  }
+  alert(`🎉 All done! Added ${count} x ${allSubSubs.length} = ${allSubSubs.length*count} products under ${sub}!`);
+}
+
+async function addBatch(main, sub, subSub, count, imgType){
+  const btn=document.querySelectorAll('button')[0]; btn.disabled=true; btn.innerText=`Adding ${count} for ${subSub}... Don't close!`;
+  document.getElementById('progress').style.display='block'; document.getElementById('log').style.display='block';
+  const log=document.getElementById('log'); const bar=document.getElementById('bar');
+  const kw = imageKeywords[subSub] || imageKeywords[sub] || `${subSub} indian ${sub}`;
+  
+  let added=0; let sellerId=localStorage.getItem('sellerId')||"admin_seller";
+  
+  const nameTemplates = {
+    "Kurtis": ["Cotton Daily Wear Kurti", "Printed Anarkali Kurti", "Rayon Straight Kurti", "Designer Party Kurti", "Office Wear Kurti"],
+    "Sarees": ["Cotton Daily Saree", "Georgette Printed Saree", "Festive Silk Saree", "Traditional Saree"],
+    "T-Shirts": ["Cotton Round Neck T-Shirt", "Printed Casual T-Shirt", "Oversized T-Shirt"],
+    "default": ["Premium Quality Product", "Trendy Fashion Wear", "Daily Use Product", "Festive Collection"]
+  };
+  let templates = nameTemplates[sub] || nameTemplates[subSub] || nameTemplates["default"];
+  // Find matching template by keyword
+  for(let key in nameTemplates){ if(subSub.includes(key) || sub.includes(key)){ templates=nameTemplates[key]; break; } }
+  
+  for(let i=1;i<=count;i++){
+    try{
+      let baseName=templates[getRandom(0, templates.length-1)];
+      let name=`Shopline ${baseName} - ${subSub} Design ${i}`;
+      let price=getPrice();
+      let oldPrice=price+getRandom(100,300);
+      
+      let images=[];
+      if(imgType==='real'){
+        // REAL images from Unsplash Source + Picsum fallback - Free commercial use
+        // Unsplash Source gives real product-like images
+        images=[
+          `https://source.unsplash.com/600x800/?${encodeURIComponent(kw)},${i}a`,
+          `https://source.unsplash.com/600x800/?${encodeURIComponent(kw)},${i}b`
+        ];
+      } else {
+        images=[
+          `https://picsum.photos/seed/${main}${sub}${subSub}${i}a/600/800`,
+          `https://picsum.photos/seed/${main}${sub}${subSub}${i}b/600/800`
+        ];
+      }
+      
+      let product={
+        name: name,
+        price: Math.round(price*0.7),
+        customerPrice: price,
+        oldPrice: oldPrice,
+        stockQty: getRandom(20,100),
+        category: main,
+        subcategory: sub,
+        subSubcategory: subSub,
+        description: `${name}. Premium ${subSub} for ${sub}. Made with high-quality fabric, comfortable for daily wear. Perfect for Indian weather. Design ${i} in ${subSub} collection. Under 700 best seller. Fabric: ${["Cotton","Rayon","Georgette","Crepe"][getRandom(0,3)]}. Ideal for office, college, festive. Easy wash, durable.`,
+        images: images,
+        image: images[0],
+        sizes: ["S","M","L","XL","XXL"].slice(0, getRandom(2,4)),
+        colors: [{name: ["Red","Blue","Black","Green","Maroon","Navy","Pink","Yellow"][getRandom(0,7)], code: "#"+Math.floor(Math.random()*16777215).toString(16)}],
+        fabric: ["Cotton","Rayon","Georgette","Crepe"][getRandom(0,3)],
+        sleeve: ["Half Sleeve","3/4 Sleeve","Full Sleeve"][getRandom(0,2)],
+        fit: "Regular Fit",
+        pattern: ["Printed","Solid","Floral"][getRandom(0,2)],
+        weight: getRandom(200,400)+"g",
+        brand: "Shopline India",
+        returnAvailable: true,
+        exchangeAvailable: true,
+        returnDays: 7,
+        exchangeDays: 7,
+        returnPolicy: "7 Days Return + 7 Days Exchange",
+        sellerId: sellerId,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      
+      await db.collection("products").add(product);
+      added++;
+      log.innerHTML+=`<div>✅ ${i}/${count} [${subSub}] Added: ${name} - ₹${price} - Real Img: ${kw}</div>`;
+    }catch(err){
+      log.innerHTML+=`<div style="color:#ff5555">❌ ${i} Failed: ${err.message}</div>`;
+    }
+    let pct=Math.round((i/count)*100); bar.style.width=pct+"%"; bar.innerText=pct+"% "+subSub; log.scrollTop=log.scrollHeight;
+  }
+  
+  document.getElementById('done').style.display='block';
+  document.getElementById('doneText').innerText=`${added} products added in ${main} > ${sub} > ${subSub} under ₹700 with REAL images! Edit in admin panel.`;
+  btn.disabled=false; btn.innerText=`🚀 Add ${count} REAL Image Products to Website`;
+  // Refresh preview
+  updatePath();
+}
+</script>
+</body>
+</html>
