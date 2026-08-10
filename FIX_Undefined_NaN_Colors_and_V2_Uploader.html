@@ -1,0 +1,201 @@
+
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FIX Existing Products + V2 CSV Uploader</title>
+<style>
+body{font-family:Arial;background:#f4f6f9;padding:12px} .card{max-width:900px;margin:0 auto;background:#fff;padding:16px;border-radius:12px}
+.btn{padding:10px 14px;border:none;border-radius:8px;font-weight:bold;cursor:pointer;margin:4px} .blue{background:#1a73e8;color:#fff}.green{background:#188038;color:#fff}.red{background:#d93025;color:#fff}.orange{background:#e37400;color:#fff}
+.log{background:#111;color:#0f0;padding:10px;border-radius:8px;height:300px;overflow:auto;font-size:12px;white-space:pre-wrap}
+.small{font-size:12px;color:#666}
+</style>
+</head><body>
+<div class="card">
+<h2>🔧 FIX Undefined + NaN + Colors undefined (Existing Products)</h2>
+<div id="authStatus">Checking...</div>
+<button class="btn blue" onclick="login()">🔵 Login as Admin</button>
+<p class="small">Your screenshot: Homepage shows undefined because field mismatch. This fixer will update ALL existing products to add ALL price field variants + fix colors from "multicolour" string to proper array.</p>
+<button class="btn orange" onclick="fixExisting()">🛠️ FIX ALL Existing Products (Prices + Colors)</button>
+<div class="log" id="log"></div>
+
+<hr>
+<h3>📦 V2 CSV Bulk Uploader - Fixed for Undefined/NaN</h3>
+<button class="btn green" onclick="downloadSampleV2()">⬇️ Download FIXED Sample CSV</button>
+<input type="file" id="csvFile" accept=".csv">
+<label><input type="checkbox" id="dryRun" checked> Dry Run</label>
+<button class="btn blue" onclick="previewCSV()">Preview</button>
+<button class="btn green" onclick="uploadV2()">🚀 Upload Fixed Format</button>
+<div id="preview"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script>
+const config={apiKey:"AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo",authDomain:"willwin-cart.firebaseapp.com",projectId:"willwin-cart"};
+firebase.initializeApp(config);
+const db=firebase.firestore(); const auth=firebase.auth();
+const ADMIN_UID="c3yryIVuoCWpHHEUNAYZAV9pwVq1"; const ADMIN_EMAIL="srikrishnab83@gmail.com";
+const PLACEHOLDER="https://via.placeholder.com/600x600.png?text=No+Image";
+function log(m){ document.getElementById('log').textContent+=m+"\n"; }
+auth.onAuthStateChanged(u=>{
+  document.getElementById('authStatus').innerHTML=u?`✅ ${u.email} ${u.uid}`:'❌ Not logged';
+});
+async function login(){ const p=new firebase.auth.GoogleAuthProvider(); try{await auth.signInWithPopup(p);}catch(e){await auth.signInWithRedirect(p);} }
+
+async function fixExisting(){
+  const user=auth.currentUser; if(!user){ alert('Login'); return; }
+  log('🔍 Fetching all products...');
+  const snap=await db.collection('products').get();
+  let fixed=0;
+  for(let doc of snap.docs){
+    let d=doc.data();
+    let update={};
+    // Fix prices: Find correct price from any existing field
+    let sale = d.sellingPrice || d.salePrice || d.price || d.selling_price || d.sale_rate || d.saleRate || 0;
+    let mrp = d.oldMrpPrice || d.mrp || d.oldPrice || d.MRP || d.mrpPrice || 0;
+    // If still 0, try parse from string fields
+    if(!sale) sale = parseFloat(d["Sale Rate"]||d["sale rate"]||0);
+    if(!mrp) mrp = parseFloat(d["MRP"]||d["mrp"]||0);
+    // If we have mrp 550 and sale undefined, we need sale
+    // Use your data: from screenshot 390 and 550, so sale=390 mrp=550
+    // Ensure both present
+    if(mrp && !sale) sale = mrp;
+    if(sale && !mrp) mrp = sale;
+    // Now create ALL variants so any page code works
+    if(sale){
+      update.price=sale;
+      update.sellingPrice=sale;
+      update.salePrice=sale;
+      update.sale_rate=sale;
+      update.saleRate=sale;
+      update.finalPrice=sale;
+      update.customerPays=sale;
+    }
+    if(mrp){
+      update.mrp=mrp;
+      update.oldMrpPrice=mrp;
+      update.oldPrice=mrp;
+      update.MRP=mrp;
+      update.mrpPrice=mrp;
+    }
+    // Discount percent
+    if(mrp && sale && mrp>sale){
+      let disc=Math.round(((mrp-sale)/mrp)*100);
+      update.discount=disc;
+      update.discountPercent=disc;
+      update.offPercent=disc;
+    }
+    // Fix colors: screenshot shows undefined because colors stored as string or [undefined]
+    let colors = d.colors || d.availableColors || d.color || [];
+    if(typeof colors==='string'){
+      // "multicolour" case
+      let cName=colors.trim()||d.colorName||"Multicolour";
+      if(cName.toLowerCase()==='multicolour' || cName.toLowerCase()==='multicolor'){
+        // Create as proper array
+        update.colors=[{name:"Multicolour", colorName:"Multicolour", code:"#FF00FF"}];
+        update.availableColors=[{name:"Multicolour"}];
+        update.colorName="Multicolour";
+        update.color="Multicolour";
+      } else {
+        // comma separated
+        let parts=cName.split(',').map(s=>s.trim()).filter(Boolean);
+        update.colors=parts.map(p=>({name:p, colorName:p}));
+        update.availableColors=parts.map(p=>({name:p}));
+      }
+    } else if(Array.isArray(colors)){
+      // check if array has undefined
+      let hasUndef=colors.some(c=>!c || c==='undefined' || (typeof c==='object' && (!c.name && !c.colorName)));
+      if(hasUndef || colors.length===0){
+        let fallback=d.colorName||d.color||"Multicolour";
+        update.colors=[{name:fallback, colorName:fallback}];
+        update.availableColors=[{name:fallback}];
+        update.colorName=fallback;
+      } else {
+        // normalize object shape
+        update.colors=colors.map(c=>{
+          if(typeof c==='string') return {name:c, colorName:c};
+          return {name:c.name||c.colorName||c.color||"Multicolour", colorName:c.name||c.colorName||c.color||"Multicolour", code:c.code||c.colorCode||""};
+        });
+      }
+    }
+    // Fix image if missing
+    if(!d.image) update.image=PLACEHOLDER;
+    if(!d.images || d.images.length===0) update.images=[update.image||PLACEHOLDER];
+
+    if(Object.keys(update).length>0){
+      await db.collection('products').doc(doc.id).update(update);
+      fixed++; log(`✅ Fixed ${doc.id}: sale=${sale} mrp=${mrp} colors=${JSON.stringify(update.colors||'')}`);
+    }
+  }
+  log(`🏁 Fixed ${fixed} products! Refresh website now.`);
+  alert(`Fixed ${fixed} products! Refresh Shopline homepage.`);
+}
+
+function downloadSampleV2(){
+  const headers=["Product Name*","Brand","Category*","SubCategory*","SubSubCategory*","HSN Code","Fabric*","Sleeve*","Fit*","Pattern*","Weight","Sale Rate* (Selling Price)","MRP* (Old Price)","Stock*","GSTRate*","ReturnAvailable","ExchangeAvailable","Sizes","Colors (comma or Multicolour)","Description"];
+  const sample=[
+    ["Premium Cotton Shirt","Shopline","Men","Shirts","Casual","6105","Cotton","Half Sleeve","Slim Fit","Checked","200gm","390","550","50","18","Yes","Yes","M,L,XL,XXL","Multicolour","Premium shirt"],
+    ["Women Kurti","FabIndia","Women","Kurtis","Cotton","6106","Cotton","Full Sleeve","Regular","Solid","250gm","599","999","100","12","Yes","No","S,M,L,XL","Red,Blue,Green","Beautiful kurti"]
+  ];
+  let csv=headers.join(',')+"\n"+sample.map(r=>r.map(v=>`"${v}"`).join(',')).join("\n");
+  const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='Shopline_Fixed_Sample_V2.csv'; a.click();
+}
+let rows=[];
+function previewCSV(){
+  const file=document.getElementById('csvFile').files[0]; if(!file){alert('Select CSV'); return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const lines=e.target.result.split(/\r?\n/).filter(l=>l.trim());
+    const headers=lines[0].split(',').map(h=>h.trim().replace(/^"|"$/g,''));
+    rows=[];
+    for(let i=1;i<lines.length;i++){
+      let row=[], cur='', inQ=false;
+      for(let ch of lines[i]){ if(ch==='"'){inQ=!inQ;}else if(ch===','&&!inQ){row.push(cur); cur='';}else cur+=ch; } row.push(cur);
+      row=row.map(v=>v.trim().replace(/^"|"$/g,''));
+      let obj={}; headers.forEach((h,idx)=>obj[h]=row[idx]||''); rows.push(obj);
+    }
+    document.getElementById('preview').innerHTML='<p>Preview '+rows.length+' rows: '+rows.map(r=>r["Product Name*"]).join(', ')+'</p>';
+  }; reader.readAsText(file);
+}
+async function uploadV2(){
+  if(document.getElementById('dryRun').checked){ alert('Uncheck Dry Run'); return; }
+  const user=auth.currentUser; if(!user){alert('Login'); return;}
+  for(let r of rows){
+    let sale=parseFloat(r["Sale Rate* (Selling Price)"]||r["Sale Rate*"]||r["SellingPrice*"]||0);
+    let mrp=parseFloat(r["MRP* (Old Price)"]||r["MRP*"]||r["OldMRP"]||0);
+    let disc=mrp>sale?Math.round(((mrp-sale)/mrp)*100):0;
+    let colorsRaw=(r["Colors (comma or Multicolour)"]||r["Colors"]||"Multicolour").trim();
+    let colorsArr;
+    if(colorsRaw.toLowerCase().includes('multicolour')||colorsRaw.toLowerCase().includes('multicolor')){
+      colorsArr=[{name:"Multicolour",colorName:"Multicolour",code:"#FF00FF"}];
+    } else {
+      colorsArr=colorsRaw.split(',').map(s=>s.trim()).filter(Boolean).map(n=>({name:n,colorName:n}));
+    }
+    let data={
+      productName:r["Product Name*"], name:r["Product Name*"],
+      brand:r["Brand"]||"Shopline",
+      category:r["Category*"]||"General", subCategory:r["SubCategory*"]||"General", subSubCategory:r["SubSubCategory*"]||"General",
+      hsnCode:r["HSN Code"]||"6105",
+      fabric:r["Fabric*"]||"Cotton", sleeve:r["Sleeve*"]||"Half Sleeve", fit:r["Fit*"]||"Regular", pattern:r["Pattern*"]||"Solid", weight:r["Weight"]||"200gm",
+      price:sale, sellingPrice:sale, salePrice:sale, sale_rate:sale, saleRate:sale, finalPrice:sale,
+      mrp:mrp, oldMrpPrice:mrp, oldPrice:mrp, MRP:mrp, mrpPrice:mrp,
+      discount:disc, discountPercent:disc,
+      stockQuantity:parseInt(r["Stock*"])||10, stock:parseInt(r["Stock*"])||10,
+      gstRate:parseInt(r["GSTRate*"])||18,
+      returnAvailable:(r["ReturnAvailable"]||'Yes').toLowerCase().startsWith('y'),
+      exchangeAvailable:(r["ExchangeAvailable"]||'Yes').toLowerCase().startsWith('y'),
+      sizes:(r["Sizes"]||"M,L,XL").split(',').map(s=>s.trim()).filter(Boolean),
+      colors:colorsArr, availableColors:colorsArr, colorName:colorsArr[0]?.name||"Multicolour", color:colorsArr[0]?.name||"Multicolour",
+      description:r["Description"]||"",
+      image:PLACEHOLDER, images:[PLACEHOLDER],
+      sellerId:ADMIN_UID, sellerEmail:ADMIN_EMAIL,
+      bulkAdded:true, noImage:true,
+      createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    };
+    await db.collection('products').add(data);
+    log('✅ Uploaded '+r["Product Name*"]+` sale=${sale} mrp=${mrp} colors=${colorsRaw}`);
+  }
+  log('Done upload V2');
+}
+</script>
+</body></html>
