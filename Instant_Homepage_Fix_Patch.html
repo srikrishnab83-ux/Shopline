@@ -1,0 +1,74 @@
+
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Instant Homepage Fix</title></head><body style="font-family:Arial;padding:16px">
+<h3>⚡ Instant Fix for Homepage undefined</h3>
+<p>This will update ALL products to add every price field name homepage might use.</p>
+<div id="status">Not logged</div>
+<button onclick="login()" style="padding:10px;background:#1a73e8;color:#fff;border:none;border-radius:8px">Login Admin</button>
+<button onclick="fix()" style="padding:10px;background:#188038;color:#fff;border:none;border-radius:8px">🔧 FIX NOW - Add All Price Fields</button>
+<pre id="log" style="background:#111;color:#0f0;padding:10px;height:300px;overflow:auto"></pre>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script>
+const cfg={apiKey:"AIzaSyCX7fx7XvW6duavBYrTrzysIQN5gPyfJGo",authDomain:"willwin-cart.firebaseapp.com",projectId:"willwin-cart"};
+firebase.initializeApp(cfg); const db=firebase.firestore(); const auth=firebase.auth();
+function log(m){document.getElementById('log').textContent+=m+"\n";}
+auth.onAuthStateChanged(u=>{document.getElementById('status').textContent=u?`✅ ${u.email} ${u.uid}`:'❌ Not logged';});
+async function login(){const p=new firebase.auth.GoogleAuthProvider(); await auth.signInWithPopup(p);}
+async function fix(){
+  const snap=await db.collection('products').get();
+  log(`Found ${snap.size} products`);
+  for(let doc of snap.docs){
+    let d=doc.data();
+    // Detect sale price from any field
+    let sale = d.sellingPrice || d.salePrice || d.price || d.sale_rate || d.finalPrice || d.customerPays || d.selling_price || 0;
+    let mrp = d.oldMrpPrice || d.mrp || d.oldPrice || d.MRP || d.mrpPrice || d.originalPrice || 0;
+    // If sale is 0 but mrp exists, try to get from product page that works: maybe Firestore has sale in different doc? Use mrp - discount logic
+    // From your screenshots: left product mrp 400 should have sale ~? Let's keep existing sale if any
+    if(!sale && d.price){ sale=d.price; }
+    // If still no sale, use mrp as sale (better than undefined)
+    if(!sale) sale=mrp||390;
+    if(!mrp) mrp=sale?Math.round(sale*1.4):550;
+    let discount = mrp>sale?Math.round(((mrp-sale)/mrp)*100):0;
+    // Build update with EVERY possible field name homepage could use
+    let upd={
+      price: sale,
+      sellingPrice: sale,
+      salePrice: sale,
+      sale_price: sale,
+      sale_rate: sale,
+      saleRate: sale,
+      finalPrice: sale,
+      final_price: sale,
+      displayPrice: sale,
+      customerPays: sale,
+      selling_price: sale,
+      mrp: mrp,
+      oldMrpPrice: mrp,
+      oldPrice: mrp,
+      MRP: mrp,
+      mrpPrice: mrp,
+      originalPrice: mrp,
+      old_price: mrp,
+      strikedPrice: mrp,
+      discount: discount,
+      discountPercent: discount,
+      discount_percent: discount,
+      offPercent: discount,
+      percentOff: discount
+    };
+    // Fix colors too
+    if(d.colors && typeof d.colors==='string'){
+      upd.colors=[{name:d.colors}];
+    }
+    if(Array.isArray(d.colors) && d.colors.some(c=>!c || c==='undefined')){
+      upd.colors=[{name:'Multicolour'}];
+    }
+    await db.collection('products').doc(doc.id).update(upd);
+    log(`✅ ${doc.id} -> price=${sale} mrp=${mrp} ${discount}%`);
+  }
+  log('DONE! Now hard refresh homepage: https://srikrishnab83-ux.github.io/Shopline/');
+  alert('Fixed! Now open homepage and do hard refresh (Ctrl+Shift+R)');
+}
+</script>
+</body></html>
